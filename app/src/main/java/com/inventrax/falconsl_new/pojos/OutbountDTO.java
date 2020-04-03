@@ -166,9 +166,32 @@ public class OutbountDTO {
 
     @SerializedName("PickedId")
     private String PickedId;
+
     @SerializedName("AccountID")
     private String AccountID;
 
+
+
+    @SerializedName("Vehicle")
+    private String Vehicle;
+
+    @SerializedName("OBDNumber")
+    private String OBDNumber;
+
+    @SerializedName("DriverName")
+    private String DriverName;
+
+    @SerializedName("DriverNo")
+    private String DriverNo;
+
+    @SerializedName("LRnumber")
+    private String LRnumber;
+
+    @SerializedName("TenatID")
+    private String TenatID;
+
+
+    private boolean isChecked=false;
 
 
 
@@ -196,6 +219,11 @@ public class OutbountDTO {
                 case "MRP":
                     if (entry.getValue() != null) {
                         this.setMRP(entry.getValue().toString());
+                    }
+                    break;
+                case "Result":
+                    if (entry.getValue() != null) {
+                        this.setResult(entry.getValue().toString());
                     }
                     break;
                 case "MOP":
@@ -454,13 +482,11 @@ public class OutbountDTO {
                         this.setCartonID(entry.getValue().toString());
                     }
                     break;
-
                 case "TransferRequestDetailsId":
                     if (entry.getValue() != null) {
                         this.setTransferRequestDetailsId(entry.getValue().toString());
                     }
                     break;
-
                 case "TransferRequestId":
                     if (entry.getValue() != null) {
                         this.setTransferRequestId(entry.getValue().toString());
@@ -471,8 +497,6 @@ public class OutbountDTO {
                         this.setsLocId(entry.getValue().toString());
                     }
                     break;
-
-
                 case "StorageLocationID":
                     if (entry.getValue() != null) {
                         this.setStorageLocationID(entry.getValue().toString());
@@ -488,6 +512,42 @@ public class OutbountDTO {
                 case "AccountID":
                     if(entry.getValue()!=null) {
                         this.setAccountID(entry.getValue().toString());
+                    }
+                    break;
+
+                case "Vehicle":
+                    if(entry.getValue()!=null) {
+                        this.setVehicle(entry.getValue().toString());
+                    }
+                    break;
+
+                case "OBDNumber":
+                    if(entry.getValue()!=null) {
+                        this.setOBDNumber(entry.getValue().toString());
+                    }
+                    break;
+
+                case "DriverName":
+                    if(entry.getValue()!=null) {
+                        this.setDriverName(entry.getValue().toString());
+                    }
+                    break;
+
+                case "DriverNo":
+                    if(entry.getValue()!=null) {
+                        this.setDriverNo(entry.getValue().toString());
+                    }
+                    break;
+
+                case "LRnumber":
+                    if(entry.getValue()!=null) {
+                        this.setLRnumber(entry.getValue().toString());
+                    }
+                    break;
+
+                case "TenatID":
+                    if(entry.getValue()!=null) {
+                        this.setTenatID(entry.getValue().toString());
                     }
                     break;
 
@@ -983,4 +1043,61 @@ public class OutbountDTO {
     public void setMRP(String MRP) {
         this.MRP = MRP;
     }
+
+    public String getVehicle() {
+        return Vehicle;
+    }
+
+    public void setVehicle(String vehicle) {
+        Vehicle = vehicle;
+    }
+
+    public String getOBDNumber() {
+        return OBDNumber;
+    }
+
+    public void setOBDNumber(String OBDNumber) {
+        this.OBDNumber = OBDNumber;
+    }
+
+    public String getDriverName() {
+        return DriverName;
+    }
+
+    public void setDriverName(String driverName) {
+        DriverName = driverName;
+    }
+
+    public String getDriverNo() {
+        return DriverNo;
+    }
+
+    public void setDriverNo(String driverNo) {
+        DriverNo = driverNo;
+    }
+
+    public String getLRnumber() {
+        return LRnumber;
+    }
+
+    public void setLRnumber(String LRnumber) {
+        this.LRnumber = LRnumber;
+    }
+
+    public String getTenatID() {
+        return TenatID;
+    }
+
+    public void setTenatID(String tenatID) {
+        TenatID = tenatID;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
 }

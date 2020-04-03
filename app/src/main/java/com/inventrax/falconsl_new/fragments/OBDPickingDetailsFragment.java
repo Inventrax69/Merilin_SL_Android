@@ -12,9 +12,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -102,7 +104,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
     private static BarcodeReader barcodeReader;
     private AidcManager manager;
     RelativeLayout rlPickList, rlSkip;
-
     String printer = "Select Printer", skipReason = "", pickedQty = "", location = "";
     List<String> deviceIPList;
     SearchableSpinner spinnerSelectReason;
@@ -176,6 +177,18 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
         lblassignedQty = (TextView) rootView.findViewById(R.id.lblRequiredQty);
         spinnerSelectReason = (SearchableSpinner) rootView.findViewById(R.id.spinnerSelectReason);
         spinnerSelectReason.setOnItemSelectedListener(this);
+
+        lblReceivedQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity=(MainActivity)getActivity();
+                    mainActivity.barcode="";
+                    return  true;
+                }
+                return false;
+            }
+        });
 
         SharedPreferences sp = getActivity().getSharedPreferences("LoginActivity", Context.MODE_PRIVATE);
         userId = sp.getString("RefUserId", "");

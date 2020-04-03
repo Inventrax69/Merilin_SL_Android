@@ -162,6 +162,21 @@ public interface ApiInterface {
     @POST("Outbound/ValidatePalletAtPicking")
     Call<String> ValidatePalletAtPicking(@Body WMSCoreMessage oRequest);
 
+    @POST("Outbound/GetOpenLoadsheetList")
+    Call<String> GetOpenLoadsheetList(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/GetPendingOBDListForLoading")
+    Call<String> GetPendingOBDListForLoading(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/UpsertLoadCreated")
+    Call<String> UpsertLoadCreated(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/UpsertLoad")
+    Call<String> UpsertLoad(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/LoadVerification")
+    Call<String> LoadVerification(@Body WMSCoreMessage oRequest);
+
     @POST("Transfers/UpsertBinToBinTransferItem")
     Call<String> UpsertBinToBinTransferItem(@Body WMSCoreMessage oRequest);
 

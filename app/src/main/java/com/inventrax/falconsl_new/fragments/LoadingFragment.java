@@ -95,7 +95,6 @@ public class LoadingFragment extends Fragment implements View.OnClickListener,Ba
     String loadSheetNo=null,loadNoCustomerCode=null;
     private String Materialcode = null;
     private boolean IsUserConfirmedRedo=false;
-
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
 

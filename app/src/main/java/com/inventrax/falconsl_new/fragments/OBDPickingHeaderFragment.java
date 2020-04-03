@@ -101,7 +101,6 @@ public class OBDPickingHeaderFragment extends Fragment implements View.OnClickLi
                     common.showUserDefinedAlertType(errorMessages.EMC_0035, getActivity(), getContext(), "Warning");
                 } else {
                     getPickListdetails();
-
                 }
                 break;
 

@@ -14,8 +14,7 @@
         android:layout_marginLeft="@dimen/nav_imgtitleicon_margin_left"
         android:layout_marginRight="@dimen/nav_imgtitleicon_margin_right"
         android:layout_centerVertical="true"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/title"

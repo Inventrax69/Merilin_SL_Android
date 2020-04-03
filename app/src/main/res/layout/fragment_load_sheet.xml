@@ -75,6 +75,7 @@
             android:text="@string/putaway"
             android:textAllCaps="false"
             android:textColor="@color/white" />
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -99,7 +100,7 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:hint="Dr Name"
-                android:inputType="number"
+                android:inputType="text"
                 android:padding="10dp"
                 android:singleLine="true"
                 android:textColor="@color/colorAccent"
@@ -115,7 +116,7 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:hint="Dr No"
-                android:inputType="number"
+                android:inputType="text"
                 android:padding="10dp"
                 android:singleLine="true"
                 android:textColor="@color/colorAccent"
@@ -140,7 +141,7 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:hint="Vehicle No"
-                android:inputType="number"
+                android:inputType="text"
                 android:padding="10dp"
                 android:singleLine="true"
                 android:textColor="@color/colorAccent"
@@ -156,7 +157,7 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:hint="Vehicle Type"
-                android:inputType="number"
+                android:inputType="text"
                 android:padding="10dp"
                 android:singleLine="true"
                 android:textColor="@color/colorAccent"
@@ -186,7 +187,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
             android:layout_marginRight="15dp"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="150dp"
             android:fadeScrollbars="false"
             android:scrollbarFadeDuration="0"
             android:scrollbars="vertical" />
@@ -277,6 +278,7 @@
                 android:layout_height="30dp"
                 android:layout_gravity="center"
                 android:background="@drawable/fullscreen_img" />
+
         </android.support.v7.widget.CardView>
 
         <TextView
@@ -609,30 +611,34 @@
 
 
         <Button
-            android:id="@+id/btnRevert"
+            android:id="@+id/btnLoadSKU"
             android:layout_width="120dp"
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="64dp"
-            android:layout_toStartOf="@+id/btnCloseThree"
-            android:layout_toLeftOf="@+id/btnCloseThree"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:background="@drawable/button_shape"
             android:elevation="30dp"
-            android:visibility="gone"
-            android:text="@string/revert"
+            android:text="Load Sku"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 
         <Button
-            android:id="@+id/btnLoadingComplete"
+            android:id="@+id/btnLoadingVerify"
             android:layout_width="140dp"
             android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="64dp"
             android:background="@drawable/button_shape"
             android:elevation="30dp"
-            android:text="@string/loadingComplete"
+            android:text="Load Verify"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 

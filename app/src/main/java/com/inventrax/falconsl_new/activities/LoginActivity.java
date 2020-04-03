@@ -69,7 +69,6 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity implements LoginView, AdapterView.OnItemSelectedListener {
 
     private static final String classCode = "API_ACT_LOGIN";
-
     private EditText inputUserId, inputPassword;
     private TextInputLayout inputLayoutUserId, inputLayoutPassword;
     private Button btnLogin, btnClear;

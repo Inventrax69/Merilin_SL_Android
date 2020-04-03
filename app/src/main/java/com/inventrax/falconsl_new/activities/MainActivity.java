@@ -70,12 +70,13 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
     private SharedPreferencesUtils sharedPreferencesUtils;
     private LogoutUtil logoutUtil;
     private static BarcodeReader barcodeReader;
-    String barcode = "";
+    public String barcode = "";
     GoodsInFragment goodsInFragment;
 
     ScanKeyListener scanKeyListener = new ScanKeyListener() {
         @Override
         public void getScannedData(String message) {
+
         }
     };
 
@@ -85,35 +86,6 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
 
     public static BarcodeReader getBarcodeObject() {
         return barcodeReader;
-    }
-
-    private final StringBuilder barcodeAssembler = new StringBuilder(50);
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    boolean processKeyEvent(KeyEvent event) {
-        InputDevice inputDevice = InputDevice.getDevice(event.getDeviceId());
-/*        if (inputDevice.isVirtual() || noScannerDevices.contains(inputDevice.getDescriptor())) {
-            return false;
-        } else {*/
-        if (event.getAction() == KeyEvent.ACTION_UP && event.getMetaState() == 0) {
-            int keyCode = event.getKeyCode();
-            if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {
-                //barcodeAssembler.append((char) ('0' + keyCode - KeyEvent.KEYCODE_0));
-                barcodeAssembler.append((char) ('0' + keyCode - KeyEvent.KEYCODE_0));
-            } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                String barcode = barcodeAssembler.toString();
-                onUserInteraction();
-                onBarcode(barcode);
-                barcodeAssembler.setLength(0);      // reset barcode assembler
-            }
-        }
-        return true;
-        /*     }*/
-    }
-
-    protected void onBarcode(String barcode) {
-        /* if not overridden, ignore the barcode */
-        Toast.makeText(MainActivity.this, "" + barcode, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -206,45 +178,11 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
         return super.dispatchKeyEvent(e);
     }
 
-    private boolean isKeyBoardOpen = false;
-    private int heightDiff;
-    private boolean wasOpened;
-    private final int DefaultKeyboardDP = 100;
-    // Lollipop includes button bar in the root. Add height of button bar (48dp) to maxDiff
-    private final int EstimatedKeyboardDP = DefaultKeyboardDP + (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 48 : 0);
-
-    public final void setKeyboardListener() {
-
-        final View activityRootView = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-
-        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-            private final Rect r = new Rect();
-
-            @Override
-            public void onGlobalLayout() {
-                // Convert the dp to pixels.
-                int estimatedKeyboardHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, EstimatedKeyboardDP, activityRootView.getResources().getDisplayMetrics());
-
-                // Conclude whether the keyboard is shown or not.
-                activityRootView.getWindowVisibleDisplayFrame(r);
-                heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
-                boolean isShown = heightDiff >= estimatedKeyboardHeight;
-
-                if (isShown == wasOpened) {
-                    return;
-                }
-
-                wasOpened = isShown;
-                if (isShown) {
-                    isKeyBoardOpen = true;
-                } else {
-                    isKeyBoardOpen = false;
-                }
-            }
-        });
+    @Override
+    public void onBackPressed() {
+        barcode="";
+        super.onBackPressed();
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -317,7 +255,6 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             // display the first navigation drawer view on app launch
             displayView(0, new NavDrawerItem(false, "Home"));
 
-            setKeyboardListener();
 
 
         } catch (Exception ex) {
@@ -451,9 +388,9 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             }
             break;
 
-            case "Load Sheet": {
+            case "Load & Pick": {
                 fragment = new LoadSheetFragment();
-                title = "Load Sheet";
+                title = "Load & Pick";
             }
             break;
 
