@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
-
 import com.honeywell.aidc.BarcodeReader;
 import com.inventrax.falconsl_new.R;
 import com.inventrax.falconsl_new.application.AbstractApplication;
@@ -54,7 +53,6 @@ import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.FragmentUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 import com.inventrax.falconsl_new.util.SharedPreferencesUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -193,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             setContentView(R.layout.activity_main);
 
             goodsInFragment = new GoodsInFragment();
-
 
             loadFormControls();
 
@@ -388,9 +385,9 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             }
             break;
 
-            case "Load & Pick": {
+            case "Pick & Load": {
                 fragment = new LoadSheetFragment();
-                title = "Load & Pick";
+                title = "Pick & Load";
             }
             break;
 
@@ -447,7 +444,6 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
     }
 
 
-    private void initiateBackgroundServices() {
-    }
+    private void initiateBackgroundServices() { }
 
 }

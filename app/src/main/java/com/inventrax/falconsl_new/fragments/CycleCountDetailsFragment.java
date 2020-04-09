@@ -2,6 +2,7 @@ package com.inventrax.falconsl_new.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -14,9 +15,11 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -117,6 +120,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
             scanner = intent.getStringExtra(GeneralString.BcReaderData);  // Scanned Barcode info
             ProcessScannedinfo(scanner.trim().toString());
+
         }
     };
 
@@ -187,6 +191,18 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
         etProjectRef = (EditText) rootView.findViewById(R.id.etProjectRef);
         etCCQty = (EditText) rootView.findViewById(R.id.etCCQty);
         etCCMRP = (EditText) rootView.findViewById(R.id.etCCMRP);
+
+        etCCQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity=(MainActivity)getActivity();
+                    mainActivity.barcode="";
+                    return  true;
+                }
+                return false;
+            }
+        });
 
         txtInputLayoutLocation = (TextInputLayout) rootView.findViewById(R.id.txtInputLayoutLocation);
         txtInputLayoutContainer = (TextInputLayout) rootView.findViewById(R.id.txtInputLayoutContainer);
@@ -262,7 +278,26 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             case R.id.btnBinComplete:
 
                 if (!etLocation.getText().toString().isEmpty()) {
-                    releaseCycleCountLocation();
+
+                    DialogUtils.showConfirmDialog(getActivity(), "Confirm", "Are you sure to complete this bin? ", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    common.setIsPopupActive(false);
+                                    releaseCycleCountLocation();
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    common.setIsPopupActive(false);
+                                    break;
+                            }
+
+                        }
+                    });
+
                 } else {
                     common.showUserDefinedAlertType(errorMessages.EMC_0007, getActivity(), getContext(), "Error");
                     return;
@@ -273,12 +308,16 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             case R.id.btnConfirm:
 
                 if (!materialCode.equals("")) {
-                    upsertCycleCount();
+                    if(etCCQty.getText().toString().isEmpty()){
+                        common.showUserDefinedAlertType("Please enter quantity", getActivity(), getContext(), "Error");
+                        return;
+                    }else{
+                        upsertCycleCount();
+                    }
                 } else {
                     common.showUserDefinedAlertType(errorMessages.EMC_0065, getActivity(), getContext(), "Error");
                     return;
                 }
-
                 break;
 
             case R.id.btnCloseExport:

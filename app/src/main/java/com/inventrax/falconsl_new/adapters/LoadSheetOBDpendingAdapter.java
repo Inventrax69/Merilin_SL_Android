@@ -113,7 +113,7 @@ public class LoadSheetOBDpendingAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
          OutbountDTO outbountDTO = (OutbountDTO) outbountDTOList.get(position);
-        ((MyViewHolder) holder).sno.setText(""+position);
+        ((MyViewHolder) holder).sno.setText(""+(position+1));
         ((MyViewHolder) holder).obd_name_check.setText(""+outbountDTO.getOBDNumber());
 
         if(outbountDTO.isChecked()){

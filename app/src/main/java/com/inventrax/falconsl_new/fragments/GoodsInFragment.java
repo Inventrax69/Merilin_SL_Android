@@ -1449,9 +1449,6 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
                                     List<LinkedTreeMap<?, ?>> _lINB = new ArrayList<LinkedTreeMap<?, ?>>();
                                     _lINB = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
 
-                                    Log.v("ABCDE", new Gson().toJson(_lINB));
-
-
                                     InboundDTO dto = null;
                                     ProgressDialogUtils.closeProgressDialog();
 
@@ -1550,7 +1547,6 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
 
             message.setEntityObject(inboundDTO);
 
-            Log.v("ABCDE_Q", new Gson().toJson(message));
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
@@ -1687,6 +1683,8 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
     }
 
     public void ValidateRSNAndReceive() {
+
+
 
         if (!etSerial.getText().toString().isEmpty()) {
             if (!etQty.getText().toString().equals("1")) {
@@ -1828,6 +1826,8 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
 
                                             Materialcode = "";
                                             lblScannedSku.setText("");
+                                            etQty.setEnabled(false);
+                                            etQty.clearFocus();
 
                                             cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
                                             ivScanSku.setImageResource(R.drawable.fullscreen_img);

@@ -222,7 +222,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
                 // menuList.add(new NavDrawerItem("Delete VLPD Picked Items", R.drawable.go));
                 menuList.add(new NavDrawerItem("Bin to Bin", R.drawable.go));
                 menuList.add(new NavDrawerItem("Pallet Transfers", R.drawable.go));
-                menuList.add(new NavDrawerItem("Load & Pick", R.drawable.go));
+                menuList.add(new NavDrawerItem("Pick & Load", R.drawable.go));
                 // menuList.add(new NavDrawerItem("Transfer Order Pick", R.drawable.go));
                 // menuList.add(new NavDrawerItem("Transfer Order PutAway", R.drawable.go));
                 menuList.add(new NavDrawerItem("Cycle Count", R.drawable.go));

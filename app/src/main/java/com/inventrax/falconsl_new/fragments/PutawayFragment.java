@@ -14,9 +14,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -173,6 +175,19 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
         etQty = (EditText) rootView.findViewById(R.id.etQty);
         etMRP = (EditText) rootView.findViewById(R.id.etMRP);
         etScannedLocation = (EditText) rootView.findViewById(R.id.etScannedLocation);
+
+
+        etQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity=(MainActivity)getActivity();
+                    mainActivity.barcode="";
+                    return  true;
+                }
+                return false;
+            }
+        });
 
         cvScanLocation = (CardView) rootView.findViewById(R.id.cvScanLocation);
         cvScanPallet = (CardView) rootView.findViewById(R.id.cvScanPallet);

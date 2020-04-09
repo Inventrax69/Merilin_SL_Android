@@ -103,8 +103,14 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
         requestforpermissions(permissions);
         //versioncontrol();
         loadFormControls();
-
         loginPresenter = new LoginPresenterImpl(this);
+    }
+
+    private boolean checkWriteExternalPermission()
+    {
+        String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        int res = LoginActivity.this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
     }
 
     //Loading all the form controls
@@ -146,6 +152,12 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
 
             ServiceURL.setServiceUrl(serviceUrlString);
 
+            if(checkWriteExternalPermission()){
+                if(!serviceUrlString.isEmpty()){
+
+                }
+            }
+
             try {
                 btnLogin.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -171,7 +183,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
                                     sharedPreferencesUtils.savePreference("isRememberPasswordChecked", true);
                                 }
                             } else {
-
                                 //Toast.makeText(getApplicationContext(),"Enter credentials",Toast.LENGTH_LONG).show();
                             }
                         } else {

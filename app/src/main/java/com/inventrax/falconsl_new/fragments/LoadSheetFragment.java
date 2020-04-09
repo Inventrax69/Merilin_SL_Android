@@ -110,7 +110,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
     SoundUtils soundUtils;
     TextView lblScannedSku,lblBatchNo,lblserialNo,lblMfgDate,lblExpDate,lblProjectRefNo,lblMRP;
 
-
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
         @Override
@@ -470,11 +469,11 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                                     if (scanType.equals("Auto")) {
                                         lblReceivedQty.setText("1");
+                                        lblReceivedQty.setEnabled(false);
                                         return;
                                     } else {
                                         // for Manual mode
                                         lblReceivedQty.setEnabled(true);
-
                                         soundUtils.alertWarning(getActivity(), getContext());
                                         DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0073);
                                         // To get the pending and received quantities
@@ -718,6 +717,11 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                         try {
 
+                            if(response.body()==null){
+                                common.showUserDefinedAlertType("No OBD numbers are pending to create", getActivity(), getContext(), "Warning");
+                                return;
+                            }
+
                             core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
 
                             List<LinkedTreeMap<?, ?>> _lLoadSheetNo = new ArrayList<LinkedTreeMap<?, ?>>();
@@ -729,6 +733,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                                 OutbountDTO dto = new OutbountDTO(_lLoadSheetNo.get(i).entrySet());
                                 lstDto.add(dto);
                             }
+
 
                             if(lstDto.size()>0){
                                 rlLoadingOne.setVisibility(View.GONE);
