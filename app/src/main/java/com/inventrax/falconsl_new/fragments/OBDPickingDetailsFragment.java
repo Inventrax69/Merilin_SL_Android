@@ -177,7 +177,7 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
         lblassignedQty = (TextView) rootView.findViewById(R.id.lblRequiredQty);
         spinnerSelectReason = (SearchableSpinner) rootView.findViewById(R.id.spinnerSelectReason);
         spinnerSelectReason.setOnItemSelectedListener(this);
-
+        lblReceivedQty.clearFocus();
         lblReceivedQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -695,13 +695,15 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
 
                                         if((lblBatchNo.getText().toString().equalsIgnoreCase(scanDTO1.getBatch()) || scanDTO1.getBatch()==null
                                                 || scanDTO1.getBatch().equalsIgnoreCase("") || scanDTO1.getBatch().isEmpty() )&&
-                                                lblserialNo.getText().toString().equalsIgnoreCase(scanDTO1.getSerialNumber())
-                                                ) {
+                                                lblserialNo.getText().toString().equalsIgnoreCase(scanDTO1.getSerialNumber()) &&
+                                                lblMfgDate.getText().toString().equalsIgnoreCase(scanDTO1.getMfgDate()) &&
+                                                lblExpDate.getText().toString().equalsIgnoreCase(scanDTO1.getExpDate())
+                                        ) {
 
-                                            // &&
-                                            //  lblMfgDate.getText().toString().equalsIgnoreCase(scanDTO1.getMfgDate()) &&
-                                            //        lblExpDate.getText().toString().equalsIgnoreCase(scanDTO1.getExpDate()
-                                            // lblProjectRefNo.getText().toString().equalsIgnoreCase(scanDTO1.getPrjRef())
+/*                                             &&
+                                              lblMfgDate.getText().toString().equalsIgnoreCase(scanDTO1.getMfgDate()) &&
+                                                    lblExpDate.getText().toString().equalsIgnoreCase(scanDTO1.getExpDate()
+                                             lblProjectRefNo.getText().toString().equalsIgnoreCase(scanDTO1.getPrjRef())*/
 
 
                                             cvScanRSN.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
@@ -712,7 +714,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                                             if (scanType.equalsIgnoreCase("Auto")) {
                                                 lblReceivedQty.setText("1");
                                                 UpsertPickItem();
-
                                             } else {
                                                 lblReceivedQty.setEnabled(true);
                                                 btnPick.setEnabled(true);

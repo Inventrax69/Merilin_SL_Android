@@ -448,7 +448,6 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
                                         common.setIsPopupActive(false);
 
                                         if (!skipReason.equals("")) {
-
                                             // To skip the item and regenerating suggestions
                                             skipItem();
                                         } else {
@@ -1965,6 +1964,7 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
                                 ProgressDialogUtils.closeProgressDialog();
 
                                 for (int i = 0; i < _lstPutaway.size(); i++) {
+
                                     PutawayDTO dto = new PutawayDTO(_lstPutaway.get(i).entrySet());
 
                                     materialMasterId = dto.getMaterialMasterId();
@@ -1975,6 +1975,7 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
                                     suggestedQty = dto.getSuggestedQty();
                                     suggestedReceivedQty = dto.getSuggestedReceivedQty();
 
+                                    etQty.clearFocus();
 
                                     totalQty = String.valueOf(Integer.parseInt(suggestedQty.split("[.]")[0]) - Integer.parseInt(suggestedReceivedQty.split("[.]")[0]));
                                     etQty.setText(totalQty);

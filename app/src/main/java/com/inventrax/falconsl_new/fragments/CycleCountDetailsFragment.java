@@ -20,12 +20,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cipherlab.barcode.GeneralString;
 import com.google.gson.Gson;
@@ -49,11 +50,11 @@ import com.inventrax.falconsl_new.pojos.CycleCountDTO;
 import com.inventrax.falconsl_new.pojos.ScanDTO;
 import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
+import com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner;
 import com.inventrax.falconsl_new.services.RestService;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
-import com.inventrax.falconsl_new.util.ScanValidator;
 import com.inventrax.falconsl_new.util.SoundUtils;
 
 import java.io.IOException;
@@ -70,14 +71,14 @@ import retrofit2.Response;
  * Created by Padmaja on 06/27/2018.
  */
 
-public class CycleCountDetailsFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener {
+public class CycleCountDetailsFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
 
     private static final String classCode = "API_FRAG_CYCLE COUNT";
     private View rootView;
     DialogUtils dialogUtils;
 
     private Button btnConfirm, btnBinComplete, btnClear, btnExportCC, btnCloseExport;
-    private TextView lblCycleCount, tvCount, lblScannedSku;
+    private TextView lblCycleCount, lblScannedSku;
     private CardView cvScanLocation, cvScanContainer, cvScanSKU;
     private TextInputLayout txtInputLayoutLocation, txtInputLayoutContainer, txtInputLayoutSerial, txtInputLayoutBatch, txtInputLayoutMfgDate,
             txtInputLayoutExpDate, txtInputLayoutProjectRef, txtInputLayoutCCQty, txtInputLayoutMRP;
@@ -98,7 +99,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     private static BarcodeReader barcodeReader;
     private AidcManager manager;
 
-    String materialCode = "",warehouseId = "",tenantId = "";
+    String materialCode = "", warehouseId = "", tenantId = "";
     private Common common = null;
 
     String userId = null, scanType = null, accountId = null;
@@ -106,23 +107,14 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
     private SoundUtils soundUtils;
-
     private LinearLayoutManager linearLayoutManager;
-
     boolean isValidLocation = false;
     boolean isPalletScanned = false;
     boolean isRSNScanned = false;
-
-    // Cipher Barcode Scanner
-    private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            scanner = intent.getStringExtra(GeneralString.BcReaderData);  // Scanned Barcode info
-            ProcessScannedinfo(scanner.trim().toString());
-
-        }
-    };
+    String Rack = "", Column = "", Level = "";
+    TextView tvRack, tvColumn, tvLevel;
+    SearchableSpinner spinnerSelectSloc;
+    String storageLoc;
 
     public void myScannedData(Context context, String barcode){
         try {
@@ -133,7 +125,18 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     }
 
 
-    public CycleCountDetailsFragment() { }
+    // Cipher Barcode Scanner
+    private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            scanner = intent.getStringExtra(GeneralString.BcReaderData);  // Scanned Barcode info
+            ProcessScannedinfo(scanner.trim().toString());
+        }
+    };
+
+    public CycleCountDetailsFragment() {
+
+    }
 
     @Nullable
     @Override
@@ -180,7 +183,10 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
         lblCycleCount = (TextView) rootView.findViewById(R.id.lblCycleCount);
         lblScannedSku = (TextView) rootView.findViewById(R.id.lblScannedSku);
-        tvCount = (TextView) rootView.findViewById(R.id.tvCount);
+
+        tvRack = (TextView) rootView.findViewById(R.id.tvRack);
+        tvColumn = (TextView) rootView.findViewById(R.id.tvColumn);
+        tvLevel = (TextView) rootView.findViewById(R.id.tvLevel);
 
         etLocation = (EditText) rootView.findViewById(R.id.etLocation);
         etContainer = (EditText) rootView.findViewById(R.id.etContainer);
@@ -192,6 +198,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
         etCCQty = (EditText) rootView.findViewById(R.id.etCCQty);
         etCCMRP = (EditText) rootView.findViewById(R.id.etCCMRP);
 
+        etCCQty.clearFocus();
         etCCQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -214,10 +221,19 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
         txtInputLayoutCCQty = (TextInputLayout) rootView.findViewById(R.id.txtInputLayoutCCQty);
         txtInputLayoutMRP = (TextInputLayout) rootView.findViewById(R.id.txtInputLayoutMRP);
 
+        spinnerSelectSloc = (SearchableSpinner) rootView.findViewById(R.id.spinnerSelectSloc);
+        spinnerSelectSloc.setOnItemSelectedListener(this);
+
         lblCycleCount.setText(getArguments().getString("CCname"));
         warehouseId = getArguments().getString("warehouseId");
         tenantId = getArguments().getString("tenantId");
+        Rack = getArguments().getString("Rack");
+        Column = getArguments().getString("Column");
+        Level = getArguments().getString("Level");
 
+        tvRack.setText("Rack : " + Rack);
+        tvColumn.setText("Col : " + Column);
+        tvLevel.setText("Level : " + Level);
 
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
@@ -270,15 +286,17 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             }
         });
 
+
+        // To get Storage Locations
+        getSLocs();
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnBinComplete:
-
                 if (!etLocation.getText().toString().isEmpty()) {
-
                     DialogUtils.showConfirmDialog(getActivity(), "Confirm", "Are you sure to complete this bin? ", new DialogInterface.OnClickListener() {
 
                         @Override
@@ -297,22 +315,37 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
                         }
                     });
-
                 } else {
                     common.showUserDefinedAlertType(errorMessages.EMC_0007, getActivity(), getContext(), "Error");
                     return;
                 }
-
                 break;
 
             case R.id.btnConfirm:
-
                 if (!materialCode.equals("")) {
-                    if(etCCQty.getText().toString().isEmpty()){
+                    if (etCCQty.getText().toString().isEmpty()) {
                         common.showUserDefinedAlertType("Please enter quantity", getActivity(), getContext(), "Error");
                         return;
-                    }else{
-                        upsertCycleCount();
+                    } else {
+                        DialogUtils.showConfirmDialog(getActivity(), "Confirm", "Are you sure to submit this sku? ", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        common.setIsPopupActive(false);
+                                        upsertCycleCount();
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        common.setIsPopupActive(false);
+                                        break;
+                                }
+
+                            }
+                        });
+
                     }
                 } else {
                     common.showUserDefinedAlertType(errorMessages.EMC_0065, getActivity(), getContext(), "Error");
@@ -329,9 +362,15 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                 clearFields();
                 break;
             case R.id.cvScanContainer:
-                isPalletScanned=true;
-                cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.white));
-                ivScanContainer.setImageResource(R.drawable.check);
+                if (isPalletScanned) {
+                    clearFields1();
+                } else {
+                    clearFields1();
+                    isPalletScanned = true;
+                    cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.white));
+                    ivScanContainer.setImageResource(R.drawable.check);
+                }
+
                 break;
 
             case R.id.btnExportCC:
@@ -351,6 +390,24 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                 }
                 break;
         }
+    }
+
+    public void getSLocs() {
+
+
+        List<String> _lstSLocNames = new ArrayList<>();
+        _lstSLocNames.add("OK");
+        _lstSLocNames.add("Damage");
+
+        ArrayAdapter arrayAdapterSLoc = new ArrayAdapter(getActivity(), R.layout.support_simple_spinner_dropdown_item, _lstSLocNames);
+        spinnerSelectSloc.setAdapter(arrayAdapterSLoc);
+        int getPostion = _lstSLocNames.indexOf("OK");
+        String compareValue = String.valueOf(_lstSLocNames.get(getPostion).toString());
+        if (compareValue != null) {
+            int spinnerPosition = arrayAdapterSLoc.getPosition(compareValue);
+            spinnerSelectSloc.setSelection(spinnerPosition);
+        }
+
     }
 
     // honeywell
@@ -427,12 +484,12 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
             if (scannedData != null && !common.isPopupActive) {
 
-                if(!isValidLocation){
+                if (!isValidLocation) {
                     ValidateLocation(scannedData);
-                }else{
-                    if(!isPalletScanned){
+                } else {
+                    if (!isPalletScanned) {
                         ValidatePallet(scannedData);
-                    }else{
+                    } else {
                         ValiDateMaterial(scannedData);
                     }
                 }
@@ -440,15 +497,21 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
 
 /*                if (ScanValidator.isLocationScanned(scannedData)) {
+
                     etLocation.setText(scannedData);
+
                     isBlockedLocation();
+
                     return;
+
                 }
                 else if (ScanValidator.isItemScanned(scannedData) && !etLocation.getText().toString().isEmpty()) {
                     if (etLocation.getText().toString().equals(String.valueOf(R.string.hintLocation))) {
                         common.showUserDefinedAlertType(errorMessages.EMC_0007, getActivity(), getContext(), "Error");
                     } else {
+
                         materialCode = scannedData.split("[|]")[0];
+
                         lblScannedSku.setText(materialCode);
                         etBatch.setText(scannedData.split("[|]")[1]);
                         etSerial.setText(scannedData.split("[|]")[2]);
@@ -456,18 +519,27 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                         etExpDate.setText(scannedData.split("[|]")[4]);
                         etProjectRef.setText(scannedData.split("[|]")[5]);
                         etCCMRP.setText(scannedData.split("[|]")[7]);
+
                         cvScanSKU.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
                         ivScanSKU.setImageResource(R.drawable.fullscreen_img);
+
                         checkMaterialAvailablilty();
+
                         return;
                     }
+
+
                 }
                 else if (ScanValidator.isContainerScanned(scannedData)) {
+
                     if (etLocation.getText().toString().isEmpty()) {
                         common.showUserDefinedAlertType(errorMessages.EMC_0007, getActivity(), getContext(), "Error");
+
                     } else {
                         etContainer.setText(scannedData);
+
                         chekPalletLocation();
+
                         return;
                     }
                 }*/
@@ -533,7 +605,8 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                     etContainer.setText("");
                                     cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanContainer.setImageResource(R.drawable.invalid_cross);
-                                    isPalletScanned=false;
+                                    isPalletScanned = false;
+
                                     ProgressDialogUtils.closeProgressDialog();
                                     common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
                                     return;
@@ -553,7 +626,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
                                     dto = new CycleCountDTO(_lResult.get(i).entrySet());
                                     if (dto.getResult().equals("1")) {
-                                        isPalletScanned=true;
+                                        isPalletScanned = true;
                                         cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.white));
                                         ivScanContainer.setImageResource(R.drawable.check);
                                     }
@@ -594,6 +667,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     }
 
     public void isBlockedLocation() {
+
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
@@ -657,7 +731,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                 }
 
                                 etLocation.setText("");
-                                isValidLocation=false;
+                                isValidLocation = false;
                                 cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.white));
                                 ivScanLocation.setImageResource(R.drawable.invalid_cross);
 
@@ -681,12 +755,12 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                 for (int i = 0; i < lstDto.size(); i++) {
 
                                     if (lstDto.get(i).getResult().equals("-1")) {
-                                        isValidLocation=true;
+                                        isValidLocation = true;
                                         cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.white));
                                         ivScanLocation.setImageResource(R.drawable.check);
                                         return;
                                     } else {
-                                        isValidLocation=false;
+                                        isValidLocation = false;
                                         etLocation.setText("");
                                         cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.white));
                                         ivScanLocation.setImageResource(R.drawable.warning_img);
@@ -740,6 +814,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     }
 
     public void checkMaterialAvailablilty() {
+
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
@@ -807,10 +882,8 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                 ivScanSKU.setImageResource(R.drawable.warning_img);
 
                                 materialCode = "";
-
                                 lblScannedSku.setText("");
-
-                                isRSNScanned=false;
+                                isRSNScanned = false;
 
                                 ProgressDialogUtils.closeProgressDialog();
                                 common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
@@ -832,7 +905,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                 for (int i = 0; i < lstDto.size(); i++) {
 
                                     if (lstDto.get(i).getResult().equals("1")) {
-                                        isRSNScanned=true;
+                                        isRSNScanned = true;
                                         cvScanSKU.setCardBackgroundColor(getResources().getColor(R.color.white));
                                         ivScanSKU.setImageResource(R.drawable.check);
 
@@ -926,15 +999,15 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             cycleCountDTO.setProjectRefNo(etProjectRef.getText().toString());
             cycleCountDTO.setMfgDate(etMfgDate.getText().toString());
             cycleCountDTO.setExpDate(etExpDate.getText().toString());
-            cycleCountDTO.setCount(tvCount.getText().toString());
+            //cycleCountDTO.setCount(tvCount.getText().toString());
             cycleCountDTO.setMRP(etCCMRP.getText().toString());
+            cycleCountDTO.setStorageLocation(storageLoc);
 
             message.setEntityObject(cycleCountDTO);
 
 
             Call<String> call = null;
-            ApiInterface apiService =
-                    RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -1004,6 +1077,8 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
                                 ProgressDialogUtils.closeProgressDialog();
 
+
+
                                 for (int i = 0; i < lstDto.size(); i++) {
 
                                     if (lstDto.get(i).getResult().equals("Confirmed successfully")) {
@@ -1020,7 +1095,12 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                         etProjectRef.setText("");
                                         etCCQty.setText("");
 
-                                        soundUtils.alertSuccess(getActivity(),getContext());
+                                        soundUtils.alertSuccess(getActivity(), getContext());
+
+                                        etCCQty.setEnabled(false);
+                                        etCCQty.clearFocus();
+
+                                        getSLocs();
 
                                     } else {
                                         common.showUserDefinedAlertType(lstDto.get(i).getResult(), getActivity(), getContext(), "Error");
@@ -1125,9 +1205,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
                                 WMSExceptionMessage owmsExceptionMessage = null;
                                 for (int i = 0; i < _lExceptions.size(); i++) {
-
                                     owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
-
                                 }
 
                                 ProgressDialogUtils.closeProgressDialog();
@@ -1334,6 +1412,38 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
         }
     }
 
+    public void clearFields1() {
+
+
+        cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.palletColor));
+        ivScanContainer.setImageResource(R.drawable.fullscreen_img);
+
+        cvScanSKU.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+        ivScanSKU.setImageResource(R.drawable.fullscreen_img);
+
+        lblScannedSku.setText("");
+        materialCode = "";
+
+        etContainer.setText("");
+        etExpDate.setText("");
+        etMfgDate.setText("");
+        etSerial.setText("");
+        etBatch.setText("");
+        etProjectRef.setText("");
+        etCCQty.setText("");
+        // To get Storage Locations
+        getSLocs();
+
+        etCCQty.setEnabled(false);
+        etCCQty.clearFocus();
+
+        rvPendingCC.setAdapter(null);
+
+        isPalletScanned = false;
+        isRSNScanned = false;
+
+    }
+
     public void clearFields() {
 
         cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.locationColor));
@@ -1359,9 +1469,14 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
         rvPendingCC.setAdapter(null);
 
+        etCCQty.setEnabled(false);
+        etCCQty.clearFocus();
+
         isValidLocation = false;
         isPalletScanned = false;
         isRSNScanned = false;
+        // To get Storage Locations
+        getSLocs();
 
     }
 
@@ -1693,7 +1808,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             //inboundDTO.setIsOutbound("0");
             message.setEntityObject(scanDTO);
 
-            Log.v("ABCDE",new Gson().toJson(message));
+            Log.v("ABCDE", new Gson().toJson(message));
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
@@ -1736,24 +1851,25 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
                                 owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                             }
-                            isRSNScanned=false;
+                            isRSNScanned = false;
                             cvScanSKU.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
                             ivScanSKU.setImageResource(R.drawable.fullscreen_img);
                             ProgressDialogUtils.closeProgressDialog();
                             common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
                         } else {
-                            LinkedTreeMap<?, ?>_lResult = new LinkedTreeMap<>();
+                            LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
                             _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
 
-                            Log.v("ABCDE",new Gson().toJson(_lResult));
+                            Log.v("ABCDE", new Gson().toJson(_lResult));
 
-                            ScanDTO scanDTO1=new ScanDTO(_lResult.entrySet());
+                            ScanDTO scanDTO1 = new ScanDTO(_lResult.entrySet());
                             ProgressDialogUtils.closeProgressDialog();
-                            if(scanDTO1!=null){
-                                if(scanDTO1.getScanResult()){
+                            if (scanDTO1 != null) {
+                                if (scanDTO1.getScanResult()) {
 
                                 /* ----For RSN reference----
                                     0 Sku|1 BatchNo|2 SerialNO|3 MFGDate|4 EXpDate|5 ProjectRefNO|6 Kit Id|7 line No|8 MRP ---- For SKU with 9 MSP's
+
                                     0 Sku|1 BatchNo|2 SerialNO|3 KitId|4 lineNo  ---- For SKU with 5 MSP's   *//*
                                     // Eg. : ToyCar|1|bat1|ser123|12/2/2018|12/2/2019|0|001*/
 
@@ -1789,13 +1905,13 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
                                     checkMaterialAvailablilty();
 
-                                } else{
+                                } else {
                                     isRSNScanned = false;
                                     cvScanSKU.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanSKU.setImageResource(R.drawable.warning_img);
                                     common.showUserDefinedAlertType(errorMessages.EMC_0009, getActivity(), getContext(), "Warning");
                                 }
-                            }else{
+                            } else {
                                 common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
                             }
                         }
@@ -1889,31 +2005,31 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                 owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                             }
 
-                            isValidLocation=false;
+                            isValidLocation = false;
                             cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.white));
                             ivScanLocation.setImageResource(R.drawable.invalid_cross);
                             ProgressDialogUtils.closeProgressDialog();
                             common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
                         } else {
-                            LinkedTreeMap<?, ?>_lResult = new LinkedTreeMap<>();
+                            LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
                             _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
 
-                            ScanDTO scanDTO1=new ScanDTO(_lResult.entrySet());
+                            ScanDTO scanDTO1 = new ScanDTO(_lResult.entrySet());
 
-                            if(scanDTO1!=null){
-                                if(scanDTO1.getScanResult()){
-                                    isValidLocation=true;
+                            if (scanDTO1 != null) {
+                                if (scanDTO1.getScanResult()) {
+                                    isValidLocation = true;
                                     cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanLocation.setImageResource(R.drawable.check);
                                     etLocation.setText(scannedData);
                                     isBlockedLocation();
-                                } else{
-                                    isValidLocation=false;
+                                } else {
+                                    isValidLocation = false;
                                     cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanLocation.setImageResource(R.drawable.warning_img);
                                     common.showUserDefinedAlertType(errorMessages.EMC_0010, getActivity(), getContext(), "Warning");
                                 }
-                            }else{
+                            } else {
                                 common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
                             }
                             ProgressDialogUtils.closeProgressDialog();
@@ -2007,32 +2123,32 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
                                 owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                             }
 
-                            isPalletScanned=false;
+                            isPalletScanned = false;
                             cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.white));
                             ivScanContainer.setImageResource(R.drawable.invalid_cross);
                             ProgressDialogUtils.closeProgressDialog();
                             common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
                         } else {
-                            LinkedTreeMap<?, ?>_lResult = new LinkedTreeMap<>();
+                            LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
                             _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
 
-                            ScanDTO scanDTO1=new ScanDTO(_lResult.entrySet());
+                            ScanDTO scanDTO1 = new ScanDTO(_lResult.entrySet());
                             ProgressDialogUtils.closeProgressDialog();
-                            if(scanDTO1!=null){
-                                if(scanDTO1.getScanResult()){
-                                    isPalletScanned=true;
+                            if (scanDTO1 != null) {
+                                if (scanDTO1.getScanResult()) {
+                                    isPalletScanned = true;
                                     cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanContainer.setImageResource(R.drawable.check);
                                     etContainer.setText(scannedData);
                                     chekPalletLocation();
-                                } else{
-                                    isPalletScanned=false;
+                                } else {
+                                    isPalletScanned = false;
                                     cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanContainer.setImageResource(R.drawable.warning_img);
                                     common.showUserDefinedAlertType(errorMessages.EMC_0009, getActivity(), getContext(), "Warning");
                                 }
-                            }else{
-                                isPalletScanned=false;
+                            } else {
+                                isPalletScanned = false;
                                 common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
                             }
 
@@ -2066,6 +2182,16 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             ProgressDialogUtils.closeProgressDialog();
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        storageLoc = spinnerSelectSloc.getSelectedItem().toString();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 
 

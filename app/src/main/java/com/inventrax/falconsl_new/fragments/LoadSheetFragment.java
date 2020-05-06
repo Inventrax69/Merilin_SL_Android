@@ -76,19 +76,20 @@ import retrofit2.Response;
  * Created by ch Anil on 27/03/2020.
  */
 
-public class LoadSheetFragment extends Fragment implements View.OnClickListener,BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
+public class LoadSheetFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
 
     private static final String classCode = "API_FRAG_009";
     private View rootView;
-    Button btnGo, btnCloseOne, btnCloseTwo,btnCloseThree,btnCreateNew,btnCreate;
-    RelativeLayout rlLoadingOne,rlLoadingTwo,rlLoadListThree;
+    Button btnGo, btnCloseOne, btnCloseTwo, btnCloseThree, btnCreateNew, btnCreate;
+    RelativeLayout rlLoadingOne, rlLoadingTwo, rlLoadListThree;
     TextView lblLoadSheetNo;
     CardView cvScanSku;
     ImageView ivScanSku;
     SearchableSpinner spinnerSelectLoadList;
-    EditText lblDrName,lblDrNo,lblVehicleNo,lblVehicleType,lblReceivedQty;
+    EditText lblDrName, lblDrNo, lblVehicleNo, lblVehicleType, lblReceivedQty;
     TextInputLayout txtInputLayoutQty;
-    String userId = null, scanType = null,accountId = "";;
+    String userId = null, scanType = null, accountId = "";
+    ;
     String scanner = null;
     String getScanner = null;
     private IntentFilter filter;
@@ -98,17 +99,17 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
     private AidcManager manager;
     private Common common;
     private WMSCoreMessage core;
-    List<LoadDTO> lstloaddata= null;
-    String loadSheetNo="",loadNoCustomerCode=null;
+    List<LoadDTO> lstloaddata = null;
+    String loadSheetNo = "", loadNoCustomerCode = null;
     private String Materialcode = null;
-    private boolean IsUserConfirmedRedo=false;
+    private boolean IsUserConfirmedRedo = false;
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
     RecyclerView recycler_view_obd;
     LinearLayoutManager linearLayoutManager;
-    Button btnLoadingVerify,btnLoadSKU;
+    Button btnLoadingVerify, btnLoadSKU;
     SoundUtils soundUtils;
-    TextView lblScannedSku,lblBatchNo,lblserialNo,lblMfgDate,lblExpDate,lblProjectRefNo,lblMRP;
+    TextView lblScannedSku, lblBatchNo, lblserialNo, lblMfgDate, lblExpDate, lblProjectRefNo, lblMRP;
 
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
@@ -119,22 +120,23 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         }
     };
 
-    public void myScannedData(Context context, String barcode){
+    public void myScannedData(Context context, String barcode) {
         try {
             ProcessScannedinfo(barcode.trim());
-        }catch (Exception e){
+        } catch (Exception e) {
             //  Toast.makeText(context, ""+e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
-    public LoadSheetFragment(){ }
+    public LoadSheetFragment() {
+    }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        rootView  = inflater.inflate(R.layout.fragment_load_sheet,container,false);
+        rootView = inflater.inflate(R.layout.fragment_load_sheet, container, false);
         barcodeReader = MainActivity.getBarcodeObject();
         loadFormControls();
         return rootView;
@@ -164,13 +166,12 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
         soundUtils = new SoundUtils();
 
-
         lblReceivedQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    MainActivity mainActivity=(MainActivity)getActivity();
-                    mainActivity.barcode="";
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.barcode = "";
                     return true;
                 }
                 return false;
@@ -180,12 +181,12 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         //DrawableCompat.setTint(isDockScanned.getDrawable(), ContextCompat.getColor(getContext(), R.color.green));
         btnGo = (Button) rootView.findViewById(R.id.btnGo);
         btnCloseOne = (Button) rootView.findViewById(R.id.btnCloseOne);
-        btnCloseTwo = (Button)rootView.findViewById(R.id.btnCloseTwo);
-        btnCloseThree = (Button)rootView.findViewById(R.id.btnCloseThree);
-        btnCreateNew = (Button)rootView.findViewById(R.id.btnCreateNew);
-        btnCreate = (Button)rootView.findViewById(R.id.btnCreate);
-        btnLoadingVerify = (Button)rootView.findViewById(R.id.btnLoadingVerify);
-        btnLoadSKU = (Button)rootView.findViewById(R.id.btnLoadSKU);
+        btnCloseTwo = (Button) rootView.findViewById(R.id.btnCloseTwo);
+        btnCloseThree = (Button) rootView.findViewById(R.id.btnCloseThree);
+        btnCreateNew = (Button) rootView.findViewById(R.id.btnCreateNew);
+        btnCreate = (Button) rootView.findViewById(R.id.btnCreate);
+        btnLoadingVerify = (Button) rootView.findViewById(R.id.btnLoadingVerify);
+        btnLoadSKU = (Button) rootView.findViewById(R.id.btnLoadSKU);
 
         lblLoadSheetNo = (TextView) rootView.findViewById(R.id.lblLoadSheetNo);
         lblScannedSku = (TextView) rootView.findViewById(R.id.lblScannedSku);
@@ -226,10 +227,10 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         btnCreateNew.setOnClickListener(this);
         btnLoadingVerify.setOnClickListener(this);
         btnLoadSKU.setOnClickListener(this);
-       // btnCreate.setOnClickListener(this);
+        // btnCreate.setOnClickListener(this);
 
         common = new Common();
-        core= new WMSCoreMessage();
+        core = new WMSCoreMessage();
 
         GetOpenLoadsheetList();
 
@@ -251,15 +252,13 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         });
 
 
-
     }
 
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btnGo:
-                // GetLoaddetails();
 
                 if (loadSheetNo.equalsIgnoreCase("")) {
                     common.showUserDefinedAlertType("No Pending Load Sheet Number", getActivity(), getContext(), "Warning");
@@ -269,11 +268,10 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                     rlLoadingTwo.setVisibility(View.GONE);
                     rlLoadListThree.setVisibility(View.VISIBLE);
                 }
+
                 break;
             case R.id.btnCreateNew:
-
                 GetPendingOBDListForLoading();
-
                 break;
 
             case R.id.btnCloseOne:
@@ -289,11 +287,11 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 break;
 
             case R.id.btnLoadSKU:
-                if(lblScannedSku.getText().toString().isEmpty()){
+                if (lblScannedSku.getText().toString().isEmpty()) {
                     common.showUserDefinedAlertType("Please Scan SKU", getActivity(), getContext(), "Warning");
                     return;
                 }
-                if(lblReceivedQty.getText().toString().isEmpty()){
+                if (lblReceivedQty.getText().toString().isEmpty()) {
                     common.showUserDefinedAlertType("Please enter qty", getActivity(), getContext(), "Warning");
                     return;
                 }
@@ -308,7 +306,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
     }
 
 
-
     // honeywell
     @Override
     public void onBarcodeEvent(final BarcodeReadEvent barcodeReadEvent) {
@@ -318,19 +315,21 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 // update UI to reflect the data
                 getScanner = barcodeReadEvent.getBarcodeData();
                 ProcessScannedinfo(getScanner);
-
             }
 
         });
     }
+
     @Override
     public void onFailureEvent(BarcodeFailureEvent barcodeFailureEvent) {
 
     }
+
     @Override
     public void onTriggerEvent(TriggerStateChangeEvent triggerStateChangeEvent) {
 
     }
+
     //Honeywell Barcode reader Properties
     public void HoneyWellBarcodeListeners() {
 
@@ -387,7 +386,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             //inboundDTO.setIsOutbound("0");
             message.setEntityObject(scanDTO);
 
-            Log.v("ABCDE",new Gson().toJson(message));
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
@@ -420,7 +418,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
                         core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
-                        Log.v("ABCDE",new Gson().toJson(core));
+
 
                         if ((core.getType().toString().equals("Exception"))) {
                             List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
@@ -437,16 +435,13 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                             ProgressDialogUtils.closeProgressDialog();
                             common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
                         } else {
-                            LinkedTreeMap<?, ?>_lResult = new LinkedTreeMap<>();
+                            LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
                             _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
 
-                            Log.v("ABCDE",new Gson().toJson(core.getEntityObject()));
-
-
-                            ScanDTO scanDTO1=new ScanDTO(_lResult.entrySet());
+                            ScanDTO scanDTO1 = new ScanDTO(_lResult.entrySet());
                             ProgressDialogUtils.closeProgressDialog();
-                            if(scanDTO1!=null){
-                                if(scanDTO1.getScanResult()){
+                            if (scanDTO1 != null) {
+                                if (scanDTO1.getScanResult()) {
 
                                 /* ----For RSN reference----
                                     0 Sku|1 BatchNo|2 SerialNO|3 MFGDate|4 EXpDate|5 ProjectRefNO|6 Kit Id|7 line No|8 MRP ---- For SKU with 9 MSP's
@@ -480,13 +475,13 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                                     }
 
 
-                                } else{
+                                } else {
                                     // lblScannedSku.setText("");
                                     cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanSku.setImageResource(R.drawable.warning_img);
                                     common.showUserDefinedAlertType(errorMessages.EMC_0009, getActivity(), getContext(), "Warning");
                                 }
-                            }else{
+                            } else {
                                 common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
                             }
                         }
@@ -525,8 +520,8 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
         if (scannedData != null) {
-            if(!ProgressDialogUtils.isProgressActive()){
-                if(rlLoadListThree.getVisibility()==View.VISIBLE){
+            if (!ProgressDialogUtils.isProgressActive()) {
+                if (rlLoadListThree.getVisibility() == View.VISIBLE) {
                     ValiDateMaterial(scannedData);
                 }
             }
@@ -535,7 +530,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        loadSheetNo=spinnerSelectLoadList.getSelectedItem().toString();
+        loadSheetNo = spinnerSelectLoadList.getSelectedItem().toString();
     }
 
     @Override
@@ -544,35 +539,16 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
     }
 
 
-/*    public void GetLoaddetails()
-    {
-        rlLoadingOne.setVisibility(View.GONE);
-        rlLoadListTwo.setVisibility(View.VISIBLE);
-        lblLoadSheetNo.setText(loadNoCustomerCode);
-        for(LoadDTO oLoditem:lstloaddata)
-        {
-            if(oLoditem.getLoadSheetNo().equals(loadSheetNo))
-            {
-*//*                lblVehicleNo.setText(oLoditem.getVehicleNumber());
-                lblDockNo.setText(oLoditem.getDockNumber());
-                lblBoxQty.setText(oLoditem.getLoadedQuantity() +"/"+ oLoditem.getLoadSheetQuantity());
-                lblVolume.setText(String.valueOf(oLoditem.getVolume()));
-                lblWeight.setText(String.valueOf(oLoditem.getWeight()));*//*
-            }
-        }
-    }*/
 
-
-    public  void GetOpenLoadsheetList() {
+    public void GetOpenLoadsheetList() {
 
         try {
             WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound,getContext());
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
             outbountDTO.setTenatID(userId);
             outbountDTO.setAccountID(accountId);
             message.setEntityObject(outbountDTO);
-
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
@@ -590,7 +566,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_01",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -623,7 +599,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                             }
 
                             for (int i = 0; i < lstDto.size(); i++) {
-                               lstLoadSheetNo.add(lstDto.get(i).getvLPDNumber());
+                                lstLoadSheetNo.add(lstDto.get(i).getvLPDNumber());
                             }
 
                             ProgressDialogUtils.closeProgressDialog();
@@ -632,7 +608,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                         } catch (Exception ex) {
                             try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_02",getActivity());
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
                                 logException();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -653,7 +629,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 });
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_03",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -663,7 +639,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             }
         } catch (Exception ex) {
             try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_04",getActivity());
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
                 logException();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -673,10 +649,10 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    public  void GetPendingOBDListForLoading() {
+    public void GetPendingOBDListForLoading() {
         try {
             WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound,getContext());
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
             outbountDTO.setTenatID(userId);
             outbountDTO.setAccountID(accountId);
@@ -699,7 +675,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_01",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -717,7 +693,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                         try {
 
-                            if(response.body()==null){
+                            if (response.body() == null) {
                                 common.showUserDefinedAlertType("No OBD numbers are pending to create", getActivity(), getContext(), "Warning");
                                 return;
                             }
@@ -735,13 +711,13 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                             }
 
 
-                            if(lstDto.size()>0){
+                            if (lstDto.size() > 0) {
                                 rlLoadingOne.setVisibility(View.GONE);
                                 rlLoadingTwo.setVisibility(View.VISIBLE);
                                 rlLoadListThree.setVisibility(View.GONE);
-                                LoadSheetOBDpendingAdapter loadSheetOBDpendingAdapter=new LoadSheetOBDpendingAdapter(getActivity(),btnCreate,lstDto,lblDrName,lblDrNo,lblVehicleNo,lblVehicleType,lblLoadSheetNo,rlLoadingOne,rlLoadingTwo,rlLoadListThree);
+                                LoadSheetOBDpendingAdapter loadSheetOBDpendingAdapter = new LoadSheetOBDpendingAdapter(getActivity(), btnCreate, lstDto, lblDrName, lblDrNo, lblVehicleNo, lblVehicleType, lblLoadSheetNo, rlLoadingOne, rlLoadingTwo, rlLoadListThree);
                                 recycler_view_obd.setAdapter(loadSheetOBDpendingAdapter);
-                            }else{
+                            } else {
                                 common.showUserDefinedAlertType("No OBD numbers are pending to create", getActivity(), getContext(), "Warning");
                             }
 
@@ -749,7 +725,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                         } catch (Exception ex) {
                             try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_02",getActivity());
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
                                 logException();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -770,7 +746,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 });
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_03",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -780,7 +756,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             }
         } catch (Exception ex) {
             try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_04",getActivity());
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
                 logException();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -790,10 +766,12 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    public  void LoadVerification() {
+    public void LoadVerification() {
+
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound,getContext());
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
             outbountDTO.setUserId(userId);
             outbountDTO.setvLPDNumber(lblLoadSheetNo.getText().toString());
@@ -816,7 +794,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_01",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -846,17 +824,29 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                                 lstDto.add(dto);
                             }
 
-                            if(lstDto.size()>0){
+                            if (lstDto.size() > 0) {
 
-                                if(lstDto.get(0).getResult().equalsIgnoreCase("PGI Updated")){
-                                    common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Success");
-                                }else{
+                                if (lstDto.get(0).getResult().equalsIgnoreCase("PGI Updated")) {
+                                    common.setIsPopupActive(true);
+                                    soundUtils.alertSuccess(getActivity(), getActivity());
+                                    DialogUtils.showAlertDialog(getActivity(), "Success", "PGI Updated", R.drawable.success, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            switch (which) {
+                                                case DialogInterface.BUTTON_POSITIVE:
+                                                    FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
+                                                    common.setIsPopupActive(false);
+                                                    break;
+                                            }
+                                        }
+                                    });
+                                    // common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Success");
+                                } else {
                                     common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Error");
                                 }
 
 
-
-                            }else{
+                            } else {
                                 common.showUserDefinedAlertType("Failed to verify", getActivity(), getActivity(), "Warning");
                             }
 
@@ -864,7 +854,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                         } catch (Exception ex) {
                             try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_02",getActivity());
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
                                 logException();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -885,7 +875,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 });
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_03",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -895,7 +885,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             }
         } catch (Exception ex) {
             try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_04",getActivity());
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
                 logException();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -906,11 +896,12 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
     }
 
 
+    public void UpsertLoad() {
 
-    public  void UpsertLoad() {
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound,getContext());
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
             outbountDTO.setUserId(userId);
             outbountDTO.setmCode(lblScannedSku.getText().toString());
@@ -941,7 +932,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_01",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -971,15 +962,15 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                                 lstDto.add(dto);
                             }
 
-                            if(lstDto.size()>0){
+                            if (lstDto.size() > 0) {
 
-                                if(lstDto.get(0).getResult().equalsIgnoreCase("Success")){
+                                if (lstDto.get(0).getResult().equalsIgnoreCase("Success")) {
                                     common.showUserDefinedAlertType("Sku loaded successfully", getActivity(), getActivity(), "Success");
-                                }else{
+                                } else {
                                     common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Error");
                                 }
 
-                            }else{
+                            } else {
                                 common.showUserDefinedAlertType("Failed to load Sku", getActivity(), getActivity(), "Error");
                             }
 
@@ -992,6 +983,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                             lblMRP.setText("");
                             lblReceivedQty.setText("");
                             lblReceivedQty.setEnabled(false);
+                            lblReceivedQty.clearFocus();
 
                             cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
                             ivScanSku.setImageResource(R.drawable.fullscreen_img);
@@ -1000,7 +992,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                         } catch (Exception ex) {
                             try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_02",getActivity());
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
                                 logException();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -1021,7 +1013,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 });
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_03",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -1031,7 +1023,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             }
         } catch (Exception ex) {
             try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_04",getActivity());
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
                 logException();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -1040,7 +1032,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
         }
     }
-
 
 
     // sending exception to the database
@@ -1071,7 +1062,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"002_01",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_01", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -1099,7 +1090,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                                 for (int i = 0; i < _lExceptions.size(); i++) {
                                     owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                                     ProgressDialogUtils.closeProgressDialog();
-                                    common.showAlertType(owmsExceptionMessage, getActivity(),getContext());
+                                    common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
                                     return;
                                 }
                             } else {
@@ -1122,7 +1113,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                         } catch (Exception ex) {
 
                             try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"002_02",getActivity());
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_02", getActivity());
                                 logException();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -1142,7 +1133,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 });
             } catch (Exception ex) {
                 try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"002_03",getActivity());
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_03", getActivity());
                     logException();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -1152,7 +1143,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             }
         } catch (Exception ex) {
             try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"002_04",getActivity());
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_04", getActivity());
                 logException();
             } catch (IOException e) {
                 e.printStackTrace();

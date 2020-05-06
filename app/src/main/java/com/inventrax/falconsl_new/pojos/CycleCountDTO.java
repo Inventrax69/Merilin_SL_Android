@@ -57,8 +57,6 @@ public class CycleCountDTO {
     private String TotalScannedSKUQuantity;
     @SerializedName("UserConfirmReDo")
     private Boolean UserConfirmReDo;
-
-
     @SerializedName("AccountID")
     private String AccountID;
     @SerializedName("Count")
@@ -77,6 +75,16 @@ public class CycleCountDTO {
     private String WarehouseID;
     @SerializedName("TenantId")
     private String TenantId;
+    @SerializedName("Rack")
+    private String Rack;
+    @SerializedName("Column")
+    private String Column;
+    @SerializedName("Level")
+    private String Level;
+
+
+    @SerializedName("StorageLocation")
+    private String StorageLocation;
 
 
     public CycleCountDTO() {
@@ -285,6 +293,26 @@ public class CycleCountDTO {
                 case "TenantId":
                     if (entry.getValue() != null) {
                         this.setTenantId(entry.getValue().toString());
+                    }
+                    break;
+                case "Rack":
+                    if (entry.getValue() != null) {
+                        this.setRack(entry.getValue().toString());
+                    }
+                    break;
+                case "Column":
+                    if (entry.getValue() != null) {
+                        this.setColumn(entry.getValue().toString());
+                    }
+                    break;
+                case "Level":
+                    if (entry.getValue() != null) {
+                        this.setLevel(entry.getValue().toString());
+                    }
+                    break;
+                case "StorageLocation":
+                    if (entry.getValue() != null) {
+                        this.setStorageLocation(entry.getValue().toString());
                     }
                     break;
 
@@ -533,4 +561,38 @@ public class CycleCountDTO {
     public void setTenantId(String tenantId) {
         TenantId = tenantId;
     }
+
+    public String getRack() {
+        return Rack;
+    }
+
+    public void setRack(String rack) {
+        Rack = rack;
+    }
+
+    public String getColumn() {
+        return Column;
+    }
+
+    public void setColumn(String column) {
+        Column = column;
+    }
+
+    public String getLevel() {
+        return Level;
+    }
+
+    public void setLevel(String level) {
+        Level = level;
+    }
+
+
+    public String getStorageLocation() {
+        return StorageLocation;
+    }
+
+    public void setStorageLocation(String storageLocation) {
+        StorageLocation = storageLocation;
+    }
+
 }

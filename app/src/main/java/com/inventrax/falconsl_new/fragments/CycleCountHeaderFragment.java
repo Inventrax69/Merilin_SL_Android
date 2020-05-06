@@ -88,10 +88,9 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
     private String CCname = "";
     private Common common = null;
 
-
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
-
+    String Rack="",Column="",Level="";
 
     public CycleCountHeaderFragment() {
 
@@ -164,18 +163,14 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
     }
 
     public void getWarehouseId() {
-
-
         for (CycleCountDTO oCycleCount : lstCycleCount) {
             if (oCycleCount.getCCName().equals(CCname)) {
-
                warehouseId = oCycleCount.getWarehouseID();
                tenantId = oCycleCount.getTenantId();
-
-
+               Rack = oCycleCount.getRack();
+               Column = oCycleCount.getColumn();
+               Level = oCycleCount.getLevel();
             }
-
-
         }
     }
 
@@ -206,6 +201,9 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
         Bundle bundle = new Bundle();
 
         bundle.putString("CCname", CCname);
+        bundle.putString("Rack", Rack);
+        bundle.putString("Column", Column);
+        bundle.putString("Level", Level);
         bundle.putString("warehouseId", warehouseId);
         bundle.putString("tenantId", tenantId);
 
@@ -288,7 +286,6 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
                                     CycleCountDTO dto = new CycleCountDTO(_lstCC.get(i).entrySet());
                                     lstDto.add(dto);
                                     lstCycleCount.add(dto);
-
                                 }
 
                                 for (int i = 0; i < lstDto.size(); i++) {

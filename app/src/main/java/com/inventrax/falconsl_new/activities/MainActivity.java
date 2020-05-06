@@ -385,9 +385,9 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             }
             break;
 
-            case "Pick & Load": {
+            case "Loading": {
                 fragment = new LoadSheetFragment();
-                title = "Pick & Load";
+                title = "Loading";
             }
             break;
 
