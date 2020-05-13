@@ -24,7 +24,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cipherlab.barcode.GeneralString;
 import com.google.gson.Gson;
@@ -369,7 +368,6 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
 
         isDockScanned = false;
         isContanierScanned = false;
-        isDockScanned = false;
 
         /*
         btnReceive.setEnabled(false);

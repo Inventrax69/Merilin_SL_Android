@@ -24,7 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.cipherlab.barcode.GeneralString;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -54,11 +54,13 @@ import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 import com.inventrax.falconsl_new.util.ScanValidator;
 import com.inventrax.falconsl_new.util.SoundUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -108,7 +110,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
     List<String> deviceIPList;
     SearchableSpinner spinnerSelectReason;
     SoundUtils soundUtils;
-
 
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
@@ -220,9 +221,7 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
         pickobdId = getArguments().getString("pickobdId");
         lblPickListNo.setText(pickOBDno);
 
-
         if (scanType.equals("Auto")) {
-
             btnPick.setEnabled(false);
             btnPick.setTextColor(getResources().getColor(R.color.black));
             btnPick.setBackgroundResource(R.drawable.button_hide);
@@ -263,9 +262,7 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
 
                         int reqQty = totalQty - recQty;
                         int qty = Integer.parseInt(lblReceivedQty.getText().toString().split("[.]")[0]);
-
                         if (reqQty < qty) {
-
                             common.showUserDefinedAlertType(errorMessages.EMC_0068, getActivity(), getContext(), "Error");
 
                         } else {
@@ -319,7 +316,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
-
                                 common.setIsPopupActive(false);
                                 break;
                         }
@@ -421,7 +417,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
         lblserialNo.setText("");
         lblMRP.setText("");
 
-
         isPalletScanned = false;
         isValidLocation = false;
         isToPalletScanned = false;
@@ -462,6 +457,8 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+
 
         if (common.isPopupActive() && rlPickList.getVisibility() != View.VISIBLE) {
 
@@ -599,9 +596,7 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
 
                 }
                 soundUtils.alertWarning(getActivity(),getContext());
-
             }
-
 
         } else {
             common.showUserDefinedAlertType(errorMessages.EMC_0030, getActivity(), getContext(), "Error");

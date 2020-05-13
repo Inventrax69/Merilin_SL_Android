@@ -1,6 +1,5 @@
 package com.inventrax.falconsl_new.fragments;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +45,6 @@ import com.inventrax.falconsl_new.common.Common;
 import com.inventrax.falconsl_new.common.constants.EndpointConstants;
 import com.inventrax.falconsl_new.common.constants.ErrorMessages;
 import com.inventrax.falconsl_new.interfaces.ApiInterface;
-import com.inventrax.falconsl_new.pojos.InventoryDTO;
 import com.inventrax.falconsl_new.pojos.LoadDTO;
 import com.inventrax.falconsl_new.pojos.OutbountDTO;
 import com.inventrax.falconsl_new.pojos.ScanDTO;
@@ -59,7 +56,6 @@ import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.FragmentUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
-import com.inventrax.falconsl_new.util.ScanValidator;
 import com.inventrax.falconsl_new.util.SoundUtils;
 
 import java.io.IOException;
@@ -89,7 +85,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
     EditText lblDrName, lblDrNo, lblVehicleNo, lblVehicleType, lblReceivedQty;
     TextInputLayout txtInputLayoutQty;
     String userId = null, scanType = null, accountId = "";
-    ;
+
     String scanner = null;
     String getScanner = null;
     private IntentFilter filter;

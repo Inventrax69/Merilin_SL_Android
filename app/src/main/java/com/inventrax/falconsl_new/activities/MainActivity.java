@@ -1,7 +1,6 @@
 package com.inventrax.falconsl_new.activities;
 
 import android.annotation.SuppressLint;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -11,16 +10,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Toast;
+
 import com.honeywell.aidc.BarcodeReader;
 import com.inventrax.falconsl_new.R;
 import com.inventrax.falconsl_new.application.AbstractApplication;
@@ -53,6 +47,7 @@ import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.FragmentUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 import com.inventrax.falconsl_new.util.SharedPreferencesUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -269,6 +264,8 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -286,15 +283,16 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
 
 
             case R.id.action_about: {
-
                 FragmentUtils.replaceFragmentWithBackStack(this, R.id.container_body, new AboutFragment());
-
             }
             break;
 
             case R.id.home: {
-
                 FragmentUtils.replaceFragmentWithBackStack(this, R.id.container_body, new HomeFragment());
+            }
+            break;
+
+            case R.id.rescan: {
 
             }
             break;
@@ -322,13 +320,11 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             case "Home":
                 fragment = new HomeFragment();
                 title = "Home";
-
                 break;
 
             case "Receiving":
                 fragment = new UnloadingFragment();
                 title = "Receiving";
-
                 break;
 
             case "Putaway": {
