@@ -90,7 +90,7 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
 
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
-    String Rack="",Column="",Level="";
+    String Rack="",Column="",Level="",CycleCountSeqCode="";
 
     public CycleCountHeaderFragment() {
 
@@ -170,6 +170,7 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
                Rack = oCycleCount.getRack();
                Column = oCycleCount.getColumn();
                Level = oCycleCount.getLevel();
+               CycleCountSeqCode = oCycleCount.getCycleCountSeqCode();
             }
         }
     }
@@ -181,7 +182,6 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
             case R.id.btnGo:
 
                 if (CCname.equals("") || CCname.equals("null")) {
-
                     common.showUserDefinedAlertType(errorMessages.EMC_0062, getActivity(), getContext(), "Warning");
                     return;
 
@@ -206,6 +206,7 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
         bundle.putString("Level", Level);
         bundle.putString("warehouseId", warehouseId);
         bundle.putString("tenantId", tenantId);
+        bundle.putString("CycleCountSeqCode", CycleCountSeqCode);
 
         CycleCountDetailsFragment cycleCountDetailsFragment = new CycleCountDetailsFragment();
         cycleCountDetailsFragment.setArguments(bundle);

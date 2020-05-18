@@ -111,7 +111,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     boolean isValidLocation = false;
     boolean isPalletScanned = false;
     boolean isRSNScanned = false;
-    String Rack = "", Column = "", Level = "";
+    String Rack = "", Column = "", Level = "",CycleCountSeqCode="";
     TextView tvRack, tvColumn, tvLevel;
     SearchableSpinner spinnerSelectSloc;
     String storageLoc;
@@ -230,6 +230,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
         Rack = getArguments().getString("Rack");
         Column = getArguments().getString("Column");
         Level = getArguments().getString("Level");
+        CycleCountSeqCode = getArguments().getString("CycleCountSeqCode");
 
         tvRack.setText("Rack : " + Rack);
         tvColumn.setText("Col : " + Column);
@@ -1164,8 +1165,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
 
             Call<String> call = null;
-            ApiInterface apiService =
-                    RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -1287,12 +1287,12 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             cycleCountDTO.setLocation(etLocation.getText().toString());
             cycleCountDTO.setWarehouseID(warehouseId);
             cycleCountDTO.setTenantId(tenantId);
+            cycleCountDTO.setCycleCountSeqCode(CycleCountSeqCode);
             message.setEntityObject(cycleCountDTO);
 
 
             Call<String> call = null;
-            ApiInterface apiService =
-                    RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity

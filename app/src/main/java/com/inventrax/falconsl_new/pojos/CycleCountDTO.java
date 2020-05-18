@@ -83,6 +83,11 @@ public class CycleCountDTO {
     private String Level;
 
 
+
+    @SerializedName("CycleCountSeqCode")
+    private String CycleCountSeqCode;
+
+
     @SerializedName("StorageLocation")
     private String StorageLocation;
 
@@ -313,6 +318,11 @@ public class CycleCountDTO {
                 case "StorageLocation":
                     if (entry.getValue() != null) {
                         this.setStorageLocation(entry.getValue().toString());
+                    }
+                    break;
+                case "CycleCountSeqCode":
+                    if (entry.getValue() != null) {
+                        this.setCycleCountSeqCode(entry.getValue().toString());
                     }
                     break;
 
@@ -593,6 +603,14 @@ public class CycleCountDTO {
 
     public void setStorageLocation(String storageLocation) {
         StorageLocation = storageLocation;
+    }
+
+    public String getCycleCountSeqCode() {
+        return CycleCountSeqCode;
+    }
+
+    public void setCycleCountSeqCode(String cycleCountSeqCode) {
+        CycleCountSeqCode = cycleCountSeqCode;
     }
 
 }

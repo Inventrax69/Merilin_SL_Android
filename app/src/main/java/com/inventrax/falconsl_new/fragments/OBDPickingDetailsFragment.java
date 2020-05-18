@@ -255,7 +255,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
 
 
             case R.id.btnPick:
-
                 if (!lblLocationNo.getText().toString().isEmpty()) {
 
                     if (!lblReceivedQty.getText().toString().isEmpty() && !lblReceivedQty.getText().toString().equals("0")) {
@@ -652,7 +651,7 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
                         core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
-                        Log.v("ABCDE",new Gson().toJson(core));
+
 
                         if ((core.getType().toString().equals("Exception"))) {
                             List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
@@ -668,12 +667,10 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                             ivScanRSN.setImageResource(R.drawable.fullscreen_img);
                             ProgressDialogUtils.closeProgressDialog();
                             common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+
                         } else {
                             LinkedTreeMap<?, ?>_lResult = new LinkedTreeMap<>();
                             _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
-
-                            Log.v("ABCDE",new Gson().toJson(core.getEntityObject()));
-
 
                             ScanDTO scanDTO1=new ScanDTO(_lResult.entrySet());
                             ProgressDialogUtils.closeProgressDialog();
@@ -1632,9 +1629,7 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             //final OutbountDTO outbountDTO = new OutbountDTO();
-
             int reqQty = totalQty - recQty;
-
             OutbountDTO oOutboundDTO = new OutbountDTO();
             oOutboundDTO.setUserId(userId);
             oOutboundDTO.setAccountID(accountId);
@@ -1696,7 +1691,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                                             || owmsExceptionMessage.getWMSExceptionCode().equals("EMC_OB_DAL_PICKSugg_EC01")
                                             || owmsExceptionMessage.getWMSExceptionCode().equals("EMC_OB_DAL_PICKSugg_EC04")) {
                                         ProgressDialogUtils.closeProgressDialog();
-
                                     }
 
                                     rlPickList.setVisibility(View.VISIBLE);

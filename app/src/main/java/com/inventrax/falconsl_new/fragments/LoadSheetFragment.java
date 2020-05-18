@@ -232,7 +232,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
         //For Honeywell
         AidcManager.create(getActivity(), new AidcManager.CreatedCallback() {
-
             @Override
             public void onCreated(AidcManager aidcManager) {
 
@@ -312,7 +311,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 getScanner = barcodeReadEvent.getBarcodeData();
                 ProcessScannedinfo(getScanner);
             }
-
         });
     }
 
@@ -382,7 +380,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             //inboundDTO.setIsOutbound("0");
             message.setEntityObject(scanDTO);
 
-
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
 
@@ -413,8 +410,8 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
 
+                        core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
 
                         if ((core.getType().toString().equals("Exception"))) {
                             List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
@@ -430,6 +427,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                             ivScanSku.setImageResource(R.drawable.fullscreen_img);
                             ProgressDialogUtils.closeProgressDialog();
                             common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+
                         } else {
                             LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
                             _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
@@ -799,8 +797,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
 
             }
-            try {
-                //Getting response from the method
+            try {                //Getting response from the method
                 call.enqueue(new Callback<String>() {
 
                     @Override
