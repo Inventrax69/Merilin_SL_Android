@@ -1276,8 +1276,8 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     }
 
     public void releaseCycleCountLocation() {
-        try {
 
+        try {
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.CycleCount, getActivity());
             final CycleCountDTO cycleCountDTO = new CycleCountDTO();
@@ -1289,7 +1289,6 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
             cycleCountDTO.setTenantId(tenantId);
             cycleCountDTO.setCycleCountSeqCode(CycleCountSeqCode);
             message.setEntityObject(cycleCountDTO);
-
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
@@ -1332,10 +1331,7 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
                                 WMSExceptionMessage owmsExceptionMessage = null;
                                 for (int i = 0; i < _lExceptions.size(); i++) {
-
                                     owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
-
-
                                 }
 
                                 ProgressDialogUtils.closeProgressDialog();
