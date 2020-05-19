@@ -153,22 +153,21 @@
 
         </LinearLayout>
 
-
-       <!-- <TextView
+        <TextView
             android:id="@+id/txtVersionName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/llButtons"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:text="Version" />
 
-        <TextView
-            android:id="@+id/txtDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/txtVersionName"
-            android:layout_marginTop="3dp"
-            android:text="Release Date" />-->
+        <!--    <TextView
+               android:id="@+id/txtDate"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_below="@+id/txtVersionName"
+               android:layout_marginTop="3dp"
+               android:text="Release Date" />-->
     </RelativeLayout>
 
     <ImageView

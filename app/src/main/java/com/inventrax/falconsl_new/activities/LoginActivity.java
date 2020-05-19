@@ -120,6 +120,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
     private static final String JSON_UPDATE_URL = "updateURL";
     private static final int PERMISSION_REQUEST_CODE = 769;
     AlertDialog.Builder builder;
+    TextView txtVersionName;
 
     @SuppressLint("StaticFieldLeak")
     @Override
@@ -304,6 +305,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
 
             inputUserId = (EditText) findViewById(R.id.etUsername);
             inputPassword = (EditText) findViewById(R.id.etPass);
+            txtVersionName = (TextView) findViewById(R.id.txtVersionName);
             chkRememberPassword = (CheckBox) findViewById(R.id.cbRememberMe);
             btnLogin = (Button) findViewById(R.id.btnLogin);
 
@@ -333,6 +335,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
             core = new WMSCoreMessage();
 
             ServiceURL.setServiceUrl(serviceUrlString);
+
+            txtVersionName.setText("Version : " + versionName);
 
 
 
