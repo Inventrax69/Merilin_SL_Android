@@ -72,7 +72,7 @@ import retrofit2.Response;
  * Created by ch Anil on 27/03/2020.
  */
 
-public class LoadSheetFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
+public class LoadGenerationFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
 
     private static final String classCode = "API_FRAG_009";
     private View rootView;
@@ -124,7 +124,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    public LoadSheetFragment() {
+    public LoadGenerationFragment() {
     }
 
 
@@ -1172,7 +1172,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 // Toast.makeText(this, "Scanner unavailable", Toast.LENGTH_SHORT).show();
             }
         }
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_activity_loading));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Load generation");
     }
 
 

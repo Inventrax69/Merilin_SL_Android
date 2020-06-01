@@ -88,10 +88,8 @@ public class OutbountDTO {
     @SerializedName("ExpDate")
     private String expDate;
 
-
     @SerializedName("ProjectNo")
     private String projectNo;
-
 
     @SerializedName("SkipReason")
     private String skipReason;
@@ -113,7 +111,6 @@ public class OutbountDTO {
 
     @SerializedName("AccountId")
     private String accountId;
-
 
     @SerializedName("MCode")
     private String mCode;
@@ -189,6 +186,10 @@ public class OutbountDTO {
 
     @SerializedName("TenatID")
     private String TenatID;
+
+
+    @SerializedName("SONumber")
+    private String SONumber;
 
 
     private boolean isChecked=false;
@@ -548,6 +549,12 @@ public class OutbountDTO {
                 case "TenatID":
                     if(entry.getValue()!=null) {
                         this.setTenatID(entry.getValue().toString());
+                    }
+                    break;
+
+                case "SONumber":
+                    if(entry.getValue()!=null) {
+                        this.setSONumber(entry.getValue().toString());
                     }
                     break;
 
@@ -1098,6 +1105,15 @@ public class OutbountDTO {
 
     public void setChecked(boolean checked) {
         isChecked = checked;
+    }
+
+
+    public String getSONumber() {
+        return SONumber;
+    }
+
+    public void setSONumber(String SONumber) {
+        this.SONumber = SONumber;
     }
 
 }

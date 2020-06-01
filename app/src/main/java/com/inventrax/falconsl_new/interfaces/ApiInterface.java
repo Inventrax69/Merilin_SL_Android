@@ -126,6 +126,9 @@ public interface ApiInterface {
     @POST("Outbound/OBDSkipItem")
     Call<String> OBDSkipItem(@Body WMSCoreMessage oRequest);
 
+   @POST("Outbound/ScanSONumberForPacking")
+    Call<String> ScanSONumberForPacking(@Body WMSCoreMessage oRequest);
+
     @POST("Transfers/GetTransferReqNos")
     Call<String> GetTransferReqNos(@Body WMSCoreMessage oRequest);
 

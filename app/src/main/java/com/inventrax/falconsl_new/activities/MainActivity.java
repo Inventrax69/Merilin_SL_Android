@@ -28,10 +28,12 @@ import com.inventrax.falconsl_new.fragments.GoodsInFragment;
 import com.inventrax.falconsl_new.fragments.HomeFragment;
 import com.inventrax.falconsl_new.fragments.InternalTransferFragment;
 import com.inventrax.falconsl_new.fragments.LiveStockFragment;
+import com.inventrax.falconsl_new.fragments.LoadGenerationFragment;
 import com.inventrax.falconsl_new.fragments.LoadSheetFragment;
 import com.inventrax.falconsl_new.fragments.LoadingFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingDetailsFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingHeaderFragment;
+import com.inventrax.falconsl_new.fragments.PackingFragment;
 import com.inventrax.falconsl_new.fragments.PalletTransfersFragment;
 import com.inventrax.falconsl_new.fragments.PutawayFragment;
 import com.inventrax.falconsl_new.fragments.SortingFragment;
@@ -155,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
                             }
                             if (fragment != null && fragment.isVisible() && fragment instanceof LoadSheetFragment) {
                                 ((LoadSheetFragment) fragment).myScannedData(MainActivity.this, barcode);
+                            }
+                            if (fragment != null && fragment.isVisible() && fragment instanceof PackingFragment) {
+                                ((PackingFragment) fragment).myScannedData(MainActivity.this, barcode);
                             }
                             
                     }
@@ -381,11 +386,23 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             }
             break;
 
+            case "Packing": {
+                fragment = new PackingFragment();
+                title = "Packing";
+            }
+            break;
+
             case "Loading": {
                 fragment = new LoadSheetFragment();
                 title = "Loading";
             }
             break;
+
+           case "Load Generation": {
+                fragment = new LoadGenerationFragment();
+                title = "Load Generation";
+           }
+           break;
 
             case "Delete OBD Picked Items": {
                 fragment = new DeleteOBDPickedItemsFragment();

@@ -338,8 +338,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
 
             txtVersionName.setText("Version : " + versionName);
 
-
-
             try {
                 btnLogin.setOnClickListener(new View.OnClickListener() {
                     @Override
