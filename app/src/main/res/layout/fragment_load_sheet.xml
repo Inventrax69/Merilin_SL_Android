@@ -10,10 +10,79 @@
     android:background="@color/white">
 
     <RelativeLayout
+        android:id="@+id/rlLoadingOne"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tvSelectLoadSheet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/selectLoadSheet"
+            style="@style/textViewStyle"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="15dp"
+            android:textStyle="normal"/>
+
+        <com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner
+            android:id="@+id/spinnerSelectLoadList"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+            android:layout_below="@+id/tvSelectLoadSheet">
+        </com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner>
+
+        <Button
+            android:id="@+id/btnCreateNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="70dp"
+            android:layout_below="@+id/spinnerSelectLoadList"
+            android:background="@drawable/button_shape"
+            android:elevation="30dp"
+            android:text="Create New Load Sheet"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btnGo"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="70dp"
+            android:background="@drawable/button_shape"
+            android:elevation="30dp"
+            android:text="@string/go"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btnCloseOne"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/button_close_shape"
+            android:elevation="30dp"
+            android:foreground="@drawable/button_cross_close"
+            android:foregroundGravity="center"
+            android:text="@string/putaway"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/rlLoadingTwo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:id="@+id/linear1"
@@ -107,7 +176,7 @@
             android:layout_marginStart="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
-            android:text="Pending SO list"
+            android:text="Pending Obd list"
             android:textStyle="normal" />
 
         <android.support.v7.widget.RecyclerView
@@ -122,8 +191,6 @@
             android:fadeScrollbars="false"
             android:scrollbarFadeDuration="0"
             android:scrollbars="vertical" />
-
-
 
 
         <Button

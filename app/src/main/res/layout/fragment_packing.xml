@@ -6,15 +6,15 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
-    android:padding="5dp"
     android:background="@color/white"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:padding="5dp">
 
     <RelativeLayout
         android:id="@+id/relativeOne"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <android.support.v7.widget.CardView
             android:id="@+id/cvScanSONumber"
@@ -72,9 +72,9 @@
 
         <LinearLayout
             android:id="@+id/linear1"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/lblOrderInfromation"
@@ -90,8 +90,8 @@
                 android:id="@+id/tvOrderInfromation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="2dp"
                 android:layout_below="@+id/lblOrderInfromation"
+                android:padding="2dp"
                 android:text=""
                 android:textColor="@color/black"
                 android:textSize="14sp"
@@ -100,14 +100,13 @@
         </LinearLayout>
 
 
-
         <TextView
             android:id="@+id/lblSKUList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/linear1"
             android:padding="2dp"
             android:text="SKU LIST"
-            android:layout_below="@+id/linear1"
             android:textColor="@color/colorPrimary"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -117,9 +116,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/lblSKUList"
-            android:padding="2dp"
-            android:fadeScrollbars="false"
             android:layout_marginBottom="80dp"
+            android:fadeScrollbars="false"
+            android:padding="2dp"
             android:scrollbarFadeDuration="0"
             android:scrollbars="vertical" />
 
@@ -129,12 +128,11 @@
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:layout_marginBottom="40dp"
-            android:padding="10dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/button_shape"
+            android:gravity="center"
+            android:padding="10dp"
             android:text="Pack Complete "
-            android:textAllCaps="true"
             android:textColor="@color/white" />
 
 
@@ -150,7 +148,7 @@
         android:layout_marginStart="-2dp"
         android:layout_marginLeft="-2dp"
         android:layout_marginTop="-8dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/lblSONumber"
@@ -179,26 +177,27 @@
 
         <LinearLayout
             android:id="@+id/linearOne"
-            android:layout_below="@+id/tvSONumber"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_centerHorizontal="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvSONumber"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
             <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
+                android:id="@+id/linearCon"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
 
                 <android.support.v7.widget.CardView
                     android:id="@+id/cvScanPallet"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
-                    android:layout_marginTop="10dp"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     app:cardBackgroundColor="@color/palletColor"
                     app:cardCornerRadius="22.5dp"
                     app:cardElevation="0dp">
@@ -216,9 +215,9 @@
                     android:id="@+id/tvScanPallet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_below="@+id/cvScanSku"
                     android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
                     android:text="@string/scanPallet"
                     android:textColor="@color/black"
                     android:textSize="12sp"
@@ -228,53 +227,47 @@
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="vertical"
-                android:layout_weight="1"
+                android:id="@+id/linearSKU"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/cvScanSku"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="center"
-                app:cardBackgroundColor="@color/skuColor"
-                app:cardCornerRadius="22.5dp"
-                app:cardElevation="0dp">
-
-                <ImageView
-                    android:id="@+id/ivScanSku"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/fullscreen_img" />
-
-            </android.support.v7.widget.CardView>
-
-
-
-            <TextView
-                android:id="@+id/tvScanSku"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_below="@+id/cvScanSku"
-                android:layout_centerHorizontal="true"
-                android:text="@string/scanSKU"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="normal" />
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cvScanSku"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    app:cardBackgroundColor="@color/skuColor"
+                    app:cardCornerRadius="22.5dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/ivScanSku"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/fullscreen_img" />
+
+                </android.support.v7.widget.CardView>
+
+
+                <TextView
+                    android:id="@+id/tvScanSku"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/cvScanSku"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:text="@string/scanSKU"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="normal" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-
-
-
-        </LinearLayout>
-
-
-
 
         <TextView
             android:id="@+id/lblScannedSku"
@@ -297,14 +290,22 @@
             android:textSize="12sp"
             android:textStyle="italic" />
 
+        <TextView
+            android:id="@+id/lblContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lblScannedSkuItem"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="normal" />
+
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_below="@+id/lblScannedSkuItem"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lblScannedSkuItem"
+            android:orientation="vertical">
 
 
             <LinearLayout
@@ -525,11 +526,11 @@
 
 
                 <LinearLayout
-                    android:padding="5dp"
                     android:layout_width="0dp"
-                    android:orientation="vertical"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.0"
+                    android:orientation="vertical"
+                    android:padding="5dp"
                     android:weightSum="2">
 
                     <TextView
@@ -550,7 +551,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:enabled="false"
                         android:hint="@string/hintQty"
                         android:inputType="number"
                         android:singleLine="true"
@@ -562,11 +562,11 @@
 
 
                 <LinearLayout
-                    android:padding="5dp"
                     android:layout_width="0dp"
-                    android:orientation="vertical"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.0"
+                    android:orientation="vertical"
+                    android:padding="5dp"
                     android:weightSum="2">
 
                     <TextView
@@ -587,9 +587,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:enabled="false"
                         android:hint="PackingType"
-                        android:inputType="number"
+                        android:inputType="textPersonName"
                         android:singleLine="true"
                         android:textColor="@color/colorAccent"
                         android:textSize="12dp" />
@@ -606,10 +605,10 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginBottom="65dp"
             android:background="@drawable/button_shape"
             android:elevation="30dp"
@@ -622,10 +621,10 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/button_shape"
             android:elevation="30dp"
@@ -645,8 +644,8 @@
             android:id="@+id/ivSucess"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_gravity="center"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:background="@drawable/check_circle_img" />
 
 
@@ -654,9 +653,9 @@
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:gravity="center"
             android:layout_below="@+id/ivSucess"
+            android:gravity="center"
+            android:padding="2dp"
             android:text="PACKING SUCCESS"
             android:textColor="@color/black"
             android:textSize="16sp"
@@ -667,8 +666,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvTitle"
-            android:padding="2dp"
             android:gravity="center"
+            android:padding="2dp"
             android:text="You have successfully packed the item"
             android:textColor="@color/black"
             android:textSize="14sp"
@@ -690,9 +689,9 @@
             android:id="@+id/lblSKUListSuccess"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/tvOrderInfromationSuccess"
             android:padding="2dp"
             android:text="SKU LIST"
-            android:layout_below="@+id/tvOrderInfromationSuccess"
             android:textColor="@color/colorPrimary"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -702,9 +701,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/lblSKUListSuccess"
-            android:padding="2dp"
-            android:fadeScrollbars="false"
             android:layout_marginBottom="80dp"
+            android:fadeScrollbars="false"
+            android:padding="2dp"
             android:scrollbarFadeDuration="0"
             android:scrollbars="vertical" />
 
@@ -714,10 +713,10 @@
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:gravity="center"
             android:layout_marginBottom="40dp"
-            android:padding="10dp"
             android:background="@drawable/button_shape"
+            android:gravity="center"
+            android:padding="10dp"
             android:text="Go Back to Home "
             android:textAllCaps="true"
             android:textColor="@color/white" />

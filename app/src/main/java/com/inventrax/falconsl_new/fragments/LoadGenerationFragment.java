@@ -2,7 +2,6 @@ package com.inventrax.falconsl_new.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -14,13 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,21 +36,18 @@ import com.honeywell.aidc.TriggerStateChangeEvent;
 import com.honeywell.aidc.UnsupportedPropertyException;
 import com.inventrax.falconsl_new.R;
 import com.inventrax.falconsl_new.activities.MainActivity;
-import com.inventrax.falconsl_new.adapters.LoadSheetOBDpendingAdapter;
+import com.inventrax.falconsl_new.adapters.LoadSheetSOListAdapter;
 import com.inventrax.falconsl_new.common.Common;
 import com.inventrax.falconsl_new.common.constants.EndpointConstants;
 import com.inventrax.falconsl_new.common.constants.ErrorMessages;
 import com.inventrax.falconsl_new.interfaces.ApiInterface;
 import com.inventrax.falconsl_new.pojos.LoadDTO;
 import com.inventrax.falconsl_new.pojos.OutbountDTO;
-import com.inventrax.falconsl_new.pojos.ScanDTO;
 import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
-import com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner;
 import com.inventrax.falconsl_new.services.RestService;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
-import com.inventrax.falconsl_new.util.FragmentUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 import com.inventrax.falconsl_new.util.SoundUtils;
 
@@ -76,12 +69,11 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
     private static final String classCode = "API_FRAG_009";
     private View rootView;
-    Button btnGo, btnCloseOne, btnCloseTwo, btnCloseThree, btnCreateNew, btnCreate;
-    RelativeLayout rlLoadingOne, rlLoadingTwo, rlLoadListThree;
+    Button  btnCloseTwo, btnCloseThree, btnCreateNew, btnCreate;
+    RelativeLayout rlLoadingTwo, rlLoadListThree;
     TextView lblLoadSheetNo;
     CardView cvScanSku;
     ImageView ivScanSku;
-    SearchableSpinner spinnerSelectLoadList;
     EditText lblDrName, lblDrNo, lblVehicleNo, lblVehicleType, lblReceivedQty;
     TextInputLayout txtInputLayoutQty;
     String userId = null, scanType = null, accountId = "";
@@ -101,11 +93,13 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     private boolean IsUserConfirmedRedo = false;
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
-    RecyclerView recycler_view_obd;
+    RecyclerView recycler_view_so;
     LinearLayoutManager linearLayoutManager;
-    Button btnLoadingVerify, btnLoadSKU;
+    Button btnDeleteSO, btnGenerate;
     SoundUtils soundUtils;
     TextView lblScannedSku, lblBatchNo, lblserialNo, lblMfgDate, lblExpDate, lblProjectRefNo, lblMRP;
+    LoadSheetSOListAdapter loadSheetSOListAdapter;
+    List<OutbountDTO> outbountDTOS;
 
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
@@ -125,6 +119,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     }
 
     public LoadGenerationFragment() {
+
     }
 
 
@@ -132,7 +127,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_load_sheet, container, false);
+        rootView = inflater.inflate(R.layout.fragment_load_sheet_generation, container, false);
         barcodeReader = MainActivity.getBarcodeObject();
         loadFormControls();
         return rootView;
@@ -146,63 +141,17 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         scanType = sp.getString("scanType", "");
         accountId = sp.getString("AccountId", "");
 
-        rlLoadingOne = (RelativeLayout) rootView.findViewById(R.id.rlLoadingOne);
-        rlLoadingTwo = (RelativeLayout) rootView.findViewById(R.id.rlLoadingTwo);
-        rlLoadListThree = (RelativeLayout) rootView.findViewById(R.id.rlLoadListThree);
-        lstloaddata = new ArrayList<LoadDTO>();
-        spinnerSelectLoadList = (SearchableSpinner) rootView.findViewById(R.id.spinnerSelectLoadList);
-        spinnerSelectLoadList.setOnItemSelectedListener(this);
-        txtInputLayoutQty = (TextInputLayout) rootView.findViewById(R.id.txtInputLayoutQty);
+        btnDeleteSO=(Button) rootView.findViewById(R.id.btnDeleteSO);
+        btnGenerate=(Button) rootView.findViewById(R.id.btnGenerate);
 
-        lblDrName = (EditText) rootView.findViewById(R.id.lblDrName);
-        lblDrNo = (EditText) rootView.findViewById(R.id.lblDrNo);
-        lblVehicleNo = (EditText) rootView.findViewById(R.id.lblVehicleNo);
-        lblVehicleType = (EditText) rootView.findViewById(R.id.lblVehicleType);
-        lblReceivedQty = (EditText) rootView.findViewById(R.id.lblReceivedQty);
-
-        soundUtils = new SoundUtils();
-
-        lblReceivedQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    mainActivity.barcode = "";
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        //DrawableCompat.setTint(isDockScanned.getDrawable(), ContextCompat.getColor(getContext(), R.color.green));
-        btnGo = (Button) rootView.findViewById(R.id.btnGo);
-        btnCloseOne = (Button) rootView.findViewById(R.id.btnCloseOne);
-        btnCloseTwo = (Button) rootView.findViewById(R.id.btnCloseTwo);
-        btnCloseThree = (Button) rootView.findViewById(R.id.btnCloseThree);
-      //  btnCreateNew = (Button) rootView.findViewById(R.id.btnCreateNew);
-        btnCreate = (Button) rootView.findViewById(R.id.btnCreate);
-        btnLoadingVerify = (Button) rootView.findViewById(R.id.btnLoadingVerify);
-        btnLoadSKU = (Button) rootView.findViewById(R.id.btnLoadSKU);
-
-        lblLoadSheetNo = (TextView) rootView.findViewById(R.id.lblLoadSheetNo);
-        lblScannedSku = (TextView) rootView.findViewById(R.id.lblScannedSku);
-
-        lblBatchNo = (TextView) rootView.findViewById(R.id.lblBatchNo);
-        lblserialNo = (TextView) rootView.findViewById(R.id.lblserialNo);
-        lblMfgDate = (TextView) rootView.findViewById(R.id.lblMfgDate);
-        lblExpDate = (TextView) rootView.findViewById(R.id.lblExpDate);
-        lblProjectRefNo = (TextView) rootView.findViewById(R.id.lblProjectRefNo);
-        lblMRP = (TextView) rootView.findViewById(R.id.lblMRP);
-
-        recycler_view_obd = (RecyclerView) rootView.findViewById(R.id.recycler_view_obd);
-        recycler_view_obd.setHasFixedSize(true);
+        recycler_view_so = (RecyclerView) rootView.findViewById(R.id.recycler_view_obd);
+        recycler_view_so.setHasFixedSize(true);
         linearLayoutManager = new LinearLayoutManager(getContext());
         // use a linear layout manager
-        recycler_view_obd.setLayoutManager(linearLayoutManager);
+        recycler_view_so.setLayoutManager(linearLayoutManager);
 
-        cvScanSku = (CardView) rootView.findViewById(R.id.cvScanSku);
-        ivScanSku = (ImageView) rootView.findViewById(R.id.ivScanSku);
 
+        soundUtils = new SoundUtils();
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
 
@@ -216,19 +165,9 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
         gson = new GsonBuilder().create();
 
-        btnGo.setOnClickListener(this);
-        btnCloseOne.setOnClickListener(this);
-        btnCloseTwo.setOnClickListener(this);
-        btnCloseThree.setOnClickListener(this);
-        btnCreateNew.setOnClickListener(this);
-        btnLoadingVerify.setOnClickListener(this);
-        btnLoadSKU.setOnClickListener(this);
-        // btnCreate.setOnClickListener(this);
-
         common = new Common();
         core = new WMSCoreMessage();
 
-        GetOpenLoadsheetList();
 
         //For Honeywell
         AidcManager.create(getActivity(), new AidcManager.CreatedCallback() {
@@ -247,54 +186,45 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         });
 
 
+        btnDeleteSO.setOnClickListener(this);
+        btnGenerate.setOnClickListener(this);
+
+
+        outbountDTOS=new ArrayList<>();
+        loadSheetSOListAdapter = new LoadSheetSOListAdapter(getActivity(), outbountDTOS, new LoadSheetSOListAdapter.OnCheckChangeListner() {
+            @Override
+            public void onCheckChange(int pos, boolean isChecked) {
+                outbountDTOS.get(pos).setChecked(isChecked);
+            }
+        });
+
+        recycler_view_so.setAdapter(loadSheetSOListAdapter);
+
+
     }
 
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnGo:
 
-                if (loadSheetNo.equalsIgnoreCase("")) {
-                    common.showUserDefinedAlertType("No Pending Load Sheet Number", getActivity(), getContext(), "Warning");
-                } else {
-                    lblLoadSheetNo.setText(loadSheetNo);
-                    rlLoadingOne.setVisibility(View.GONE);
-                    rlLoadingTwo.setVisibility(View.GONE);
-                    rlLoadListThree.setVisibility(View.VISIBLE);
+            case R.id.btnDeleteSO:
+
+                List<OutbountDTO> outbountDTOS_d=(ArrayList<OutbountDTO>)outbountDTOS;
+                for(int i=0;i<outbountDTOS_d.size();i++){
+                    if(outbountDTOS_d.get(i).isChecked()){
+                        outbountDTOS.remove(i);
+                    }else{
+                        outbountDTOS.get(i).setChecked(false);
+                    }
                 }
 
-                break;
-/*            case R.id.btnCreateNew:
-                GetPendingOBDListForLoading();
-                break;*/
+                loadSheetSOListAdapter.notifyDataSetChanged();
 
-            case R.id.btnCloseOne:
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
                 break;
 
-            case R.id.btnCloseTwo:
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
-                break;
+            case R.id.btnGenerate:
 
-            case R.id.btnCloseThree:
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
-                break;
-
-            case R.id.btnLoadSKU:
-                if (lblScannedSku.getText().toString().isEmpty()) {
-                    common.showUserDefinedAlertType("Please Scan SKU", getActivity(), getContext(), "Warning");
-                    return;
-                }
-                if (lblReceivedQty.getText().toString().isEmpty()) {
-                    common.showUserDefinedAlertType("Please enter qty", getActivity(), getContext(), "Warning");
-                    return;
-                }
-                UpsertLoad();
-                break;
-
-            case R.id.btnLoadingVerify:
-                LoadVerification();
                 break;
 
         }
@@ -364,167 +294,27 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
     }
 
-    public void ValiDateMaterial(final String scannedData) {
-
-        try {
-
-            WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.ScanDTO, getContext());
-            ScanDTO scanDTO = new ScanDTO();
-            scanDTO.setUserID(userId);
-            scanDTO.setAccountID(accountId);
-            // scanDTO.setTenantID(String.valueOf(tenantID));
-            //scanDTO.setWarehouseID(String.valueOf(warehouseID));
-            scanDTO.setScanInput(scannedData);
-            scanDTO.setVlpdNumber(lblLoadSheetNo.getText().toString());
-            //inboundDTO.setIsOutbound("0");
-            message.setEntityObject(scanDTO);
-
-            Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
-
-            try {
-                //Checking for Internet Connectivity
-                // if (NetworkUtils.isInternetAvailable()) {
-                // Calling the Interface method
-                call = apiService.ValiDateMaterial(message);
-                ProgressDialogUtils.showProgressDialog("Please Wait");
-                // } else {
-                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
-                // return;
-                // }
-
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_01", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
-            }
-            try {
-                //Getting response from the method
-                call.enqueue(new Callback<String>() {
-
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-
-                        core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
-
-                        if ((core.getType().toString().equals("Exception"))) {
-                            List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
-
-                            WMSExceptionMessage owmsExceptionMessage = null;
-                            for (int i = 0; i < _lExceptions.size(); i++) {
-
-                                owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
-                            }
-
-                            cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
-                            ivScanSku.setImageResource(R.drawable.fullscreen_img);
-                            ProgressDialogUtils.closeProgressDialog();
-                            common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
-
-                        } else {
-                            LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
-                            _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
-
-                            ScanDTO scanDTO1 = new ScanDTO(_lResult.entrySet());
-                            ProgressDialogUtils.closeProgressDialog();
-                            if (scanDTO1 != null) {
-                                if (scanDTO1.getScanResult()) {
-
-                                /* ----For RSN reference----
-                                    0 Sku|1 BatchNo|2 SerialNO|3 MFGDate|4 EXpDate|5 ProjectRefNO|6 Kit Id|7 line No|8 MRP ---- For SKU with 9 MSP's
-
-                                    0 Sku|1 BatchNo|2 SerialNO|3 KitId|4 lineNo  ---- For SKU with 5 MSP's   *//*
-                                    // Eg. : ToyCar|1|bat1|ser123|12/2/2018|12/2/2019|0|001*/
-
-
-                                    cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
-                                    ivScanSku.setImageResource(R.drawable.check);
-
-                                    Materialcode = scanDTO1.getSkuCode();
-                                    lblScannedSku.setText(Materialcode);
-                                    lblBatchNo.setText(scanDTO1.getBatch());
-                                    lblserialNo.setText(scanDTO1.getSerialNumber());
-                                    lblMfgDate.setText(scanDTO1.getMfgDate());
-                                    lblExpDate.setText(scanDTO1.getExpDate());
-                                    lblProjectRefNo.setText(scanDTO1.getPrjRef());
-                                    lblMRP.setText(scanDTO1.getMrp());
-
-                                    if (scanType.equals("Auto")) {
-                                        lblReceivedQty.setText("1");
-                                        lblReceivedQty.setEnabled(false);
-                                        return;
-                                    } else {
-                                        // for Manual mode
-                                        lblReceivedQty.setEnabled(true);
-                                        soundUtils.alertWarning(getActivity(), getContext());
-                                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0073);
-                                        // To get the pending and received quantities
-                                    }
-
-
-                                } else {
-                                    // lblScannedSku.setText("");
-                                    cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
-                                    ivScanSku.setImageResource(R.drawable.warning_img);
-                                    common.showUserDefinedAlertType(errorMessages.EMC_0009, getActivity(), getContext(), "Warning");
-                                }
-                            } else {
-                                common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable throwable) {
-                        //Toast.makeText(LoginActivity.this, throwable.toString(), Toast.LENGTH_LONG).show();
-                        ProgressDialogUtils.closeProgressDialog();
-                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-                    }
-                });
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_02", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-            }
-        } catch (Exception ex) {
-            try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_03", getActivity());
-                logException();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ProgressDialogUtils.closeProgressDialog();
-            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
-        }
-    }
 
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
         if (scannedData != null) {
             if (!ProgressDialogUtils.isProgressActive()) {
-                if (rlLoadListThree.getVisibility() == View.VISIBLE) {
-                    ValiDateMaterial(scannedData);
-                }
+                    ScanData(scannedData);
             }
         }
     }
 
+    private void ScanData(String scannedData) {
+        OutbountDTO outbountDTO=new OutbountDTO();
+        outbountDTO.setSONumber(scannedData);
+        outbountDTOS.add(outbountDTO);
+        loadSheetSOListAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        loadSheetNo = spinnerSelectLoadList.getSelectedItem().toString();
+
     }
 
     @Override
@@ -533,498 +323,6 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     }
 
 
-
-    public void GetOpenLoadsheetList() {
-
-        try {
-            WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
-            OutbountDTO outbountDTO = new OutbountDTO();
-            outbountDTO.setTenatID(userId);
-            outbountDTO.setAccountID(accountId);
-            message.setEntityObject(outbountDTO);
-
-            Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
-
-            try {
-                //Checking for Internet Connectivity
-                // if (NetworkUtils.isInternetAvailable()) {
-                // Calling the Interface method
-                ProgressDialogUtils.showProgressDialog("Please Wait");
-                call = apiService.GetOpenLoadsheetList(message);
-                // } else {
-                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
-                // return;
-                // }
-
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
-
-            }
-            try {
-                //Getting response from the method
-                call.enqueue(new Callback<String>() {
-
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-
-                        try {
-
-                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
-
-                            List<LinkedTreeMap<?, ?>> _lLoadSheetNo = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lLoadSheetNo = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
-
-                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
-                            List<String> lstLoadSheetNo = new ArrayList<>();
-
-
-                            for (int i = 0; i < _lLoadSheetNo.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lLoadSheetNo.get(i).entrySet());
-                                lstDto.add(dto);
-                            }
-
-                            for (int i = 0; i < lstDto.size(); i++) {
-                                lstLoadSheetNo.add(lstDto.get(i).getvLPDNumber());
-                            }
-
-                            ProgressDialogUtils.closeProgressDialog();
-                            ArrayAdapter arrayAdapterLoadSheet = new ArrayAdapter(getActivity(), R.layout.support_simple_spinner_dropdown_item, lstLoadSheetNo);
-                            spinnerSelectLoadList.setAdapter(arrayAdapterLoadSheet);
-
-                        } catch (Exception ex) {
-                            try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
-                                logException();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            ProgressDialogUtils.closeProgressDialog();
-                        }
-
-
-                    }
-
-                    // response object fails
-                    @Override
-                    public void onFailure(Call<String> call, Throwable throwable) {
-
-                        ProgressDialogUtils.closeProgressDialog();
-                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-                    }
-                });
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-            }
-        } catch (Exception ex) {
-            try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
-                logException();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ProgressDialogUtils.closeProgressDialog();
-            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
-        }
-    }
-
-    public void GetPendingOBDListForLoading() {
-        try {
-            WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
-            OutbountDTO outbountDTO = new OutbountDTO();
-            outbountDTO.setTenatID(userId);
-            outbountDTO.setAccountID(accountId);
-            message.setEntityObject(outbountDTO);
-
-
-            Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
-
-            try {
-                //Checking for Internet Connectivity
-                // if (NetworkUtils.isInternetAvailable()) {
-                // Calling the Interface method
-                ProgressDialogUtils.showProgressDialog("Please Wait");
-                call = apiService.GetPendingOBDListForLoading(message);
-                // } else {
-                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
-                // return;
-                // }
-
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
-
-            }
-            try {
-                //Getting response from the method
-                call.enqueue(new Callback<String>() {
-
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-
-                        try {
-
-                            if (response.body() == null) {
-                                common.showUserDefinedAlertType("No OBD numbers are pending to create", getActivity(), getContext(), "Warning");
-                                return;
-                            }
-
-                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
-
-                            List<LinkedTreeMap<?, ?>> _lLoadSheetNo = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lLoadSheetNo = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
-
-                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
-
-                            for (int i = 0; i < _lLoadSheetNo.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lLoadSheetNo.get(i).entrySet());
-                                lstDto.add(dto);
-                            }
-
-
-                            if (lstDto.size() > 0) {
-                                rlLoadingOne.setVisibility(View.GONE);
-                                rlLoadingTwo.setVisibility(View.VISIBLE);
-                                rlLoadListThree.setVisibility(View.GONE);
-                                LoadSheetOBDpendingAdapter loadSheetOBDpendingAdapter = new LoadSheetOBDpendingAdapter(getActivity(), btnCreate, lstDto, lblDrName, lblDrNo, lblVehicleNo, lblVehicleType, lblLoadSheetNo, rlLoadingOne, rlLoadingTwo, rlLoadListThree);
-                                recycler_view_obd.setAdapter(loadSheetOBDpendingAdapter);
-                            } else {
-                                common.showUserDefinedAlertType("No OBD numbers are pending to create", getActivity(), getContext(), "Warning");
-                            }
-
-                            ProgressDialogUtils.closeProgressDialog();
-
-                        } catch (Exception ex) {
-                            try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
-                                logException();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            ProgressDialogUtils.closeProgressDialog();
-                        }
-
-
-                    }
-
-                    // response object fails
-                    @Override
-                    public void onFailure(Call<String> call, Throwable throwable) {
-
-                        ProgressDialogUtils.closeProgressDialog();
-                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-                    }
-                });
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-            }
-        } catch (Exception ex) {
-            try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
-                logException();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ProgressDialogUtils.closeProgressDialog();
-            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
-        }
-    }
-
-    public void LoadVerification() {
-
-        try {
-
-            WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
-            OutbountDTO outbountDTO = new OutbountDTO();
-            outbountDTO.setUserId(userId);
-            outbountDTO.setvLPDNumber(lblLoadSheetNo.getText().toString());
-            message.setEntityObject(outbountDTO);
-
-
-            Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
-
-            try {
-                //Checking for Internet Connectivity
-                // if (NetworkUtils.isInternetAvailable()) {
-                // Calling the Interface method
-                ProgressDialogUtils.showProgressDialog("Please Wait");
-                call = apiService.LoadVerification(message);
-                // } else {
-                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
-                // return;
-                // }
-
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
-
-            }
-            try {                //Getting response from the method
-                call.enqueue(new Callback<String>() {
-
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-
-                        try {
-
-                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
-
-                            List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
-
-                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
-
-                            for (int i = 0; i < _lResult.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
-                                lstDto.add(dto);
-                            }
-
-                            if (lstDto.size() > 0) {
-
-                                if (lstDto.get(0).getResult().equalsIgnoreCase("PGI Updated")) {
-                                    common.setIsPopupActive(true);
-                                    soundUtils.alertSuccess(getActivity(), getActivity());
-                                    DialogUtils.showAlertDialog(getActivity(), "Success", "PGI Updated", R.drawable.success, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            switch (which) {
-                                                case DialogInterface.BUTTON_POSITIVE:
-                                                    FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
-                                                    common.setIsPopupActive(false);
-                                                    break;
-                                            }
-                                        }
-                                    });
-                                    // common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Success");
-                                } else {
-                                    common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Error");
-                                }
-
-
-                            } else {
-                                common.showUserDefinedAlertType("Failed to verify", getActivity(), getActivity(), "Warning");
-                            }
-
-                            ProgressDialogUtils.closeProgressDialog();
-
-                        } catch (Exception ex) {
-                            try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
-                                logException();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            ProgressDialogUtils.closeProgressDialog();
-                        }
-
-
-                    }
-
-                    // response object fails
-                    @Override
-                    public void onFailure(Call<String> call, Throwable throwable) {
-
-                        ProgressDialogUtils.closeProgressDialog();
-                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-                    }
-                });
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-            }
-        } catch (Exception ex) {
-            try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
-                logException();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ProgressDialogUtils.closeProgressDialog();
-            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
-        }
-    }
-
-
-    public void UpsertLoad() {
-
-        try {
-
-            WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
-            OutbountDTO outbountDTO = new OutbountDTO();
-            outbountDTO.setUserId(userId);
-            outbountDTO.setmCode(lblScannedSku.getText().toString());
-            outbountDTO.setvLPDNumber(lblLoadSheetNo.getText().toString());
-            outbountDTO.setMfgDate(lblMfgDate.getText().toString());
-            outbountDTO.setExpDate(lblExpDate.getText().toString());
-            outbountDTO.setBatchNo(lblBatchNo.getText().toString());
-            outbountDTO.setSerialNo(lblserialNo.getText().toString());
-            outbountDTO.setProjectNo(lblProjectRefNo.getText().toString());
-            outbountDTO.setMRP(lblMRP.getText().toString());
-            outbountDTO.setPickedQty(lblReceivedQty.getText().toString());
-            message.setEntityObject(outbountDTO);
-
-
-            Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
-
-            try {
-                //Checking for Internet Connectivity
-                // if (NetworkUtils.isInternetAvailable()) {
-                // Calling the Interface method
-                ProgressDialogUtils.showProgressDialog("Please Wait");
-                call = apiService.UpsertLoad(message);
-                // } else {
-                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
-                // return;
-                // }
-
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
-
-            }
-            try {
-                //Getting response from the method
-                call.enqueue(new Callback<String>() {
-
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-
-                        try {
-
-                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
-
-                            List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
-
-                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
-
-                            for (int i = 0; i < _lResult.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
-                                lstDto.add(dto);
-                            }
-
-                            if (lstDto.size() > 0) {
-
-                                if (lstDto.get(0).getResult().equalsIgnoreCase("Success")) {
-                                    common.showUserDefinedAlertType("Sku loaded successfully", getActivity(), getActivity(), "Success");
-                                } else {
-                                    common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Error");
-                                }
-
-                            } else {
-                                common.showUserDefinedAlertType("Failed to load Sku", getActivity(), getActivity(), "Error");
-                            }
-
-                            lblScannedSku.setText("");
-                            lblBatchNo.setText("");
-                            lblserialNo.setText("");
-                            lblMfgDate.setText("");
-                            lblExpDate.setText("");
-                            lblProjectRefNo.setText("");
-                            lblMRP.setText("");
-                            lblReceivedQty.setText("");
-                            lblReceivedQty.setEnabled(false);
-                            lblReceivedQty.clearFocus();
-
-                            cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
-                            ivScanSku.setImageResource(R.drawable.fullscreen_img);
-
-                            ProgressDialogUtils.closeProgressDialog();
-
-                        } catch (Exception ex) {
-                            try {
-                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
-                                logException();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            ProgressDialogUtils.closeProgressDialog();
-                        }
-
-
-                    }
-
-                    // response object fails
-                    @Override
-                    public void onFailure(Call<String> call, Throwable throwable) {
-
-                        ProgressDialogUtils.closeProgressDialog();
-                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-                    }
-                });
-            } catch (Exception ex) {
-                try {
-                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
-                    logException();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ProgressDialogUtils.closeProgressDialog();
-                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
-            }
-        } catch (Exception ex) {
-            try {
-                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
-                logException();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ProgressDialogUtils.closeProgressDialog();
-            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
-        }
-    }
 
 
     // sending exception to the database

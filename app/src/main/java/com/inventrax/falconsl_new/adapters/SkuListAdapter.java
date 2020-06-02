@@ -18,16 +18,17 @@ public class SkuListAdapter extends  RecyclerView.Adapter{
     Context context;
     RelativeLayout relativeOne,relativeTwo,relativeThree,relativeFour;
     boolean isSet=false;
-
-
     private List<SKUListDTO> skuListDTOList;
-    public SkuListAdapter(Context context, List<SKUListDTO> skuListDTOList,RelativeLayout relativeOne,RelativeLayout relativeTwo,RelativeLayout relativeThree,RelativeLayout relativeFour) {
+    OnItemClickListener listener;
+
+    public SkuListAdapter(Context context, List<SKUListDTO> skuListDTOList,RelativeLayout relativeOne,RelativeLayout relativeTwo,RelativeLayout relativeThree,RelativeLayout relativeFour,OnItemClickListener listener) {
         this.context = context;
         this.skuListDTOList = skuListDTOList;
         this.relativeOne=relativeOne;
         this.relativeTwo=relativeTwo;
         this.relativeThree=relativeThree;
         this.relativeFour=relativeFour;
+        this.listener=listener;
         isSet=true;
     }
 
@@ -54,20 +55,22 @@ public class SkuListAdapter extends  RecyclerView.Adapter{
         // set the data in items
 
         ((MyViewHolder) holder).txtMCode.setText(skuListDTO.getMCode());
-        ((MyViewHolder) holder).txtQty.setText(skuListDTO.getPackedQty()+" / "+skuListDTO.getSOQty() );
 
+       // ((MyViewHolder) holder).txtQty.setText(((skuListDTO.getPackedQty().split("[.]") !=null && skuListDTO.getPackedQty().split("[.]").length > 0 ) ? skuListDTO.getPackedQty().split("[.]")[0] : skuListDTO.getPackedQty()) + " / " +
+       //         ((skuListDTO.getSOQty().split("[.]") !=null && skuListDTO.getSOQty().split("[.]").length > 0 ) ? skuListDTO.getSOQty().split("[.]")[0] : skuListDTO.getSOQty()) );
 
+        ((MyViewHolder) holder).txtQty.setText(skuListDTO.getPackedQty().split("[.]")[0] +" / " + skuListDTO.getSOQty().split("[.]")[0] );
+/*
         ((MyViewHolder) holder).view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isSet){
-                    relativeOne.setVisibility(View.GONE);
-                    relativeTwo.setVisibility(View.GONE);
-                    relativeThree.setVisibility(View.VISIBLE);
-                    relativeFour.setVisibility(View.GONE);
+
+
+
                 }
             }
-        });
+        });*/
 
 
     }
@@ -90,7 +93,26 @@ public class SkuListAdapter extends  RecyclerView.Adapter{
             txtMCode = (TextView) itemView.findViewById(R.id.txtMCode);
             view=itemView;
 
+            //on item click
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int pos = getAdapterPosition();
+                        if (pos != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(pos);
+                        }
+                    }
+                }
+
+            });
+
         }
+    }
+
+    // Item click listener interface
+    public interface OnItemClickListener {
+        void onItemClick(int pos);
     }
 
 }

@@ -80,7 +80,7 @@
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:alpha="1"
-        android:src="@drawable/fwms"
+        android:src="@drawable/mlogo"
         android:layout_above="@+id/textView2"
         android:layout_centerHorizontal="true"
         />
@@ -103,7 +103,7 @@
         android:id="@+id/txtHelpLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="  Help Line Number : 9676692934"
+        android:text="  Help Line Number : 08916766001"
         android:layout_above="@+id/imageView1"
         android:drawableLeft="@drawable/ic_action_phone_call"
         style="@style/textViewStyle"

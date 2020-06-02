@@ -72,7 +72,7 @@ import retrofit2.Response;
  * Created by ch Anil on 27/03/2020.
  */
 
-public class LoadSheetFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
+public class NewLoadSheetFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
 
     private static final String classCode = "API_FRAG_009";
     private View rootView;
@@ -124,7 +124,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    public LoadSheetFragment() {
+    public NewLoadSheetFragment() {
     }
 
 
@@ -179,7 +179,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         btnCloseOne = (Button) rootView.findViewById(R.id.btnCloseOne);
         btnCloseTwo = (Button) rootView.findViewById(R.id.btnCloseTwo);
         btnCloseThree = (Button) rootView.findViewById(R.id.btnCloseThree);
-         btnCreateNew = (Button) rootView.findViewById(R.id.btnCreateNew);
+      //  btnCreateNew = (Button) rootView.findViewById(R.id.btnCreateNew);
         btnCreate = (Button) rootView.findViewById(R.id.btnCreate);
         btnLoadingVerify = (Button) rootView.findViewById(R.id.btnLoadingVerify);
         btnLoadSKU = (Button) rootView.findViewById(R.id.btnLoadSKU);
@@ -246,6 +246,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             }
         });
 
+
     }
 
 
@@ -264,7 +265,6 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 }
 
                 break;
-
 /*            case R.id.btnCreateNew:
                 GetPendingOBDListForLoading();
                 break;*/

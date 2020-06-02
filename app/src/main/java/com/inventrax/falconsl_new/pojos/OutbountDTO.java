@@ -114,6 +114,7 @@ public class OutbountDTO {
 
     @SerializedName("MCode")
     private String mCode;
+
     @SerializedName("MDescription")
     private String mDescription;
 
@@ -125,7 +126,6 @@ public class OutbountDTO {
 
     @SerializedName("SODetailsID")
     private String SODetailsID;
-
 
     @SerializedName("POSOHeaderId")
     private String pOSOHeaderId;
@@ -144,7 +144,6 @@ public class OutbountDTO {
 
     @SerializedName("LocationId")
     private String locationId;
-
 
     @SerializedName("CartonID")
     private String cartonID;
@@ -167,8 +166,6 @@ public class OutbountDTO {
     @SerializedName("AccountID")
     private String AccountID;
 
-
-
     @SerializedName("Vehicle")
     private String Vehicle;
 
@@ -187,9 +184,32 @@ public class OutbountDTO {
     @SerializedName("TenatID")
     private String TenatID;
 
-
     @SerializedName("SONumber")
     private String SONumber;
+
+
+
+    @SerializedName("PackedQty")
+    private String PackedQty;
+
+    @SerializedName("CartonSerialNo")
+    private String CartonSerialNo;
+
+    @SerializedName("PSNID")
+    private String PSNID;
+
+    @SerializedName("PSNDetailsID")
+    private String PSNDetailsID;
+
+
+
+    @SerializedName("PackType")
+    private String PackType;
+
+
+
+    @SerializedName("PackComplete")
+    private String PackComplete;
 
 
     private boolean isChecked=false;
@@ -558,9 +578,39 @@ public class OutbountDTO {
                     }
                     break;
 
+               case "PSNID":
+                    if(entry.getValue()!=null) {
+                        this.setPSNID(entry.getValue().toString());
+                    }
+                    break;
 
+                  case "PackedQty":
+                    if(entry.getValue()!=null) {
+                        this.setPackedQty(entry.getValue().toString());
+                    }
+                    break;
 
+                  case "CartonSerialNo":
+                    if(entry.getValue()!=null) {
+                        this.setCartonSerialNo(entry.getValue().toString());
+                    }
+                    break;
 
+                  case "PSNDetailsID":
+                    if(entry.getValue()!=null) {
+                        this.setPSNDetailsID(entry.getValue().toString());
+                    }
+                    break;
+                  case "PackType":
+                    if(entry.getValue()!=null) {
+                        this.setPackType(entry.getValue().toString());
+                    }
+                    break;
+                  case "PackComplete":
+                    if(entry.getValue()!=null) {
+                        this.setPackComplete(entry.getValue().toString());
+                    }
+                    break;
 
             }
         }
@@ -1114,6 +1164,54 @@ public class OutbountDTO {
 
     public void setSONumber(String SONumber) {
         this.SONumber = SONumber;
+    }
+
+    public String getPSNID() {
+        return PSNID;
+    }
+
+    public void setPSNID(String PSNID) {
+        this.PSNID = PSNID;
+    }
+
+    public String getPackedQty() {
+        return PackedQty;
+    }
+
+    public void setPackedQty(String packedQty) {
+        PackedQty = packedQty;
+    }
+
+    public String getCartonSerialNo() {
+        return CartonSerialNo;
+    }
+
+    public void setCartonSerialNo(String cartonSerialNo) {
+        CartonSerialNo = cartonSerialNo;
+    }
+
+    public String getPSNDetailsID() {
+        return PSNDetailsID;
+    }
+
+    public void setPSNDetailsID(String PSNDetailsID) {
+        this.PSNDetailsID = PSNDetailsID;
+    }
+
+    public String getPackType() {
+        return PackType;
+    }
+
+    public void setPackType(String packType) {
+        PackType = packType;
+    }
+
+    public String getPackComplete() {
+        return PackComplete;
+    }
+
+    public void setPackComplete(String packComplete) {
+        PackComplete = packComplete;
     }
 
 }

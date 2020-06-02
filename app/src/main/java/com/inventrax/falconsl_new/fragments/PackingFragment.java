@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -41,6 +44,7 @@ import com.inventrax.falconsl_new.common.constants.ErrorMessages;
 import com.inventrax.falconsl_new.interfaces.ApiInterface;
 import com.inventrax.falconsl_new.pojos.OutbountDTO;
 import com.inventrax.falconsl_new.pojos.SKUListDTO;
+import com.inventrax.falconsl_new.pojos.ScanDTO;
 import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner;
@@ -70,11 +74,11 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
     private static final String classCode = "API_FRAG_LIVESTOCK";
     private View rootView;
-    private TextView tvOrderInfromation, tvScanLocation, tvScanPallet, lblScannedData;
+    private TextView tvOrderInfromation, tvOrderInfromationSuccess, tvScanPallet, lblScannedData;
     private SearchableSpinner spinnerSelectTenant, spinnerSelectWH;
-    private CardView cvScanSONumber, cvScanLocation, cvScanPallet;
-    private ImageView ivScanSONumber, ivScanLocation, ivScanPallet;
-    private Button btnPackComplete, btnBackHome;
+    private CardView cvScanSONumber, cvScanPallet, cvScanSku;
+    private ImageView ivScanSONumber, ivScanSku, ivScanPallet;
+    private Button btnPackComplete, btnBackHome,btnPack;
     private RecyclerView recyclerViewLiveStock;
     private LinearLayoutManager linearLayoutManager;
     private RadioButton radioLocation,radioPallet,radioSKU;
@@ -103,7 +107,11 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
     private RecyclerView recycler_view_sku_list,recycler_view_sku_listSuccess;
     RelativeLayout relativeOne,relativeTwo,relativeThree,relativeFour;
-    String SONumber="";
+    TextView lblBatchNo,lblserialNo,lblMfgDate,lblExpDate,lblMRP,lblScannedSku,lblProjectRefNo,tvSONumber,lblContainer;
+    EditText lblReceivedQty,lblPackingType;
+    LinearLayout linearCon,linearSKU;
+    String SONumber="",SODetailID="",OutBoundId="",packedQty="",pickedQty="",soQty="",OBDNumber="",PSNID="0",PSNDetailsID="";
+    boolean isPallet=false,isSKU=false;
 
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
@@ -145,18 +153,40 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         accountId = sp.getString("AccountId", "");
 
         cvScanSONumber = (CardView) rootView.findViewById(R.id.cvScanSONumber);
+        cvScanPallet = (CardView) rootView.findViewById(R.id.cvScanPallet);
+        cvScanSku = (CardView) rootView.findViewById(R.id.cvScanSku);
 
         ivScanSONumber = (ImageView) rootView.findViewById(R.id.ivScanSONumber);
+        ivScanPallet = (ImageView) rootView.findViewById(R.id.ivScanPallet);
+        ivScanSku = (ImageView) rootView.findViewById(R.id.ivScanSku);
 
         relativeOne = (RelativeLayout) rootView.findViewById(R.id.relativeOne);
         relativeTwo = (RelativeLayout) rootView.findViewById(R.id.relativeTwo);
         relativeThree = (RelativeLayout) rootView.findViewById(R.id.relativeThree);
         relativeFour = (RelativeLayout) rootView.findViewById(R.id.relativeFour);
 
+        linearCon = (LinearLayout) rootView.findViewById(R.id.linearCon);
+        linearSKU = (LinearLayout) rootView.findViewById(R.id.linearSKU);
+
         btnPackComplete = (Button) rootView.findViewById(R.id.btnPackComplete);
         btnBackHome = (Button) rootView.findViewById(R.id.btnBackHome);
+        btnPack = (Button) rootView.findViewById(R.id.btnPack);
 
         tvOrderInfromation = (TextView) rootView.findViewById(R.id.tvOrderInfromation);
+        tvOrderInfromationSuccess = (TextView) rootView.findViewById(R.id.tvOrderInfromationSuccess);
+        tvSONumber = (TextView) rootView.findViewById(R.id.tvSONumber);
+
+        lblBatchNo = (TextView) rootView.findViewById(R.id.lblBatchNo);
+        lblserialNo = (TextView) rootView.findViewById(R.id.lblserialNo);
+        lblMfgDate = (TextView) rootView.findViewById(R.id.lblMfgDate);
+        lblExpDate = (TextView) rootView.findViewById(R.id.lblExpDate);
+        lblMRP = (TextView) rootView.findViewById(R.id.lblMRP);
+        lblProjectRefNo = (TextView) rootView.findViewById(R.id.lblProjectRefNo);
+        lblScannedSku = (TextView) rootView.findViewById(R.id.lblScannedSku);
+        lblContainer = (TextView) rootView.findViewById(R.id.lblContainer);
+
+        lblReceivedQty = (EditText) rootView.findViewById(R.id.lblReceivedQty);
+        lblPackingType = (EditText) rootView.findViewById(R.id.lblPackingType);
 
         recycler_view_sku_list = (RecyclerView) rootView.findViewById(R.id.recycler_view_sku_list);
         recycler_view_sku_list.setHasFixedSize(true);
@@ -211,6 +241,13 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         cvScanSONumber.setOnClickListener(this);
         btnPackComplete.setOnClickListener(this);
         btnBackHome.setOnClickListener(this);
+        btnPack.setOnClickListener(this);
+
+
+        relativeOne.setVisibility(View.VISIBLE);
+        relativeTwo.setVisibility(View.GONE);
+        relativeThree.setVisibility(View.GONE);
+        relativeFour.setVisibility(View.GONE);
 
     }
 
@@ -227,19 +264,41 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                 break;
 
             case R.id.btnPackComplete:
-                relativeOne.setVisibility(View.GONE);
-                relativeTwo.setVisibility(View.GONE);
-                relativeFour.setVisibility(View.VISIBLE);
-                GetSKUListSuccess();
+
+                UpdatePackComplete();
+
                 break;
 
             case R.id.btnBackHome:
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
                 break;
 
+            case R.id.btnPack:
+
+                int soQty_1 = Integer.parseInt(soQty.split("[.]")[0]);
+                int packQty = Integer.parseInt(packedQty.split("[.]")[0]);
+
+                if(lblReceivedQty.getText().toString().isEmpty()){
+                    common.showUserDefinedAlertType("Please Enter Qty", getActivity(), getActivity(), "Warning");
+                    return;
+                }
+                if(lblPackingType.getText().toString().isEmpty()){
+                    common.showUserDefinedAlertType("Please Enter Packing Type", getActivity(), getActivity(), "Warning");
+                    return;
+                }
+                if((Integer.parseInt(lblReceivedQty.getText().toString())+packQty) > soQty_1){
+                    common.showUserDefinedAlertType("Qty is more than picked qty", getActivity(), getActivity(), "Warning");
+                    return;
+                }
+
+                UpsertPackItem();
+
+                break;
+
             case R.id.btnCloseOne:
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
                 break;
+
 
         }
     }
@@ -257,7 +316,12 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         relativeOne.setVisibility(View.GONE);
         relativeTwo.setVisibility(View.VISIBLE);
         relativeFour.setVisibility(View.GONE);
-        SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS,relativeOne,relativeTwo,relativeThree,relativeFour);
+        SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS, relativeOne, relativeTwo, relativeThree, relativeFour, new SkuListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int pos) {
+
+            }
+        });
         recycler_view_sku_list.setAdapter(skuListAdapter);
 
     }
@@ -349,9 +413,20 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
         if (scannedData != null) {
 
-
             if(relativeOne.getVisibility()==View.VISIBLE){
-                ScanSONumberForPacking(scannedData);
+                ScanSONumberForPacking(scannedData,0);
+            }
+
+            if(relativeThree.getVisibility()==View.VISIBLE){
+                if(linearCon.getVisibility()== View.VISIBLE){
+                    if(!isPallet){
+                        ValidatePallet(scannedData);
+                    }else{
+                        ValiDateMaterial(scannedData);
+                    }
+                }else{
+                    ValiDateMaterial(scannedData);
+                }
             }
 
         }
@@ -527,15 +602,15 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
     }
 
-    public void ScanSONumberForPacking(String scannedData) {
+    public void UpdatePackComplete() {
 
         try {
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
-            OutbountDTO outbountDTO = new OutbountDTO();
+            final OutbountDTO outbountDTO = new OutbountDTO();
             outbountDTO.setTenatID(userId);
             outbountDTO.setAccountID(accountId);
-            outbountDTO.setSONumber(scannedData);
+            outbountDTO.setSONumber(SONumber);
             message.setEntityObject(outbountDTO);
 
             Call<String> call = null;
@@ -546,7 +621,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                 // if (NetworkUtils.isInternetAvailable()) {
                 // Calling the Interface method
                 ProgressDialogUtils.showProgressDialog("Please Wait");
-                call = apiService.ScanSONumberForPacking(message);
+                call = apiService.UpdatePackComplete(message);
                 // } else {
                 // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
                 // return;
@@ -573,25 +648,43 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                         try {
 
                             core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
 
-                            List<LinkedTreeMap<?, ?>> _lSKUList = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lSKUList = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
-
-                            if(_lSKUList!=null){
-                                List<SKUListDTO> skuListDTOS=new ArrayList<>();
-                                for (int i = 0; i < _lSKUList.size(); i++) {
-                                    SKUListDTO dto = new SKUListDTO(_lSKUList.get(i).entrySet());
-                                    skuListDTOS.add(dto);
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                    ProgressDialogUtils.closeProgressDialog();
+                                    common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+                                    return;
                                 }
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lOutBound = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lOutBound = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                                if(_lOutBound!=null){
+                                    final List<OutbountDTO> outbountDTOS=new ArrayList<>();
+                                    for (int i = 0; i < _lOutBound.size(); i++) {
+                                        OutbountDTO dto = new OutbountDTO(_lOutBound.get(i).entrySet());
+                                        outbountDTOS.add(dto);
+                                    }
 
-                                if(skuListDTOS.size()>0){
+                                    if(outbountDTOS.size()>0){
 
-                                    relativeOne.setVisibility(View.GONE);
-                                    relativeTwo.setVisibility(View.VISIBLE);
-                                    relativeFour.setVisibility(View.GONE);
-                                    tvOrderInfromation.setText(skuListDTOS.get(0).getCustomerName());
-                                    SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS,relativeOne,relativeTwo,relativeThree,relativeFour);
-                                    recycler_view_sku_list.setAdapter(skuListAdapter);
+                                        if(outbountDTOS.get(0).getPackComplete().equals("true")){
+                                            relativeOne.setVisibility(View.GONE);
+                                            relativeTwo.setVisibility(View.GONE);
+                                            relativeFour.setVisibility(View.VISIBLE);
+                                            ScanSONumberForPacking(SONumber,3);
+                                        }else{
+
+                                        }
+
+
+
+                                        ProgressDialogUtils.closeProgressDialog();
+                                    }
+
                                 }
 
                             }
@@ -640,5 +733,752 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
         }
     }
+
+    public void GETMSPsForPacking(final String mCode) {
+
+        try {
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
+            final OutbountDTO outbountDTO = new OutbountDTO();
+            outbountDTO.setTenatID(userId);
+            outbountDTO.setAccountID(accountId);
+            outbountDTO.setSODetailsID(SODetailID);
+            message.setEntityObject(outbountDTO);
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                call = apiService.GETMSPsForPacking(message);
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        try {
+
+                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                    ProgressDialogUtils.closeProgressDialog();
+                                    common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+                                    return;
+                                }
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lOutBound = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lOutBound = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                                if(_lOutBound!=null){
+                                    final List<OutbountDTO> outbountDTOS=new ArrayList<>();
+                                    for (int i = 0; i < _lOutBound.size(); i++) {
+                                        OutbountDTO dto = new OutbountDTO(_lOutBound.get(i).entrySet());
+                                        outbountDTOS.add(dto);
+                                    }
+
+                                    if(outbountDTOS.size()>0){
+
+                                        lblScannedSku.setText(mCode);
+                                        lblBatchNo.setText(outbountDTOS.get(0).getBatchNo());
+                                        lblserialNo.setText(outbountDTOS.get(0).getSerialNo());
+                                        lblMfgDate.setText(outbountDTOS.get(0).getMfgDate());
+                                        lblExpDate.setText(outbountDTOS.get(0).getExpDate());
+                                        lblProjectRefNo.setText(outbountDTOS.get(0).getProjectNo());
+                                        lblMRP.setText(outbountDTOS.get(0).getMRP());
+                                        tvSONumber.setText(SONumber);
+
+                                        ProgressDialogUtils.closeProgressDialog();
+                                    }
+
+                                }
+
+                            }
+
+                            ProgressDialogUtils.closeProgressDialog();
+
+                        } catch (Exception ex) {
+                            try {
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
+                                logException();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            ProgressDialogUtils.closeProgressDialog();
+                        }
+
+
+                    }
+
+                    // response object fails
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
+        }
+    }
+
+   public void UpsertPackItem() {
+
+        try {
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
+            final OutbountDTO outbountDTO = new OutbountDTO();
+            outbountDTO.setTenatID(userId);
+            outbountDTO.setAccountID(accountId);
+            outbountDTO.setmCode(lblScannedSku.getText().toString());
+            outbountDTO.setOutboundID(OutBoundId);
+            outbountDTO.setPSNID(PSNID);
+            outbountDTO.setSODetailsID(SODetailID);
+            outbountDTO.setPSNDetailsID(PSNDetailsID);
+            outbountDTO.setPackedQty(lblReceivedQty.getText().toString());
+            outbountDTO.setPickedQty(soQty);
+            outbountDTO.setPackType(lblPackingType.getText().toString());
+            outbountDTO.setCartonSerialNo("");
+            message.setEntityObject(outbountDTO);
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                call = apiService.UpsertPackItem(message);
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        try {
+
+                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                    ProgressDialogUtils.closeProgressDialog();
+                                    common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+                                    return;
+                                }
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lOutBound = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lOutBound = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                                if(_lOutBound!=null){
+                                    final List<OutbountDTO> outbountDTOS=new ArrayList<>();
+                                    for (int i = 0; i < _lOutBound.size(); i++) {
+                                        OutbountDTO dto = new OutbountDTO(_lOutBound.get(i).entrySet());
+                                        outbountDTOS.add(dto);
+                                    }
+
+                                    if(outbountDTOS.size()>0){
+                                        if(Integer.parseInt(outbountDTOS.get(0).getPSNDetailsID())>0){
+                                            ScanSONumberForPacking(SONumber,1);
+                                        }
+                                        ProgressDialogUtils.closeProgressDialog();
+                                    }
+                                }
+                            }
+
+                            ProgressDialogUtils.closeProgressDialog();
+
+                        } catch (Exception ex) {
+                            try {
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
+                                logException();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            ProgressDialogUtils.closeProgressDialog();
+                        }
+
+
+                    }
+
+                    // response object fails
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
+        }
+    }
+
+    public void ScanSONumberForPacking(final String scannedData, final int value) {
+
+        try {
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
+            OutbountDTO outbountDTO = new OutbountDTO();
+            outbountDTO.setTenatID(userId);
+            outbountDTO.setAccountID(accountId);
+            outbountDTO.setSONumber(scannedData);
+            message.setEntityObject(outbountDTO);
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                call = apiService.ScanSONumberForPacking(message);
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        try {
+
+                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                    ProgressDialogUtils.closeProgressDialog();
+                                    common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+                                    return;
+                                }
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lSKUList = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lSKUList = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                if(_lSKUList!=null){
+                                    final List<SKUListDTO> skuListDTOS=new ArrayList<>();
+                                    for (int i = 0; i < _lSKUList.size(); i++) {
+                                        SKUListDTO dto = new SKUListDTO(_lSKUList.get(i).entrySet());
+                                        skuListDTOS.add(dto);
+                                    }
+
+                                    if(skuListDTOS.size()>0){
+
+                                        cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                        ivScanSONumber.setImageResource(R.drawable.check);
+
+                                        if(value==0){
+                                            new CountDownTimer(1000, 1000) {
+
+                                                public void onTick(long millisUntilFinished) {
+
+                                                }
+
+                                                public void onFinish() {
+                                                    setData(skuListDTOS,scannedData);
+                                                }
+                                            }.start();
+                                        }else{
+                                            if(value==3){
+                                                setDataScuess(skuListDTOS,scannedData);
+                                            }else{
+                                                setData(skuListDTOS,scannedData);
+                                            }
+
+                                        }
+
+                                        ProgressDialogUtils.closeProgressDialog();
+                                    }else{
+                                        common.showUserDefinedAlertType("No SKU List Found", getActivity(), getActivity(), "Warning");
+                                    }
+
+                                }
+                            }
+
+                            ProgressDialogUtils.closeProgressDialog();
+
+
+                        } catch (Exception ex) {
+                            try {
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
+                                logException();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            ProgressDialogUtils.closeProgressDialog();
+                        }
+
+
+                    }
+
+                    // response object fails
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
+        }
+    }
+
+    public void setDataScuess(final List<SKUListDTO> skuListDTOS, String scannedData){
+
+        SONumber =scannedData;
+        relativeOne.setVisibility(View.GONE);
+        relativeTwo.setVisibility(View.GONE);
+        relativeThree.setVisibility(View.GONE);
+        relativeFour.setVisibility(View.VISIBLE);
+        tvOrderInfromationSuccess.setText(skuListDTOS.get(0).getCustomerName());
+        SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS, relativeOne, relativeTwo, relativeThree, relativeFour, new SkuListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int pos) {
+
+            }
+        });
+        recycler_view_sku_listSuccess.setAdapter(skuListAdapter);
+    }
+
+    public void setData(final List<SKUListDTO> skuListDTOS, String scannedData){
+
+        SONumber =scannedData;
+        relativeOne.setVisibility(View.GONE);
+        relativeTwo.setVisibility(View.VISIBLE);
+        relativeThree.setVisibility(View.GONE);
+        relativeFour.setVisibility(View.GONE);
+        tvOrderInfromation.setText(skuListDTOS.get(0).getCustomerName());
+        SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS, relativeOne, relativeTwo, relativeThree, relativeFour, new SkuListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int pos) {
+
+
+                if(Integer.parseInt(skuListDTOS.get(pos).getSOQty().split("[.]")[0]) != Integer.parseInt(skuListDTOS.get(pos).getPackedQty().split("[.]")[0])){
+
+                    SODetailID= skuListDTOS.get(pos).getSODetailsID();
+                    OutBoundId= skuListDTOS.get(pos).getOutboundID();
+                    OBDNumber= skuListDTOS.get(pos).getOBDNumber();
+                    packedQty = skuListDTOS.get(pos).getPackedQty();
+                    soQty = skuListDTOS.get(pos).getSOQty();
+                    PSNID = skuListDTOS.get(pos).getPSNID();
+                    PSNDetailsID = skuListDTOS.get(pos).getPSNDetailsID();
+
+                    if(skuListDTOS.get(pos).getBusinessType().equals("E-Commerce")){
+                        linearCon.setVisibility(View.VISIBLE);
+                        linearSKU.setVisibility(View.VISIBLE);
+                    }else{
+                        linearCon.setVisibility(View.GONE);
+                        linearSKU.setVisibility(View.VISIBLE);
+                    }
+
+                    ProgressDialogUtils.closeProgressDialog();
+                    GETMSPsForPacking(skuListDTOS.get(pos).getMCode());
+
+                    relativeOne.setVisibility(View.GONE);
+                    relativeTwo.setVisibility(View.GONE);
+                    relativeThree.setVisibility(View.VISIBLE);
+                    relativeFour.setVisibility(View.GONE);
+                }else{
+                    common.showUserDefinedAlertType("Already Packed", getActivity(), getActivity(), "Warning");
+                }
+
+            }
+        });
+        recycler_view_sku_list.setAdapter(skuListAdapter);
+    }
+
+    public void ValiDateMaterial(final String scannedData) {
+
+        try {
+
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.ScanDTO, getContext());
+            ScanDTO scanDTO = new ScanDTO();
+            scanDTO.setUserID(userId);
+            scanDTO.setAccountID(accountId);
+            // scanDTO.setTenantID(String.valueOf(tenantID));
+            //scanDTO.setWarehouseID(String.valueOf(warehouseID));
+            scanDTO.setScanInput(scannedData);
+            scanDTO.setObdNumber(OBDNumber);
+            //inboundDTO.setIsOutbound("0");
+            message.setEntityObject(scanDTO);
+
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                call = apiService.ValiDateMaterial(message);
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_01", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+
+
+                        if ((core.getType().toString().equals("Exception"))) {
+                            List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                            _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                            WMSExceptionMessage owmsExceptionMessage = null;
+                            for (int i = 0; i < _lExceptions.size(); i++) {
+
+                                owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                            }
+                            isSKU=false;
+                            cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+                            ivScanSku.setImageResource(R.drawable.fullscreen_img);
+                            ProgressDialogUtils.closeProgressDialog();
+                            common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+
+                        } else {
+                            LinkedTreeMap<?, ?>_lResult = new LinkedTreeMap<>();
+                            _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
+
+                            ScanDTO scanDTO1=new ScanDTO(_lResult.entrySet());
+                            ProgressDialogUtils.closeProgressDialog();
+                            if(scanDTO1!=null){
+                                if(scanDTO1.getScanResult()){
+
+                                /* ----For RSN reference----
+                                    0 Sku|1 BatchNo|2 SerialNO|3 MFGDate|4 EXpDate|5 ProjectRefNO|6 Kit Id|7 line No|8 MRP ---- For SKU with 9 MSP's
+
+                                    0 Sku|1 BatchNo|2 SerialNO|3 KitId|4 lineNo  ---- For SKU with 5 MSP's   *//*
+                                    // Eg. : ToyCar|1|bat1|ser123|12/2/2018|12/2/2019|0|001*/
+
+                                    if(scanDTO1.getSkuCode().equalsIgnoreCase(lblScannedSku.getText().toString().trim())){
+
+                                        if((lblBatchNo.getText().toString().equalsIgnoreCase(scanDTO1.getBatch()) || scanDTO1.getBatch()==null
+                                                || scanDTO1.getBatch().equalsIgnoreCase("") || scanDTO1.getBatch().isEmpty() )&&
+                                                lblserialNo.getText().toString().equalsIgnoreCase(scanDTO1.getSerialNumber()) &&
+                                                lblMfgDate.getText().toString().equalsIgnoreCase(scanDTO1.getMfgDate()) &&
+                                                lblExpDate.getText().toString().equalsIgnoreCase(scanDTO1.getExpDate())
+                                        ) {
+
+/*                                             &&
+                                              lblMfgDate.getText().toString().equalsIgnoreCase(scanDTO1.getMfgDate()) &&
+                                                    lblExpDate.getText().toString().equalsIgnoreCase(scanDTO1.getExpDate()
+                                             lblProjectRefNo.getText().toString().equalsIgnoreCase(scanDTO1.getPrjRef())*/
+
+
+                                            cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                            ivScanSku.setImageResource(R.drawable.check);
+
+                                            isSKU=true;
+
+
+                                        }else{
+                                            common.showUserDefinedAlertType(errorMessages.EMC_0079,getActivity(),getContext(),"Error");
+                                        }
+
+                                    }else {
+                                        isSKU=false;
+                                        cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                        ivScanSku.setImageResource(R.drawable.warning_img);
+                                        common.showUserDefinedAlertType(errorMessages.EMC_0029, getActivity(), getContext(), "Error");
+                                    }
+
+                                } else{
+                                    // lblScannedSku.setText("");
+                                    isSKU=false;
+                                    cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                    ivScanSku.setImageResource(R.drawable.warning_img);
+                                    common.showUserDefinedAlertType(errorMessages.EMC_0009, getActivity(), getContext(), "Warning");
+                                }
+                            }else{
+                                common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+                        //Toast.makeText(LoginActivity.this, throwable.toString(), Toast.LENGTH_LONG).show();
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_02", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_03", getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+        }
+    }
+
+    public void ValidatePallet(final String scannedData) {
+        try {
+
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.ScanDTO, getContext());
+            ScanDTO scanDTO = new ScanDTO();
+            scanDTO.setUserID(userId);
+            scanDTO.setAccountID(accountId);
+            // scanDTO.setTenantID(String.valueOf(tenantID));
+            //scanDTO.setWarehouseID(String.valueOf(warehouseID));
+            scanDTO.setScanInput(scannedData);
+            scanDTO.setObdNumber(OBDNumber);
+            //inboundDTO.setIsOutbound("0");
+            message.setEntityObject(scanDTO);
+
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                call = apiService.ValidatePallet(message);
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_01", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+
+                        if ((core.getType().toString().equals("Exception"))) {
+                            List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                            _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                            WMSExceptionMessage owmsExceptionMessage = null;
+                            for (int i = 0; i < _lExceptions.size(); i++) {
+
+                                owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                            }
+
+                            isPallet=false;
+                            lblContainer.setText("");
+                            cvScanPallet.setCardBackgroundColor(getResources().getColor(R.color.white));
+                            ivScanPallet.setImageResource(R.drawable.invalid_cross);
+                            ProgressDialogUtils.closeProgressDialog();
+                            common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+                        } else {
+                            LinkedTreeMap<?, ?>_lResult = new LinkedTreeMap<>();
+                            _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
+
+                            ScanDTO scanDTO1=new ScanDTO(_lResult.entrySet());
+                            ProgressDialogUtils.closeProgressDialog();
+                            if(scanDTO1!=null){
+                                if(scanDTO1.getScanResult()){
+                                    lblContainer.setText(scannedData);
+                                    //ValidatePalletCode();
+                                    isPallet = true;
+                                    cvScanPallet.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                    ivScanPallet.setImageResource(R.drawable.check);
+                                } else{
+                                    isPallet=false;
+                                    lblContainer.setText("");
+                                    cvScanPallet.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                    ivScanPallet.setImageResource(R.drawable.warning_img);
+                                    common.showUserDefinedAlertType(errorMessages.EMC_0009, getActivity(), getContext(), "Warning");
+                                }
+                            }else{
+                                isPallet=false;
+                                common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+                        //Toast.makeText(LoginActivity.this, throwable.toString(), Toast.LENGTH_LONG).show();
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_02", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_03", getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+        }
+    }
+
+
 
 }

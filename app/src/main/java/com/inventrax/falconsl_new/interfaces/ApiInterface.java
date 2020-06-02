@@ -126,8 +126,17 @@ public interface ApiInterface {
     @POST("Outbound/OBDSkipItem")
     Call<String> OBDSkipItem(@Body WMSCoreMessage oRequest);
 
-   @POST("Outbound/ScanSONumberForPacking")
+    @POST("Outbound/ScanSONumberForPacking")
     Call<String> ScanSONumberForPacking(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/UpdatePackComplete")
+    Call<String> UpdatePackComplete(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/GETMSPsForPacking")
+    Call<String> GETMSPsForPacking(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/UpsertPackItem")
+    Call<String> UpsertPackItem(@Body WMSCoreMessage oRequest);
 
     @POST("Transfers/GetTransferReqNos")
     Call<String> GetTransferReqNos(@Body WMSCoreMessage oRequest);
