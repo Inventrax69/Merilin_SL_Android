@@ -4,6 +4,7 @@ package com.inventrax.falconsl_new.util;
  * Created by nareshp on 05/01/2016.
  */
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -84,6 +85,27 @@ public class FragmentUtils {
         try {
             fragmentManager = activity.getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(fragmentContainer, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        } catch (Exception ex) {
+
+        }
+    }
+
+    /**
+     * To replace fragment for the specified container with back stack option
+     *
+     * @param activity          current FragmentActivity reference
+     * @param fragmentContainer fragment container which holds the specified fragment
+     * @param fragment          fragment added to the specified container
+     */
+    public static void replaceFragmentWithBackStackWithArguments(FragmentActivity activity, int fragmentContainer, Fragment fragment, Bundle args) {
+
+        try {
+            fragmentManager = activity.getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragment.setArguments(args);
             fragmentTransaction.replace(fragmentContainer, fragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();

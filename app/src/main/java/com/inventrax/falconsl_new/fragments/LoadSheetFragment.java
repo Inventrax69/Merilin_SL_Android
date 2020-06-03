@@ -179,7 +179,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         btnCloseOne = (Button) rootView.findViewById(R.id.btnCloseOne);
         btnCloseTwo = (Button) rootView.findViewById(R.id.btnCloseTwo);
         btnCloseThree = (Button) rootView.findViewById(R.id.btnCloseThree);
-         btnCreateNew = (Button) rootView.findViewById(R.id.btnCreateNew);
+        btnCreateNew = (Button) rootView.findViewById(R.id.btnCreateNew);
         btnCreate = (Button) rootView.findViewById(R.id.btnCreate);
         btnLoadingVerify = (Button) rootView.findViewById(R.id.btnLoadingVerify);
         btnLoadSKU = (Button) rootView.findViewById(R.id.btnLoadSKU);

@@ -31,6 +31,7 @@ import com.inventrax.falconsl_new.fragments.LiveStockFragment;
 import com.inventrax.falconsl_new.fragments.LoadGenerationFragment;
 import com.inventrax.falconsl_new.fragments.LoadSheetFragment;
 import com.inventrax.falconsl_new.fragments.LoadingFragment;
+import com.inventrax.falconsl_new.fragments.NewLoadSheetFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingDetailsFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingHeaderFragment;
 import com.inventrax.falconsl_new.fragments.PackingFragment;
@@ -393,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             break;
 
             case "Loading": {
-                fragment = new LoadSheetFragment();
+                fragment = new NewLoadSheetFragment();
                 title = "Loading";
             }
             break;

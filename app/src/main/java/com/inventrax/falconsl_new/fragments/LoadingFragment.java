@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cipherlab.barcode.GeneralString;
 import com.google.gson.Gson;
@@ -303,6 +302,7 @@ public class LoadingFragment extends Fragment implements View.OnClickListener,Ba
             }
         }
     }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         loadSheetNo = spinnerSelectLoadList.getSelectedItem().toString().split("[-]", 2)[0].trim();
@@ -315,18 +315,22 @@ public class LoadingFragment extends Fragment implements View.OnClickListener,Ba
     }
     public void GetLoaddetails()
     {
+
         rlLoadingOne.setVisibility(View.GONE);
         rlLoadListTwo.setVisibility(View.VISIBLE);
         lblLoadSheetNo.setText(loadNoCustomerCode);
+
         for(LoadDTO oLoditem:lstloaddata)
         {
             if(oLoditem.getLoadSheetNo().equals(loadSheetNo))
             {
+
                 lblVehicleNo.setText(oLoditem.getVehicleNumber());
                 lblDockNo.setText(oLoditem.getDockNumber());
                 lblBoxQty.setText(oLoditem.getLoadedQuantity() +"/"+ oLoditem.getLoadSheetQuantity());
                 lblVolume.setText(String.valueOf(oLoditem.getVolume()));
                 lblWeight.setText(String.valueOf(oLoditem.getWeight()));
+
             }
         }
     }

@@ -13,60 +13,88 @@ import java.util.Set;
  */
 
 public class OutbountDTO {
+
     @SerializedName("OutboundID")
     private String outboundID;
+
     @SerializedName("PickRefNo")
     private List<String> pickRefNo;
+
     @SerializedName("MRP")
     private String MRP;
+
     @SerializedName("MOP")
     private String MOP;
+
     @SerializedName("SKU")
     private String SKU;
+
     @SerializedName("SerialNo")
     private String serialNo;
+
     @SerializedName("MfgDate")
     private String MfgDate;
+
     @SerializedName("Location")
     private String location;
+
     @SerializedName("LoadList")
     private List<LoadDTO> LoadList;
+
     @SerializedName("PalletNo")
     private String palletNo;
+
     @SerializedName("UserId")
     private String userId;
+
     @SerializedName("IsMaterialDamaged")
     private Boolean isMaterialDamaged;
+
     @SerializedName("IsMaterialNotFound")
     private Boolean isMaterialNotFound;
+
     @SerializedName("Result")
     private String result;
+
     @SerializedName("RequiredQty")
     private String requiredQty;
+
     @SerializedName("PickedQty")
     private String pickedQty;
+
     @SerializedName("SelectedPickRefNumber")
     private String SelectedPickRefNumber;
+
     @SerializedName("SelectedLoadSheetNumber")
     private String SelectedLoadSheetNumber;
+
     @SerializedName("AllowNestedInventoryDispatch")
     private Boolean AllowNestedInventoryDispatch;
+
     @SerializedName("AllowDispatchOfOLDMRP")
     private Boolean AllowDispatchOfOLDMRP;
+
     @SerializedName("AllowCrossDocking")
     private Boolean AllowCrossDocking;
+
     @SerializedName("StrictComplianceToPicking")
     private Boolean StrictComplianceToPicking;
+
     @SerializedName("AutoReconsileInventoryOnSkip")
     private Boolean AutoReconsileInventoryOnSkip;
+
     @SerializedName("DockNumber")
     private String dockNumber;
+
     @SerializedName("SuggestionID")
     private String SuggestionID;
+
     @SerializedName("RevertQty")
     private String RevertQty;
+
     @SerializedName("CustomerCode")
     private String CustomerCode;
+
     @SerializedName("MaterialMasterId")
     private String MaterialMasterId;
 
@@ -187,8 +215,6 @@ public class OutbountDTO {
     @SerializedName("SONumber")
     private String SONumber;
 
-
-
     @SerializedName("PackedQty")
     private String PackedQty;
 
@@ -201,15 +227,21 @@ public class OutbountDTO {
     @SerializedName("PSNDetailsID")
     private String PSNDetailsID;
 
-
-
     @SerializedName("PackType")
     private String PackType;
 
-
-
     @SerializedName("PackComplete")
     private String PackComplete;
+
+    @SerializedName("TotalSOCount")
+    private String TotalSOCount;
+
+    @SerializedName("ScannedSOCount")
+    private String ScannedSOCount;
+
+
+    @SerializedName("BusinessType")
+    private String BusinessType;
 
 
     private boolean isChecked=false;
@@ -606,9 +638,27 @@ public class OutbountDTO {
                         this.setPackType(entry.getValue().toString());
                     }
                     break;
+
                   case "PackComplete":
                     if(entry.getValue()!=null) {
                         this.setPackComplete(entry.getValue().toString());
+                    }
+                    break;
+
+                 case "TotalSOCount":
+                    if(entry.getValue()!=null) {
+                        this.setTotalSOCount(entry.getValue().toString());
+                    }
+                    break;
+
+                 case "ScannedSOCount":
+                    if(entry.getValue()!=null) {
+                        this.setScannedSOCount(entry.getValue().toString());
+                    }
+                    break;
+                 case "BusinessType":
+                    if(entry.getValue()!=null) {
+                        this.setBusinessType(entry.getValue().toString());
                     }
                     break;
 
@@ -1213,5 +1263,31 @@ public class OutbountDTO {
     public void setPackComplete(String packComplete) {
         PackComplete = packComplete;
     }
+
+    public String getTotalSOCount() {
+        return TotalSOCount;
+    }
+
+    public void setTotalSOCount(String totalSOCount) {
+        TotalSOCount = totalSOCount;
+    }
+
+    public String getScannedSOCount() {
+        return ScannedSOCount;
+    }
+
+    public void setScannedSOCount(String scannedSOCount) {
+        ScannedSOCount = scannedSOCount;
+    }
+
+
+    public String getBusinessType() {
+        return BusinessType;
+    }
+
+    public void setBusinessType(String businessType) {
+        BusinessType = businessType;
+    }
+
 
 }

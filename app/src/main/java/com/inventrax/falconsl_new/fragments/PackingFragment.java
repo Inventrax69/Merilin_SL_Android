@@ -13,9 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,6 +39,7 @@ import com.honeywell.aidc.ScannerUnavailableException;
 import com.honeywell.aidc.TriggerStateChangeEvent;
 import com.honeywell.aidc.UnsupportedPropertyException;
 import com.inventrax.falconsl_new.R;
+import com.inventrax.falconsl_new.activities.MainActivity;
 import com.inventrax.falconsl_new.adapters.SkuListAdapter;
 import com.inventrax.falconsl_new.common.Common;
 import com.inventrax.falconsl_new.common.constants.EndpointConstants;
@@ -188,6 +191,30 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         lblReceivedQty = (EditText) rootView.findViewById(R.id.lblReceivedQty);
         lblPackingType = (EditText) rootView.findViewById(R.id.lblPackingType);
 
+        lblReceivedQty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.barcode = "";
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        lblPackingType.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.barcode = "";
+                    return true;
+                }
+                return false;
+            }
+        });
+
         recycler_view_sku_list = (RecyclerView) rootView.findViewById(R.id.recycler_view_sku_list);
         recycler_view_sku_list.setHasFixedSize(true);
 
@@ -256,12 +283,6 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.cvScanSONumber:
-                relativeOne.setVisibility(View.GONE);
-                relativeTwo.setVisibility(View.VISIBLE);
-                relativeFour.setVisibility(View.GONE);
-                GetSKUList();
-                break;
 
             case R.id.btnPackComplete:
 
@@ -301,44 +322,6 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
 
         }
-    }
-
-    private void GetSKUList() {
-
-        List<SKUListDTO> skuListDTOS=new ArrayList<>();
-
-        SKUListDTO skuListDTO=new SKUListDTO();
-        skuListDTO.setSKUName("MCODE1");
-        skuListDTO.setPickedQty("5");
-        skuListDTO.setAssignQty("10");
-        skuListDTOS.add(skuListDTO);
-
-        relativeOne.setVisibility(View.GONE);
-        relativeTwo.setVisibility(View.VISIBLE);
-        relativeFour.setVisibility(View.GONE);
-        SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS, relativeOne, relativeTwo, relativeThree, relativeFour, new SkuListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int pos) {
-
-            }
-        });
-        recycler_view_sku_list.setAdapter(skuListAdapter);
-
-    }
-
-    private void GetSKUListSuccess() {
-
-        List<SKUListDTO> skuListDTOS=new ArrayList<>();
-
-        SKUListDTO skuListDTO=new SKUListDTO();
-        skuListDTO.setSKUName("MCODE1");
-        skuListDTO.setPickedQty("5");
-        skuListDTO.setAssignQty("10");
-        skuListDTOS.add(skuListDTO);
-
-        SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS);
-        recycler_view_sku_listSuccess.setAdapter(skuListAdapter);
-
     }
 
 
@@ -677,10 +660,8 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                                             relativeFour.setVisibility(View.VISIBLE);
                                             ScanSONumberForPacking(SONumber,3);
                                         }else{
-
+                                            common.showUserDefinedAlertType("Pack complete failed", getActivity(), getActivity(), "Error");
                                         }
-
-
 
                                         ProgressDialogUtils.closeProgressDialog();
                                     }
@@ -700,7 +681,6 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                             }
                             ProgressDialogUtils.closeProgressDialog();
                         }
-
 
                     }
 
@@ -880,7 +860,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
             outbountDTO.setPackedQty(lblReceivedQty.getText().toString());
             outbountDTO.setPickedQty(soQty);
             outbountDTO.setPackType(lblPackingType.getText().toString());
-            outbountDTO.setCartonSerialNo("");
+            outbountDTO.setCartonSerialNo(lblContainer.getText().toString());
             message.setEntityObject(outbountDTO);
 
             Call<String> call = null;
@@ -1181,10 +1161,10 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                     PSNDetailsID = skuListDTOS.get(pos).getPSNDetailsID();
 
                     if(skuListDTOS.get(pos).getBusinessType().equals("E-Commerce")){
-                        linearCon.setVisibility(View.VISIBLE);
+                        linearCon.setVisibility(View.GONE);
                         linearSKU.setVisibility(View.VISIBLE);
                     }else{
-                        linearCon.setVisibility(View.GONE);
+                        linearCon.setVisibility(View.VISIBLE);
                         linearSKU.setVisibility(View.VISIBLE);
                     }
 

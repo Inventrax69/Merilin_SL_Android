@@ -143,7 +143,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
                 protected String doInBackground(String... strings) {
 
                     String json_string = new GetUpdateJsonResponse().getContents(serviceUrlString+"/update.json");
+
                     try{
+
                         final JSONObject json = new JSONObject(json_string);
                         int result = json.getInt(JSON_VERSION_CODE);
                         if(versionCode < result){

@@ -13,9 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,17 +45,20 @@ import com.inventrax.falconsl_new.common.constants.ErrorMessages;
 import com.inventrax.falconsl_new.interfaces.ApiInterface;
 import com.inventrax.falconsl_new.pojos.LoadDTO;
 import com.inventrax.falconsl_new.pojos.OutbountDTO;
+import com.inventrax.falconsl_new.pojos.ScanDTO;
 import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.services.RestService;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
+import com.inventrax.falconsl_new.util.FragmentUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 import com.inventrax.falconsl_new.util.SoundUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -72,12 +77,11 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     Button  btnCloseTwo, btnCloseThree, btnCreateNew, btnCreate;
     RelativeLayout rlLoadingTwo, rlLoadListThree;
     TextView lblLoadSheetNo;
-    CardView cvScanSku;
-    ImageView ivScanSku;
+    CardView cvScanSONumber;
+    ImageView ivScanSONumber;
     EditText lblDrName, lblDrNo, lblVehicleNo, lblVehicleType, lblReceivedQty;
     TextInputLayout txtInputLayoutQty;
     String userId = null, scanType = null, accountId = "";
-
     String scanner = null;
     String getScanner = null;
     private IntentFilter filter;
@@ -100,6 +104,8 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     TextView lblScannedSku, lblBatchNo, lblserialNo, lblMfgDate, lblExpDate, lblProjectRefNo, lblMRP;
     LoadSheetSOListAdapter loadSheetSOListAdapter;
     List<OutbountDTO> outbountDTOS;
+    String SONumber="";
+    boolean isSOEnabled=false;
 
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
@@ -118,9 +124,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         }
     }
 
-    public LoadGenerationFragment() {
-
-    }
+    public LoadGenerationFragment() { }
 
 
     @Nullable
@@ -144,11 +148,67 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         btnDeleteSO=(Button) rootView.findViewById(R.id.btnDeleteSO);
         btnGenerate=(Button) rootView.findViewById(R.id.btnGenerate);
 
+        lblDrName = (EditText) rootView.findViewById(R.id.lblDrName);
+        lblDrNo = (EditText) rootView.findViewById(R.id.lblDrNo);
+        lblVehicleNo = (EditText) rootView.findViewById(R.id.lblVehicleNo);
+        lblVehicleType = (EditText) rootView.findViewById(R.id.lblVehicleType);
+
+        lblDrName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.barcode = "";
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        lblDrNo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.barcode = "";
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        lblVehicleNo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.barcode = "";
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        lblVehicleType.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.barcode = "";
+                    return true;
+                }
+                return false;
+            }
+        });
+
         recycler_view_so = (RecyclerView) rootView.findViewById(R.id.recycler_view_obd);
         recycler_view_so.setHasFixedSize(true);
         linearLayoutManager = new LinearLayoutManager(getContext());
         // use a linear layout manager
         recycler_view_so.setLayoutManager(linearLayoutManager);
+
+        cvScanSONumber = (CardView) rootView.findViewById(R.id.cvScanSONumber);
+        ivScanSONumber = (ImageView) rootView.findViewById(R.id.ivScanSONumber);
 
 
         soundUtils = new SoundUtils();
@@ -164,10 +224,8 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         getActivity().registerReceiver(this.myDataReceiver, this.filter);
 
         gson = new GsonBuilder().create();
-
         common = new Common();
         core = new WMSCoreMessage();
-
 
         //For Honeywell
         AidcManager.create(getActivity(), new AidcManager.CreatedCallback() {
@@ -188,6 +246,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
         btnDeleteSO.setOnClickListener(this);
         btnGenerate.setOnClickListener(this);
+        cvScanSONumber.setOnClickListener(this);
 
 
         outbountDTOS=new ArrayList<>();
@@ -200,6 +259,50 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
         recycler_view_so.setAdapter(loadSheetSOListAdapter);
 
+        cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.grey));
+        ivScanSONumber.setImageResource(R.drawable.fullscreen_img);
+        lblDrName.setEnabled(true);
+        lblDrNo.setEnabled(true);
+        lblVehicleNo.setEnabled(true);
+        lblVehicleType.setEnabled(true);
+
+        lblDrName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!lblDrName.isEnabled()){
+                    common.showUserDefinedAlertType("Please enable by clicking on scan SO number icon", getActivity(), getActivity(), "Warning");
+                }
+            }
+        });
+
+        lblDrNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!lblDrNo.isEnabled()){
+                    common.showUserDefinedAlertType("Please enable by clicking on scan SO number icon", getActivity(), getActivity(), "Warning");
+                }
+            }
+        });
+
+        lblVehicleNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!lblVehicleNo.isEnabled()){
+                    common.showUserDefinedAlertType("Please enable by clicking on scan SO number icon", getActivity(), getActivity(), "Warning");
+                }
+            }
+        });
+
+        lblVehicleType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!lblVehicleType.isEnabled()){
+                    common.showUserDefinedAlertType("Please enable by clicking on scan SO number icon", getActivity(), getActivity(), "Warning");
+                }
+            }
+        });
+
+
 
     }
 
@@ -208,16 +311,64 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
 
+            case R.id.cvScanSONumber:
+
+                if(isSOEnabled){
+
+                    isSOEnabled=false;
+                    cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+                    ivScanSONumber.setImageResource(R.drawable.fullscreen_img);
+                    lblDrName.setEnabled(false);
+                    lblDrNo.setEnabled(false);
+                    lblVehicleNo.setEnabled(false);
+                    lblVehicleType.setEnabled(false);
+                    lblDrName.clearFocus();
+                    lblDrNo.clearFocus();
+                    lblVehicleNo.clearFocus();
+                    lblVehicleType.clearFocus();
+
+                }else{
+
+                    isSOEnabled=true;
+                    cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.grey));
+                    ivScanSONumber.setImageResource(R.drawable.fullscreen_img);
+                    lblDrName.setEnabled(true);
+                    lblDrNo.setEnabled(true);
+                    lblVehicleNo.setEnabled(true);
+                    lblVehicleType.setEnabled(true);
+                    lblDrName.clearFocus();
+                    lblDrNo.clearFocus();
+                    lblVehicleNo.clearFocus();
+                    lblVehicleType.clearFocus();
+
+                }
+
+                break;
+
             case R.id.btnDeleteSO:
 
-                List<OutbountDTO> outbountDTOS_d=(ArrayList<OutbountDTO>)outbountDTOS;
+                Iterator<OutbountDTO> iterator = outbountDTOS.iterator();
+                while (iterator.hasNext()) {
+                    OutbountDTO p = iterator.next();
+                    if (p.isChecked()) {
+                        iterator.remove();
+                    }
+                }
+
+
+
+
+
+
+
+/*                List<OutbountDTO> outbountDTOS_d=(ArrayList<OutbountDTO>)outbountDTOS;
                 for(int i=0;i<outbountDTOS_d.size();i++){
                     if(outbountDTOS_d.get(i).isChecked()){
                         outbountDTOS.remove(i);
                     }else{
                         outbountDTOS.get(i).setChecked(false);
                     }
-                }
+                }*/
 
                 loadSheetSOListAdapter.notifyDataSetChanged();
 
@@ -225,6 +376,41 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
             case R.id.btnGenerate:
 
+                if(lblDrName.getText().toString().isEmpty()){
+                    common.showUserDefinedAlertType("Enter Driver Name", getActivity(), getActivity(), "Warning");
+                    return;
+                }
+
+                if(lblDrNo.getText().toString().isEmpty()){
+                    common.showUserDefinedAlertType("Enter Driver Number", getActivity(), getActivity(), "Warning");
+                    return;
+                }
+
+                if(lblVehicleNo.getText().toString().isEmpty()){
+                    common.showUserDefinedAlertType("Enter Vehicle Number", getActivity(), getActivity(), "Warning");
+                    return;
+                }
+
+                if(lblVehicleType.getText().toString().isEmpty()){
+                    common.showUserDefinedAlertType("Enter Vehicle Type", getActivity(), getActivity(), "Warning");
+                    return;
+                }
+                
+                SONumber="";
+                for(int i=0;i<outbountDTOS.size();i++){
+                    if(outbountDTOS.get(i).isChecked()){
+                        SONumber += outbountDTOS.get(i).getSONumber()+",";
+                    }
+                }
+
+                if(SONumber.isEmpty()){
+                    common.showUserDefinedAlertType("Please scan aleast one SO number", getActivity(), getActivity(), "Warning");
+                    return;
+                }else{
+                    SONumber = SONumber.substring(0, SONumber.length() - 1);
+                }
+
+                GenerateLoadSheet(SONumber) ;
                 break;
 
         }
@@ -300,7 +486,14 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     public void ProcessScannedinfo(String scannedData) {
         if (scannedData != null) {
             if (!ProgressDialogUtils.isProgressActive()) {
-                    ScanData(scannedData);
+/*                if(isSOEnabled){
+                    ValidateSO(scannedData);
+                }else{
+                    common.showUserDefinedAlertType("Please enable by clicking on scan SO number icon", getActivity(), getActivity(), "Warning");
+                }*/
+
+                ScanData(scannedData);
+
             }
         }
     }
@@ -323,6 +516,133 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     }
 
 
+    public void ValidateSO(final String scannedData) {
+
+        try {
+
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.ScanDTO, getContext());
+            ScanDTO scanDTO = new ScanDTO();
+            scanDTO.setUserID(userId);
+            scanDTO.setAccountID(accountId);
+            // scanDTO.setTenantID(String.valueOf(tenantID));
+            //scanDTO.setWarehouseID(String.valueOf(warehouseID));
+            scanDTO.setScanInput(scannedData);
+            //inboundDTO.setIsOutbound("0");
+            message.setEntityObject(scanDTO);
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                call = apiService.ValidateSO(message);
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_01", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+
+                        if ((core.getType().toString().equals("Exception"))) {
+                            List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                            _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                            WMSExceptionMessage owmsExceptionMessage = null;
+                            for (int i = 0; i < _lExceptions.size(); i++) {
+
+                                owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                            }
+
+                            cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+                            ivScanSONumber.setImageResource(R.drawable.fullscreen_img);
+                            ProgressDialogUtils.closeProgressDialog();
+                            common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+
+                        } else {
+                            LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
+                            _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
+
+                            ScanDTO scanDTO1 = new ScanDTO(_lResult.entrySet());
+                            ProgressDialogUtils.closeProgressDialog();
+                            if (scanDTO1 != null) {
+                                if (scanDTO1.getScanResult()) {
+
+                                /* ----For RSN reference----
+                                    0 Sku|1 BatchNo|2 SerialNO|3 MFGDate|4 EXpDate|5 ProjectRefNO|6 Kit Id|7 line No|8 MRP ---- For SKU with 9 MSP's
+
+                                    0 Sku|1 BatchNo|2 SerialNO|3 KitId|4 lineNo  ---- For SKU with 5 MSP's   *//*
+                                    // Eg. : ToyCar|1|bat1|ser123|12/2/2018|12/2/2019|0|001*/
+
+                                    cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+                                    ivScanSONumber.setImageResource(R.drawable.check);
+
+                                    OutbountDTO outbountDTO=new OutbountDTO();
+                                    outbountDTO.setSONumber(scannedData);
+                                    outbountDTOS.add(outbountDTO);
+                                    loadSheetSOListAdapter.notifyDataSetChanged();
+
+                                } else {
+                                    // lblScannedSku.setText("");
+                                    cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                    ivScanSONumber.setImageResource(R.drawable.warning_img);
+                                    common.showUserDefinedAlertType("Invalid SO Number", getActivity(), getContext(), "Warning");
+                                }
+                            } else {
+                                common.showUserDefinedAlertType("Error while getting data", getActivity(), getContext(), "Error");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+                        //Toast.makeText(LoginActivity.this, throwable.toString(), Toast.LENGTH_LONG).show();
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_02", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "002_03", getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+        }
+    }
+
 
 
     // sending exception to the database
@@ -338,8 +658,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
             message.setEntityObject(wmsExceptionMessage);
 
             Call<String> call = null;
-            ApiInterface apiService =
-                    RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -493,6 +812,121 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         getActivity().unregisterReceiver(this.myDataReceiver);
         super.onDestroyView();
 
+    }
+
+    public  void GenerateLoadSheet(String SONumber) {
+
+        try {
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.Outbound,getActivity());
+            OutbountDTO outbountDTO = new OutbountDTO();
+            outbountDTO.setUserId(userId);
+            outbountDTO.setTenatID(userId);
+            outbountDTO.setVehicle(lblVehicleNo.getText().toString());
+            outbountDTO.setOBDNumber(SONumber);
+            outbountDTO.setDriverNo(lblDrNo.getText().toString());
+            outbountDTO.setDriverName(lblDrName.getText().toString());
+            outbountDTO.setLRnumber(lblVehicleType.getText().toString());
+            message.setEntityObject(outbountDTO);
+
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                call = apiService.GenerateLoadSheet(message);
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_01",getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        try {
+
+                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+
+                            List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
+                            _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
+
+                            for (int i = 0; i < _lResult.size(); i++) {
+                                OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
+                                lstDto.add(dto);
+                            }
+
+                            if(lstDto.size()>0){
+                                NewLoadSheetFragment fragment = new NewLoadSheetFragment();
+                                Bundle args = new Bundle();
+                                args.putString("Key", "Value");
+                                FragmentUtils.replaceFragmentWithBackStackWithArguments(getActivity(), R.id.container_body, fragment ,args);
+                            }else{
+                                common.showUserDefinedAlertType("Load No. Not Created", getActivity(), getActivity(), "Warning");
+                            }
+
+                            ProgressDialogUtils.closeProgressDialog();
+                        } catch (Exception ex) {
+                            try {
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_02",getActivity());
+                                logException();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            ProgressDialogUtils.closeProgressDialog();
+                        }
+
+
+                    }
+
+                    // response object fails
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_03",getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(),classCode,"001_04",getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
+        }
     }
 
 }

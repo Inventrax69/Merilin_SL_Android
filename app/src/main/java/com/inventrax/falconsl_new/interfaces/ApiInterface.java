@@ -177,11 +177,17 @@ public interface ApiInterface {
     @POST("Outbound/GetOpenLoadsheetList")
     Call<String> GetOpenLoadsheetList(@Body WMSCoreMessage oRequest);
 
+    @POST("Outbound/GetSOCountUnderLoadSheet")
+    Call<String> GetSOCountUnderLoadSheet(@Body WMSCoreMessage oRequest);
+
     @POST("Outbound/GetPendingOBDListForLoading")
     Call<String> GetPendingOBDListForLoading(@Body WMSCoreMessage oRequest);
 
     @POST("Outbound/UpsertLoadCreated")
     Call<String> UpsertLoadCreated(@Body WMSCoreMessage oRequest);
+
+    @POST("Outbound/GenerateLoadSheet")
+    Call<String> GenerateLoadSheet(@Body WMSCoreMessage oRequest);
 
     @POST("Outbound/UpsertLoad")
     Call<String> UpsertLoad(@Body WMSCoreMessage oRequest);
@@ -211,6 +217,9 @@ public interface ApiInterface {
     @POST("Outbound/GetSortingList")
     Call<String> GetSortingList(@Body WMSCoreMessage oRequest);
 
+    @POST("Outbound/UpsertLoadDetails")
+    Call<String> UpsertLoadDetails(@Body WMSCoreMessage oRequest);
+
     //scan
     @POST("Scan/ValidateLocation")
     Call<String> ValidateLocation(@Body WMSCoreMessage oRequest);
@@ -220,6 +229,9 @@ public interface ApiInterface {
 
     @POST("Scan/ValidatePallet")
     Call<String> ValidatePallet(@Body WMSCoreMessage oRequest);
+
+    @POST("Scan/ValidateSO")
+    Call<String> ValidateSO(@Body WMSCoreMessage oRequest);
 
 
 }
