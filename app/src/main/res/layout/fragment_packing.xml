@@ -57,7 +57,7 @@
             android:elevation="30dp"
             android:foreground="@drawable/button_cross_close"
             android:foregroundGravity="center"
-            android:text="@string/putaway"
+            android:visibility="gone"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 
@@ -99,7 +99,6 @@
 
         </LinearLayout>
 
-
         <TextView
             android:id="@+id/lblSKUList"
             android:layout_width="wrap_content"
@@ -125,7 +124,7 @@
         <Button
             android:id="@+id/btnPackComplete"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="40dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
@@ -157,7 +156,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="2dp"
             android:text="SO Number"
             android:textColor="@color/black"
             android:textSize="14sp"
@@ -167,10 +166,10 @@
             android:id="@+id/tvSONumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
+            android:layout_below="@+id/lblSONumber"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="2dp"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="normal" />
@@ -190,7 +189,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
-
 
                 <android.support.v7.widget.CardView
                     android:id="@+id/cvScanPallet"
@@ -218,11 +216,10 @@
                     android:layout_below="@+id/cvScanSku"
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center"
-                    android:text="@string/scanPallet"
+                    android:text="Scan Carton"
                     android:textColor="@color/black"
                     android:textSize="12sp"
                     android:textStyle="normal" />
-
 
             </LinearLayout>
 

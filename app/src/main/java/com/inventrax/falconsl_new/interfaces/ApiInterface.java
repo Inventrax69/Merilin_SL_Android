@@ -230,6 +230,9 @@ public interface ApiInterface {
     @POST("Scan/ValidatePallet")
     Call<String> ValidatePallet(@Body WMSCoreMessage oRequest);
 
+    @POST("Scan/ValidateCarton")
+    Call<String> ValidateCarton(@Body WMSCoreMessage oRequest);
+
     @POST("Scan/ValidateSO")
     Call<String> ValidateSO(@Body WMSCoreMessage oRequest);
 

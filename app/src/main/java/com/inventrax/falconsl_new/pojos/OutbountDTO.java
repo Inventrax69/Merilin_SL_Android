@@ -104,6 +104,9 @@ public class OutbountDTO {
     @SerializedName("BatchNo")
     private String batchNo;
 
+    @SerializedName("ExpDate")
+    private String expDate;
+
     @SerializedName("AssignedQuantity")
     private String assignedQuantity;
 
@@ -113,8 +116,7 @@ public class OutbountDTO {
     @SerializedName("AssignedID")
     private String assignedID;
 
-    @SerializedName("ExpDate")
-    private String expDate;
+
 
     @SerializedName("ProjectNo")
     private String projectNo;
@@ -244,10 +246,17 @@ public class OutbountDTO {
     private String BusinessType;
 
 
+    @SerializedName("LoadRefNo")
+    private String LoadRefNo;
+
+    @SerializedName("CustomerName")
+    private String CustomerName;
+
+
+    @SerializedName("CustomerAddress")
+    private String CustomerAddress;
+
     private boolean isChecked=false;
-
-
-
 
 
     public OutbountDTO() {
@@ -659,6 +668,24 @@ public class OutbountDTO {
                  case "BusinessType":
                     if(entry.getValue()!=null) {
                         this.setBusinessType(entry.getValue().toString());
+                    }
+                    break;
+
+                 case "LoadRefNo":
+                    if(entry.getValue()!=null) {
+                        this.setLoadRefNo(entry.getValue().toString());
+                    }
+                    break;
+
+                 case "CustomerName":
+                    if(entry.getValue()!=null) {
+                        this.setCustomerName(entry.getValue().toString());
+                    }
+                    break;
+
+                 case "CustomerAddress":
+                    if(entry.getValue()!=null) {
+                        this.setCustomerAddress(entry.getValue().toString());
                     }
                     break;
 
@@ -1287,6 +1314,32 @@ public class OutbountDTO {
 
     public void setBusinessType(String businessType) {
         BusinessType = businessType;
+    }
+
+
+    public String getLoadRefNo() {
+        return LoadRefNo;
+    }
+
+    public void setLoadRefNo(String loadRefNo) {
+        LoadRefNo = loadRefNo;
+    }
+
+
+    public String getCustomerName() {
+        return CustomerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        CustomerName = customerName;
+    }
+
+    public String getCustomerAddress() {
+        return CustomerAddress;
+    }
+
+    public void setCustomerAddress(String customerAddress) {
+        CustomerAddress = customerAddress;
     }
 
 

@@ -11,7 +11,7 @@
 
     <RelativeLayout
         android:id="@+id/rlLoadingOne"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -75,7 +75,7 @@
         android:layout_marginStart="-2dp"
         android:layout_marginLeft="-2dp"
         android:layout_marginTop="-8dp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tvLoadSheet"
@@ -212,7 +212,7 @@
                         android:layout_weight="1"
                         android:enabled="false"
                         android:hint="Custmer name"
-                        android:inputType="number"
+                        android:inputType="textPersonName"
                         android:singleLine="true"
                         android:textColor="@color/colorAccent"
                         android:textSize="12dp" />
@@ -247,7 +247,7 @@
                         android:layout_weight="1"
                         android:enabled="false"
                         android:hint="Customer Code"
-                        android:inputType="number"
+                        android:inputType="textPersonName"
                         android:singleLine="true"
                         android:textColor="@color/colorAccent"
                         android:textSize="12dp" />
@@ -273,7 +273,7 @@
 
 
                     <EditText
-                        android:id="@+id/lblReceivedQty"
+                        android:id="@+id/lblCustomerAddress"
                         style="@style/editTextStyleSmall"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -281,8 +281,7 @@
                         android:layout_weight="1"
                         android:enabled="false"
                         android:hint="CustomerAddress"
-                        android:inputType="number"
-                        android:singleLine="true"
+                        android:inputType="textMultiLine"
                         android:textColor="@color/colorAccent"
                         android:textSize="12dp" />
 

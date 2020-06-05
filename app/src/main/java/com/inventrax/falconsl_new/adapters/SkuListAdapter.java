@@ -59,7 +59,8 @@ public class SkuListAdapter extends  RecyclerView.Adapter{
        // ((MyViewHolder) holder).txtQty.setText(((skuListDTO.getPackedQty().split("[.]") !=null && skuListDTO.getPackedQty().split("[.]").length > 0 ) ? skuListDTO.getPackedQty().split("[.]")[0] : skuListDTO.getPackedQty()) + " / " +
        //         ((skuListDTO.getSOQty().split("[.]") !=null && skuListDTO.getSOQty().split("[.]").length > 0 ) ? skuListDTO.getSOQty().split("[.]")[0] : skuListDTO.getSOQty()) );
 
-        ((MyViewHolder) holder).txtQty.setText(skuListDTO.getPackedQty().split("[.]")[0] +" / " + skuListDTO.getSOQty().split("[.]")[0] );
+        if(skuListDTO.getPackedQty() != null && skuListDTO.getPickedQty() != null)
+          ((MyViewHolder) holder).txtQty.setText(skuListDTO.getPackedQty().split("[.]")[0] +" / " + skuListDTO.getPickedQty().split("[.]")[0] );
 /*
         ((MyViewHolder) holder).view.setOnClickListener(new View.OnClickListener() {
             @Override

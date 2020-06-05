@@ -44,6 +44,7 @@ public class SKUListDTO
     @SerializedName("SODetailsID")
     private String SODetailsID;
 
+
     @SerializedName("ObdNumber")
     private String ObdNumber;
 
@@ -56,10 +57,27 @@ public class SKUListDTO
     @SerializedName("PSNID")
     private String PSNID;
 
-
-
     @SerializedName("PSNDetailsID")
     private String PSNDetailsID;
+
+    @SerializedName("SerialNo")
+    private String serialNo;
+
+    @SerializedName("MfgDate")
+    private String MfgDate;
+
+    @SerializedName("BatchNo")
+    private String batchNo;
+
+    @SerializedName("ExpDate")
+    private String expDate;
+
+    @SerializedName("MRP")
+    private String MRP;
+
+
+    @SerializedName("ProjectNo")
+    private String ProjectNo;
 
     public SKUListDTO()
     { }
@@ -149,6 +167,37 @@ public class SKUListDTO
                      case  "PSNDetailsID" :
                         if(entry.getValue()!=null) {
                             this.setPSNDetailsID(entry.getValue().toString());
+                        }
+                        break;
+                      case  "SerialNo" :
+                        if(entry.getValue()!=null) {
+                            this.setSerialNo(entry.getValue().toString());
+                        }
+                        break;
+                      case  "MfgDate" :
+                        if(entry.getValue()!=null) {
+                            this.setMfgDate(entry.getValue().toString());
+                        }
+                        break;
+                     case  "BatchNo" :
+                        if(entry.getValue()!=null) {
+                            this.setBatchNo(entry.getValue().toString());
+                        }
+                        break;
+
+                     case  "ExpDate" :
+                        if(entry.getValue()!=null) {
+                            this.setExpDate(entry.getValue().toString());
+                        }
+                        break;
+                     case  "MRP" :
+                        if(entry.getValue()!=null) {
+                            this.setMRP(entry.getValue().toString());
+                        }
+                        break;
+                      case  "ProjectNo" :
+                        if(entry.getValue()!=null) {
+                            this.setProjectNo(entry.getValue().toString());
                         }
                         break;
                 }
@@ -284,6 +333,55 @@ public class SKUListDTO
 
     public void setPSNDetailsID(String PSNDetailsID) {
         this.PSNDetailsID = PSNDetailsID;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public String getMfgDate() {
+        return MfgDate;
+    }
+
+    public void setMfgDate(String mfgDate) {
+        MfgDate = mfgDate;
+    }
+
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
+    public String getExpDate() {
+        return expDate;
+    }
+
+    public void setExpDate(String expDate) {
+        this.expDate = expDate;
+    }
+
+    public String getMRP() {
+        return MRP;
+    }
+
+    public void setMRP(String MRP) {
+        this.MRP = MRP;
+    }
+
+    public String getProjectNo() {
+        return ProjectNo;
+    }
+
+    public void setProjectNo(String projectNo) {
+        ProjectNo = projectNo;
     }
 
 

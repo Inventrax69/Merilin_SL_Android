@@ -81,7 +81,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
     private SearchableSpinner spinnerSelectTenant, spinnerSelectWH;
     private CardView cvScanSONumber, cvScanPallet, cvScanSku;
     private ImageView ivScanSONumber, ivScanSku, ivScanPallet;
-    private Button btnPackComplete, btnBackHome,btnPack;
+    private Button btnPackComplete, btnBackHome,btnPack,btnClear;
     private RecyclerView recyclerViewLiveStock;
     private LinearLayoutManager linearLayoutManager;
     private RadioButton radioLocation,radioPallet,radioSKU;
@@ -96,11 +96,8 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
     private static BarcodeReader barcodeReader;
     private AidcManager manager;
     private Common common;
-
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
-
-
     private Boolean isLocationScanned = false, isSKUScanned = false, isPalletScanned = false;
     private String scannedLocation = null, scannedPallet = "", scannedSKU = null;
     private String userId = "", scanType = "", accountId = "", selectedTenant = "",
@@ -113,7 +110,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
     TextView lblBatchNo,lblserialNo,lblMfgDate,lblExpDate,lblMRP,lblScannedSku,lblProjectRefNo,tvSONumber,lblContainer;
     EditText lblReceivedQty,lblPackingType;
     LinearLayout linearCon,linearSKU;
-    String SONumber="",SODetailID="",OutBoundId="",packedQty="",pickedQty="",soQty="",OBDNumber="",PSNID="0",PSNDetailsID="";
+    String SONumber="",SODetailID="",OutBoundId="",packedQty="",pickedQty="",OBDNumber="",PSNID="0",PSNDetailsID="",SOHeaderID="";
     boolean isPallet=false,isSKU=false;
 
     // Cipher Barcode Scanner
@@ -125,9 +122,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         }
     };
 
-    public PackingFragment() {
-
-    }
+    public PackingFragment() { }
 
     public void myScannedData(Context context, String barcode){
         try {
@@ -174,6 +169,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         btnPackComplete = (Button) rootView.findViewById(R.id.btnPackComplete);
         btnBackHome = (Button) rootView.findViewById(R.id.btnBackHome);
         btnPack = (Button) rootView.findViewById(R.id.btnPack);
+        btnClear = (Button) rootView.findViewById(R.id.btnClear);
 
         tvOrderInfromation = (TextView) rootView.findViewById(R.id.tvOrderInfromation);
         tvOrderInfromationSuccess = (TextView) rootView.findViewById(R.id.tvOrderInfromationSuccess);
@@ -269,12 +265,15 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         btnPackComplete.setOnClickListener(this);
         btnBackHome.setOnClickListener(this);
         btnPack.setOnClickListener(this);
+        btnClear.setOnClickListener(this);
 
 
         relativeOne.setVisibility(View.VISIBLE);
         relativeTwo.setVisibility(View.GONE);
         relativeThree.setVisibility(View.GONE);
         relativeFour.setVisibility(View.GONE);
+
+        ClearFileds();
 
     }
 
@@ -285,9 +284,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
 
             case R.id.btnPackComplete:
-
                 UpdatePackComplete();
-
                 break;
 
             case R.id.btnBackHome:
@@ -296,7 +293,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
             case R.id.btnPack:
 
-                int soQty_1 = Integer.parseInt(soQty.split("[.]")[0]);
+                int pickedQty_1 = Integer.parseInt(pickedQty.split("[.]")[0]);
                 int packQty = Integer.parseInt(packedQty.split("[.]")[0]);
 
                 if(lblReceivedQty.getText().toString().isEmpty()){
@@ -307,21 +304,44 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                     common.showUserDefinedAlertType("Please Enter Packing Type", getActivity(), getActivity(), "Warning");
                     return;
                 }
-                if((Integer.parseInt(lblReceivedQty.getText().toString())+packQty) > soQty_1){
+                if((Integer.parseInt(lblReceivedQty.getText().toString())+packQty) > pickedQty_1){
                     common.showUserDefinedAlertType("Qty is more than picked qty", getActivity(), getActivity(), "Warning");
                     return;
                 }
 
                 UpsertPackItem();
-
                 break;
 
             case R.id.btnCloseOne:
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
                 break;
 
+          case R.id.btnClear:
+                ClearFileds();
+                break;
 
         }
+    }
+
+    private void ClearFileds() {
+
+        cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+        ivScanSku.setImageResource(R.drawable.fullscreen_img);
+
+        cvScanPallet.setCardBackgroundColor(getResources().getColor(R.color.palletColor));
+        ivScanPallet.setImageResource(R.drawable.fullscreen_img);
+
+        isSKU=false;
+        isPallet=false;
+
+        lblReceivedQty.setText("");
+        lblReceivedQty.clearFocus();
+        lblReceivedQty.setEnabled(false);
+
+        lblPackingType.setText("");
+        lblPackingType.clearFocus();
+        lblPackingType.setEnabled(false);
+
     }
 
 
@@ -403,7 +423,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
             if(relativeThree.getVisibility()==View.VISIBLE){
                 if(linearCon.getVisibility()== View.VISIBLE){
                     if(!isPallet){
-                        ValidatePallet(scannedData);
+                        ValidateCarton(scannedData);
                     }else{
                         ValiDateMaterial(scannedData);
                     }
@@ -847,20 +867,30 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
    public void UpsertPackItem() {
 
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             final OutbountDTO outbountDTO = new OutbountDTO();
             outbountDTO.setTenatID(userId);
             outbountDTO.setAccountID(accountId);
-            outbountDTO.setmCode(lblScannedSku.getText().toString());
             outbountDTO.setOutboundID(OutBoundId);
             outbountDTO.setPSNID(PSNID);
             outbountDTO.setSODetailsID(SODetailID);
+            outbountDTO.setSONumber(SONumber);
             outbountDTO.setPSNDetailsID(PSNDetailsID);
             outbountDTO.setPackedQty(lblReceivedQty.getText().toString());
-            outbountDTO.setPickedQty(soQty);
+            outbountDTO.setPickedQty(pickedQty);
             outbountDTO.setPackType(lblPackingType.getText().toString());
             outbountDTO.setCartonSerialNo(lblContainer.getText().toString());
+            outbountDTO.setmCode(lblScannedSku.getText().toString());
+            outbountDTO.setBatchNo(lblBatchNo.getText().toString());
+            outbountDTO.setSerialNo(lblserialNo.getText().toString());
+            outbountDTO.setMfgDate(lblMfgDate.getText().toString());
+            outbountDTO.setExpDate(lblExpDate.getText().toString());
+            outbountDTO.setMRP(lblMRP.getText().toString());
+            outbountDTO.setProjectNo(lblProjectRefNo.getText().toString());
+
+
             message.setEntityObject(outbountDTO);
 
             Call<String> call = null;
@@ -921,6 +951,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
                                     if(outbountDTOS.size()>0){
                                         if(Integer.parseInt(outbountDTOS.get(0).getPSNDetailsID())>0){
+                                            ClearFileds();
                                             ScanSONumberForPacking(SONumber,1);
                                         }
                                         ProgressDialogUtils.closeProgressDialog();
@@ -1128,12 +1159,14 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         relativeThree.setVisibility(View.GONE);
         relativeFour.setVisibility(View.VISIBLE);
         tvOrderInfromationSuccess.setText(skuListDTOS.get(0).getCustomerName());
+
         SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS, relativeOne, relativeTwo, relativeThree, relativeFour, new SkuListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int pos) {
 
             }
         });
+
         recycler_view_sku_listSuccess.setAdapter(skuListAdapter);
     }
 
@@ -1150,15 +1183,23 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
             public void onItemClick(int pos) {
 
 
-                if(Integer.parseInt(skuListDTOS.get(pos).getSOQty().split("[.]")[0]) != Integer.parseInt(skuListDTOS.get(pos).getPackedQty().split("[.]")[0])){
+                if(Integer.parseInt(skuListDTOS.get(pos).getPickedQty().split("[.]")[0]) != Integer.parseInt(skuListDTOS.get(pos).getPackedQty().split("[.]")[0])){
 
                     SODetailID= skuListDTOS.get(pos).getSODetailsID();
                     OutBoundId= skuListDTOS.get(pos).getOutboundID();
                     OBDNumber= skuListDTOS.get(pos).getOBDNumber();
                     packedQty = skuListDTOS.get(pos).getPackedQty();
-                    soQty = skuListDTOS.get(pos).getSOQty();
+                    pickedQty = skuListDTOS.get(pos).getPickedQty();
                     PSNID = skuListDTOS.get(pos).getPSNID();
                     PSNDetailsID = skuListDTOS.get(pos).getPSNDetailsID();
+                    lblScannedSku.setText(skuListDTOS.get(pos).getMCode());
+                    lblBatchNo.setText(skuListDTOS.get(pos).getBatchNo());
+                    lblserialNo.setText(skuListDTOS.get(pos).getSerialNo());
+                    lblMfgDate.setText(skuListDTOS.get(pos).getMfgDate());
+                    lblExpDate.setText(skuListDTOS.get(pos).getExpDate());
+                    lblProjectRefNo.setText(skuListDTOS.get(pos).getProjectNo());
+                    lblMRP.setText(skuListDTOS.get(pos).getMRP());
+                    tvSONumber.setText(SONumber);
 
                     if(skuListDTOS.get(pos).getBusinessType().equals("E-Commerce")){
                         linearCon.setVisibility(View.GONE);
@@ -1169,12 +1210,14 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                     }
 
                     ProgressDialogUtils.closeProgressDialog();
-                    GETMSPsForPacking(skuListDTOS.get(pos).getMCode());
+
+                    //GETMSPsForPacking(skuListDTOS.get(pos).getMCode());
 
                     relativeOne.setVisibility(View.GONE);
                     relativeTwo.setVisibility(View.GONE);
                     relativeThree.setVisibility(View.VISIBLE);
                     relativeFour.setVisibility(View.GONE);
+
                 }else{
                     common.showUserDefinedAlertType("Already Packed", getActivity(), getActivity(), "Warning");
                 }
@@ -1282,6 +1325,14 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                                             cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
                                             ivScanSku.setImageResource(R.drawable.check);
 
+                                            lblReceivedQty.setText("");
+                                            lblReceivedQty.clearFocus();
+                                            lblReceivedQty.setEnabled(true);
+
+                                            lblPackingType.setText("");
+                                            lblPackingType.clearFocus();
+                                            lblPackingType.setEnabled(true);
+
                                             isSKU=true;
 
 
@@ -1338,7 +1389,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         }
     }
 
-    public void ValidatePallet(final String scannedData) {
+    public void ValidateCarton(final String scannedData) {
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
@@ -1349,7 +1400,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
             // scanDTO.setTenantID(String.valueOf(tenantID));
             //scanDTO.setWarehouseID(String.valueOf(warehouseID));
             scanDTO.setScanInput(scannedData);
-            scanDTO.setObdNumber(OBDNumber);
+            scanDTO.setObdNumber(SONumber);
             //inboundDTO.setIsOutbound("0");
             message.setEntityObject(scanDTO);
 
@@ -1361,7 +1412,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                 //Checking for Internet Connectivity
                 // if (NetworkUtils.isInternetAvailable()) {
                 // Calling the Interface method
-                call = apiService.ValidatePallet(message);
+                call = apiService.ValidateCarton(message);
                 ProgressDialogUtils.showProgressDialog("Please Wait");
                 // } else {
                 // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
@@ -1458,7 +1509,5 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
         }
     }
-
-
 
 }

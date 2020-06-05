@@ -2,6 +2,7 @@ package com.inventrax.falconsl_new.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -75,7 +76,7 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
     CardView cvScanSku;
     ImageView ivScanSku;
     SearchableSpinner spinnerSelectLoadList;
-    EditText lblDrName, lblDrNo, lblVehicleNo, lblVehicleType, lblReceivedQty;
+    EditText lblCustmerName, lblCustomerCode, lblCustomerAddress;
     TextInputLayout txtInputLayoutQty;
     String userId = null, scanType = null, accountId = "";
     String scanner = null;
@@ -93,10 +94,10 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
     private boolean IsUserConfirmedRedo = false;
     private ExceptionLoggerUtils exceptionLoggerUtils;
     private ErrorMessages errorMessages;
-    Button btnLoadingVerify, btnLoadSKU;
+    Button btnLoadingComplete, btnLoadSKU;
     SoundUtils soundUtils;
-    TextView lblScannedSku, lblBatchNo, lblserialNo, lblMfgDate, lblExpDate, lblProjectRefNo, lblMRP,lblTol;
-    String BusinessType="";
+    TextView lblScannedSku, lblBatchNo, lblserialNo, lblMfgDate, lblExpDate, lblProjectRefNo, lblMRP, lblTol, tvScanSku;
+    String BusinessType = "";
 
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
@@ -146,9 +147,15 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
         rlLoadingTwo = (RelativeLayout) rootView.findViewById(R.id.rlLoadingTwo);
 
         btnGo = (Button) rootView.findViewById(R.id.btnGo);
+        btnLoadingComplete = (Button) rootView.findViewById(R.id.btnLoadingComplete);
 
         lblLoadSheetNo = (TextView) rootView.findViewById(R.id.lblLoadSheetNo);
         lblTol = (TextView) rootView.findViewById(R.id.lblTol);
+        tvScanSku = (TextView) rootView.findViewById(R.id.tvScanSku);
+
+        lblCustmerName = (EditText) rootView.findViewById(R.id.lblCustmerName);
+        lblCustomerCode = (EditText) rootView.findViewById(R.id.lblCustomerCode);
+        lblCustomerAddress = (EditText) rootView.findViewById(R.id.lblCustomerAddress);
 
         spinnerSelectLoadList = (SearchableSpinner) rootView.findViewById(R.id.spinnerSelectLoadList);
         spinnerSelectLoadList.setOnItemSelectedListener(this);
@@ -162,22 +169,21 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
         getActivity().registerReceiver(this.myDataReceiver, this.filter);
 
         gson = new GsonBuilder().create();
-
         common = new Common();
         core = new WMSCoreMessage();
 
-        if(getArguments()!=null){
-                if(getArguments().getString("LoadSheetNo") != null){
-                    lblLoadSheetNo.setText(getArguments().getString("LoadSheetNo"));
-                    GetSOCountUnderLoadSheet();
-                    rlLoadingOne.setVisibility(View.GONE);
-                    rlLoadingTwo.setVisibility(View.VISIBLE);
-                }else{
-                    GetOpenLoadsheetList();
-                    rlLoadingOne.setVisibility(View.VISIBLE);
-                    rlLoadingTwo.setVisibility(View.GONE);
-                }
-        }else{
+        if (getArguments() != null) {
+            if (getArguments().getString("LoadSheetNo") != null) {
+                lblLoadSheetNo.setText(getArguments().getString("LoadSheetNo"));
+                GetSOCountUnderLoadSheet();
+                rlLoadingOne.setVisibility(View.GONE);
+                rlLoadingTwo.setVisibility(View.VISIBLE);
+            } else {
+                GetOpenLoadsheetList();
+                rlLoadingOne.setVisibility(View.VISIBLE);
+                rlLoadingTwo.setVisibility(View.GONE);
+            }
+        } else {
             GetOpenLoadsheetList();
             rlLoadingOne.setVisibility(View.VISIBLE);
             rlLoadingTwo.setVisibility(View.GONE);
@@ -201,6 +207,7 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
 
 
         btnGo.setOnClickListener(this);
+        btnLoadingComplete.setOnClickListener(this);
 
 
     }
@@ -225,6 +232,10 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
 
             case R.id.btnCloseOne:
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
+                break;
+
+              case R.id.btnLoadingComplete:
+                LoadVerification();
                 break;
 
             case R.id.btnCloseTwo:
@@ -295,6 +306,7 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
             properties.put(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, true);
             // Apply the settings
             barcodeReader.setProperties(properties);
+
         }
 
     }
@@ -304,19 +316,20 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
-            message = common.SetAuthentication(EndpointConstants.ScanDTO, getContext());
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
             outbountDTO.setUserId(userId);
             outbountDTO.setAccountID(accountId);
-            // scanDTO.setTenantID(String.valueOf(tenantID));
+            //scanDTO.setTenantID(String.valueOf(tenantID));
             //scanDTO.setWarehouseID(String.valueOf(warehouseID));
-            if(BusinessType.equals("E-Commerce")){
-                outbountDTO.setCartonID(scannedData);
-                outbountDTO.setSONumber("");
-            }else{
-                outbountDTO.setCartonID("");
+            if (BusinessType.equals("E-Commerce")) {
+                outbountDTO.setCartonSerialNo("");
                 outbountDTO.setSONumber(scannedData);
+            } else {
+                outbountDTO.setCartonSerialNo(scannedData);
+                outbountDTO.setSONumber("");
             }
+            outbountDTO.setLoadRefNo(lblLoadSheetNo.getText().toString());
             //inboundDTO.setIsOutbound("0");
             message.setEntityObject(outbountDTO);
 
@@ -351,30 +364,65 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
 
-                        core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+                        if (response.body() != null) {
 
-                        if ((core.getType().toString().equals("Exception"))) {
-                            List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
 
-                            WMSExceptionMessage owmsExceptionMessage = null;
-                            for (int i = 0; i < _lExceptions.size(); i++) {
+                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
 
-                                owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
+
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                }
+
+                                cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+                                ivScanSku.setImageResource(R.drawable.fullscreen_img);
+                                ProgressDialogUtils.closeProgressDialog();
+                                common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lOutBound = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lOutBound = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                                if(_lOutBound!=null){
+                                    final List<OutbountDTO> outbountDTOS=new ArrayList<>();
+                                    for (int i = 0; i < _lOutBound.size(); i++) {
+                                        OutbountDTO dto = new OutbountDTO(_lOutBound.get(i).entrySet());
+                                        outbountDTOS.add(dto);
+                                    }
+
+                                    if(outbountDTOS.size()>0){
+                                        if(outbountDTOS.get(0).getCustomerCode().equals("Already scanned.")){
+                                            common.showUserDefinedAlertType("Already scanned", getActivity(), getContext(), "Warning");
+                                        }else{
+                                            lblCustmerName.setText(outbountDTOS.get(0).getCustomerName());
+                                            lblCustomerCode.setText(outbountDTOS.get(0).getCustomerCode());
+                                            lblCustomerAddress.setText(outbountDTOS.get(0).getCustomerAddress());
+
+                                            GetSOCountUnderLoadSheet();
+                                        }
+
+                                    }
+                                }
+
+
+
+                                ProgressDialogUtils.closeProgressDialog();
+
+
+
+
+
+
+
                             }
 
-                            cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
-                            ivScanSku.setImageResource(R.drawable.fullscreen_img);
                             ProgressDialogUtils.closeProgressDialog();
-                            common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
-
-                        } else {
-                            LinkedTreeMap<?, ?> _lResult = new LinkedTreeMap<>();
-                            _lResult = (LinkedTreeMap<?, ?>) core.getEntityObject();
-
-                            GetSOCountUnderLoadSheet();
-
                         }
+                        ProgressDialogUtils.closeProgressDialog();
                     }
 
                     @Override
@@ -412,7 +460,6 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
         if (scannedData != null) {
             if (!ProgressDialogUtils.isProgressActive()) {
                 if (rlLoadingTwo.getVisibility() == View.VISIBLE) {
-
                     UpsertLoadDetails(scannedData);
                 }
             }
@@ -430,16 +477,17 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
     }
 
 
-    public void GetSOCountUnderLoadSheet() {
+    public void LoadVerification() {
 
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
-            outbountDTO.setTenatID(userId);
-            outbountDTO.setAccountID(accountId);
-            outbountDTO.setLRnumber(lblLoadSheetNo.getText().toString());
+            outbountDTO.setUserId(userId);
+            outbountDTO.setvLPDNumber(lblLoadSheetNo.getText().toString());
             message.setEntityObject(outbountDTO);
+
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
@@ -449,7 +497,7 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
                 // if (NetworkUtils.isInternetAvailable()) {
                 // Calling the Interface method
                 ProgressDialogUtils.showProgressDialog("Please Wait");
-                call = apiService.GetSOCountUnderLoadSheet(message);
+                call = apiService.LoadVerification(message);
                 // } else {
                 // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
                 // return;
@@ -466,8 +514,7 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
                 DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
 
             }
-            try {
-                //Getting response from the method
+            try {                //Getting response from the method
                 call.enqueue(new Callback<String>() {
 
                     @Override
@@ -477,21 +524,43 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
 
                             core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
 
-                            List<LinkedTreeMap<?, ?>> _lLoadSheetNo = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lLoadSheetNo = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                            List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
+                            _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
 
                             List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
 
-                            for (int i = 0; i < _lLoadSheetNo.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lLoadSheetNo.get(i).entrySet());
+                            for (int i = 0; i < _lResult.size(); i++) {
+                                OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
                                 lstDto.add(dto);
                             }
 
-                            if(lstDto.size()>0){
-                                BusinessType=lstDto.get(0).getBusinessType();
-                                lblTol.setText(lstDto.get(0).getScannedSOCount() + " / " + lstDto.get(0).getTotalSOCount() );
+                            if (lstDto.size() > 0) {
+
+                                if (lstDto.get(0).getResult().equalsIgnoreCase("PGI Updated")) {
+                                    common.setIsPopupActive(true);
+                                    soundUtils.alertSuccess(getActivity(), getActivity());
+                                    DialogUtils.showAlertDialog(getActivity(), "Success", "PGI Updated", R.drawable.success, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            switch (which) {
+                                                case DialogInterface.BUTTON_POSITIVE:
+                                                    FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
+                                                    common.setIsPopupActive(false);
+                                                    break;
+                                            }
+                                        }
+                                    });
+                                    // common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Success");
+                                } else {
+                                    common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Error");
+                                }
+
+
+                            } else {
+                                common.showUserDefinedAlertType("Failed to verify", getActivity(), getActivity(), "Warning");
                             }
 
+                            ProgressDialogUtils.closeProgressDialog();
 
                         } catch (Exception ex) {
                             try {
@@ -537,10 +606,140 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
     }
 
 
+    public void GetSOCountUnderLoadSheet() {
+
+        try {
+            WMSCoreMessage message = new WMSCoreMessage();
+            message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
+            OutbountDTO outbountDTO = new OutbountDTO();
+            outbountDTO.setTenatID(userId);
+            outbountDTO.setAccountID(accountId);
+            outbountDTO.setLoadRefNo(lblLoadSheetNo.getText().toString());
+            message.setEntityObject(outbountDTO);
+
+            Call<String> call = null;
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+
+            try {
+                //Checking for Internet Connectivity
+                // if (NetworkUtils.isInternetAvailable()) {
+                // Calling the Interface method
+                ProgressDialogUtils.showProgressDialog("Please Wait");
+                call = apiService.GetSOCountUnderLoadSheet(message);
+                // } else {
+                // DialogUtils.showAlertDialog(getActivity(), "Please enable internet");
+                // return;
+                // }
+
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_01", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
+
+            }
+            try {
+                //Getting response from the method
+                call.enqueue(new Callback<String>() {
+
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+
+                        try {
+
+                            core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+
+                            // if any Exception throws
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                    ProgressDialogUtils.closeProgressDialog();
+                                    common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+                                    return;
+                                }
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lLoadSheetNo = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lLoadSheetNo = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
+
+                                for (int i = 0; i < _lLoadSheetNo.size(); i++) {
+                                    OutbountDTO dto = new OutbountDTO(_lLoadSheetNo.get(i).entrySet());
+                                    lstDto.add(dto);
+                                }
+
+                                if (lstDto.size() > 0) {
+                                    BusinessType = lstDto.get(0).getBusinessType();
+                                    lblTol.setText(lstDto.get(0).getScannedSOCount() + " / " + lstDto.get(0).getTotalSOCount());
+
+                                    if (BusinessType.equals("E-Commerce")) {
+                                        tvScanSku.setText("Scan SO Number");
+                                    } else {
+                                        tvScanSku.setText("Scan Carton Number");
+                                    }
+                                }
+
+
+                            }
+
+                            ProgressDialogUtils.closeProgressDialog();
+
+                        } catch (Exception ex) {
+                            try {
+                                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_02", getActivity());
+                                logException();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            ProgressDialogUtils.closeProgressDialog();
+                        }
+
+
+                    }
+
+                    // response object fails
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+
+                        ProgressDialogUtils.closeProgressDialog();
+                        DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+                    }
+                });
+            } catch (Exception ex) {
+                try {
+                    exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_03", getActivity());
+                    logException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ProgressDialogUtils.closeProgressDialog();
+                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0001);
+            }
+        } catch (Exception ex) {
+            try {
+                exceptionLoggerUtils.createExceptionLog(ex.toString(), classCode, "001_04", getActivity());
+                logException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProgressDialogUtils.closeProgressDialog();
+            DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
+        }
+    }
+
 
     public void GetOpenLoadsheetList() {
 
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
@@ -647,11 +846,6 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
         }
     }
 
-
-
-
-
-
     // sending exception to the database
     public void logException() {
         try {
@@ -665,8 +859,7 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
             message.setEntityObject(wmsExceptionMessage);
 
             Call<String> call = null;
-            ApiInterface apiService =
-                    RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity

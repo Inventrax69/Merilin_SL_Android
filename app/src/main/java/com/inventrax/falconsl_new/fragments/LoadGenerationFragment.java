@@ -105,7 +105,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     LoadSheetSOListAdapter loadSheetSOListAdapter;
     List<OutbountDTO> outbountDTOS;
     String SONumber="";
-    boolean isSOEnabled=false;
+    boolean isSOEnabled=true;
 
     // Cipher Barcode Scanner
     private final BroadcastReceiver myDataReceiver = new BroadcastReceiver() {
@@ -248,7 +248,6 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         btnGenerate.setOnClickListener(this);
         cvScanSONumber.setOnClickListener(this);
 
-
         outbountDTOS=new ArrayList<>();
         loadSheetSOListAdapter = new LoadSheetSOListAdapter(getActivity(), outbountDTOS, new LoadSheetSOListAdapter.OnCheckChangeListner() {
             @Override
@@ -265,6 +264,10 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         lblDrNo.setEnabled(true);
         lblVehicleNo.setEnabled(true);
         lblVehicleType.setEnabled(true);
+        lblDrName.clearFocus();
+        lblDrNo.clearFocus();
+        lblVehicleNo.clearFocus();
+        lblVehicleType.clearFocus();
 
         lblDrName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,7 +304,6 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                 }
             }
         });
-
 
 
     }
@@ -355,21 +357,6 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                     }
                 }
 
-
-
-
-
-
-
-/*                List<OutbountDTO> outbountDTOS_d=(ArrayList<OutbountDTO>)outbountDTOS;
-                for(int i=0;i<outbountDTOS_d.size();i++){
-                    if(outbountDTOS_d.get(i).isChecked()){
-                        outbountDTOS.remove(i);
-                    }else{
-                        outbountDTOS.get(i).setChecked(false);
-                    }
-                }*/
-
                 loadSheetSOListAdapter.notifyDataSetChanged();
 
                 break;
@@ -398,9 +385,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                 
                 SONumber="";
                 for(int i=0;i<outbountDTOS.size();i++){
-                    if(outbountDTOS.get(i).isChecked()){
                         SONumber += outbountDTOS.get(i).getSONumber()+",";
-                    }
                 }
 
                 if(SONumber.isEmpty()){
@@ -486,13 +471,12 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     public void ProcessScannedinfo(String scannedData) {
         if (scannedData != null) {
             if (!ProgressDialogUtils.isProgressActive()) {
-/*                if(isSOEnabled){
+                if(!isSOEnabled){
                     ValidateSO(scannedData);
                 }else{
                     common.showUserDefinedAlertType("Please enable by clicking on scan SO number icon", getActivity(), getActivity(), "Warning");
-                }*/
+                }
 
-                ScanData(scannedData);
 
             }
         }
@@ -574,8 +558,8 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                                 owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                             }
 
-                            cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
-                            ivScanSONumber.setImageResource(R.drawable.fullscreen_img);
+                            cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.white));
+                            ivScanSONumber.setImageResource(R.drawable.warning_img);
                             ProgressDialogUtils.closeProgressDialog();
                             common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
 
@@ -594,7 +578,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                                     0 Sku|1 BatchNo|2 SerialNO|3 KitId|4 lineNo  ---- For SKU with 5 MSP's   *//*
                                     // Eg. : ToyCar|1|bat1|ser123|12/2/2018|12/2/2019|0|001*/
 
-                                    cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+                                    cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanSONumber.setImageResource(R.drawable.check);
 
                                     OutbountDTO outbountDTO=new OutbountDTO();
@@ -823,7 +807,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
             outbountDTO.setUserId(userId);
             outbountDTO.setTenatID(userId);
             outbountDTO.setVehicle(lblVehicleNo.getText().toString());
-            outbountDTO.setOBDNumber(SONumber);
+            outbountDTO.setSONumber(SONumber);
             outbountDTO.setDriverNo(lblDrNo.getText().toString());
             outbountDTO.setDriverName(lblDrName.getText().toString());
             outbountDTO.setLRnumber(lblVehicleType.getText().toString());
@@ -879,7 +863,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                             if(lstDto.size()>0){
                                 NewLoadSheetFragment fragment = new NewLoadSheetFragment();
                                 Bundle args = new Bundle();
-                                args.putString("Key", "Value");
+                                args.putString("LoadSheetNo", lstDto.get(0).getLoadRefNo());
                                 FragmentUtils.replaceFragmentWithBackStackWithArguments(getActivity(), R.id.container_body, fragment ,args);
                             }else{
                                 common.showUserDefinedAlertType("Load No. Not Created", getActivity(), getActivity(), "Warning");
