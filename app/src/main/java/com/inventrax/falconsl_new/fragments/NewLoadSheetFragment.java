@@ -523,42 +523,58 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
                         try {
 
                             core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
 
-                            List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
 
-                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
-
-                            for (int i = 0; i < _lResult.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
-                                lstDto.add(dto);
-                            }
-
-                            if (lstDto.size() > 0) {
-
-                                if (lstDto.get(0).getResult().equalsIgnoreCase("PGI Updated")) {
-                                    common.setIsPopupActive(true);
-                                    soundUtils.alertSuccess(getActivity(), getActivity());
-                                    DialogUtils.showAlertDialog(getActivity(), "Success", "PGI Updated", R.drawable.success, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            switch (which) {
-                                                case DialogInterface.BUTTON_POSITIVE:
-                                                    FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
-                                                    common.setIsPopupActive(false);
-                                                    break;
-                                            }
-                                        }
-                                    });
-                                    // common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Success");
-                                } else {
-                                    common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Error");
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                                 }
 
+                                ProgressDialogUtils.closeProgressDialog();
+                                common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
 
                             } else {
-                                common.showUserDefinedAlertType("Failed to verify", getActivity(), getActivity(), "Warning");
+                                List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
+
+                                for (int i = 0; i < _lResult.size(); i++) {
+                                    OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
+                                    lstDto.add(dto);
+                                }
+
+                                if (lstDto.size() > 0) {
+
+                                    if (lstDto.get(0).getResult().equalsIgnoreCase("PGI Updated")) {
+                                        common.setIsPopupActive(true);
+                                        soundUtils.alertSuccess(getActivity(), getActivity());
+                                        DialogUtils.showAlertDialog(getActivity(), "Success", "PGI Updated", R.drawable.success, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                switch (which) {
+                                                    case DialogInterface.BUTTON_POSITIVE:
+                                                        FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
+                                                        common.setIsPopupActive(false);
+                                                        break;
+                                                }
+                                            }
+                                        });
+                                        // common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Success");
+                                    } else {
+                                        common.showUserDefinedAlertType(lstDto.get(0).getResult(), getActivity(), getActivity(), "Error");
+                                    }
+
+
+                                } else {
+                                    common.showUserDefinedAlertType("Failed to verify", getActivity(), getActivity(), "Warning");
+                                }
                             }
+
+
 
                             ProgressDialogUtils.closeProgressDialog();
 
@@ -783,25 +799,42 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
 
                             core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
 
-                            List<LinkedTreeMap<?, ?>> _lLoadSheetNo = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lLoadSheetNo = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
 
-                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
-                            List<String> lstLoadSheetNo = new ArrayList<>();
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
+
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                }
+
+                                ProgressDialogUtils.closeProgressDialog();
+                                common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lLoadSheetNo = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lLoadSheetNo = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
+                                List<String> lstLoadSheetNo = new ArrayList<>();
 
 
-                            for (int i = 0; i < _lLoadSheetNo.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lLoadSheetNo.get(i).entrySet());
-                                lstDto.add(dto);
-                            }
+                                for (int i = 0; i < _lLoadSheetNo.size(); i++) {
+                                    OutbountDTO dto = new OutbountDTO(_lLoadSheetNo.get(i).entrySet());
+                                    lstDto.add(dto);
+                                }
 
-                            for (int i = 0; i < lstDto.size(); i++) {
-                                lstLoadSheetNo.add(lstDto.get(i).getvLPDNumber());
+                                for (int i = 0; i < lstDto.size(); i++) {
+                                    lstLoadSheetNo.add(lstDto.get(i).getvLPDNumber());
+                                }
+
+                                ProgressDialogUtils.closeProgressDialog();
+                                ArrayAdapter arrayAdapterLoadSheet = new ArrayAdapter(getActivity(), R.layout.support_simple_spinner_dropdown_item, lstLoadSheetNo);
+                                spinnerSelectLoadList.setAdapter(arrayAdapterLoadSheet);
                             }
 
                             ProgressDialogUtils.closeProgressDialog();
-                            ArrayAdapter arrayAdapterLoadSheet = new ArrayAdapter(getActivity(), R.layout.support_simple_spinner_dropdown_item, lstLoadSheetNo);
-                            spinnerSelectLoadList.setAdapter(arrayAdapterLoadSheet);
 
                         } catch (Exception ex) {
                             try {
@@ -990,6 +1023,7 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
                 // Toast.makeText(this, "Scanner unavailable", Toast.LENGTH_SHORT).show();
             }
         }
+
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_activity_loading));
     }
 

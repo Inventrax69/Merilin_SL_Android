@@ -99,7 +99,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     private ErrorMessages errorMessages;
     RecyclerView recycler_view_so;
     LinearLayoutManager linearLayoutManager;
-    Button btnDeleteSO, btnGenerate;
+    Button btnDeleteSO, btnGenerate, btnClear;
     SoundUtils soundUtils;
     TextView lblScannedSku, lblBatchNo, lblserialNo, lblMfgDate, lblExpDate, lblProjectRefNo, lblMRP;
     LoadSheetSOListAdapter loadSheetSOListAdapter;
@@ -147,6 +147,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
         btnDeleteSO=(Button) rootView.findViewById(R.id.btnDeleteSO);
         btnGenerate=(Button) rootView.findViewById(R.id.btnGenerate);
+        btnClear=(Button) rootView.findViewById(R.id.btnClear);
 
         lblDrName = (EditText) rootView.findViewById(R.id.lblDrName);
         lblDrNo = (EditText) rootView.findViewById(R.id.lblDrNo);
@@ -246,6 +247,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
         btnDeleteSO.setOnClickListener(this);
         btnGenerate.setOnClickListener(this);
+        btnClear.setOnClickListener(this);
         cvScanSONumber.setOnClickListener(this);
 
         outbountDTOS=new ArrayList<>();
@@ -359,6 +361,17 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
                 loadSheetSOListAdapter.notifyDataSetChanged();
 
+                break;
+
+            case R.id.btnClear:
+                lblDrName.setText("");
+                lblDrNo.setText("");
+                lblVehicleNo.setText("");
+                lblVehicleType.setText("");
+                lblDrName.clearFocus();
+                lblDrNo.clearFocus();
+                lblVehicleNo.clearFocus();
+                lblVehicleType.clearFocus();
                 break;
 
             case R.id.btnGenerate:
@@ -581,10 +594,18 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                                     cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.white));
                                     ivScanSONumber.setImageResource(R.drawable.check);
 
+                                    for(int i=0 ;i<outbountDTOS.size();i++){
+                                        if(outbountDTOS.get(i).getSONumber().equals(scannedData)){
+                                            common.showUserDefinedAlertType("Already Scanned SO Number", getActivity(), getContext(), "Warning");
+                                            return;
+                                        }
+                                    }
+
                                     OutbountDTO outbountDTO=new OutbountDTO();
                                     outbountDTO.setSONumber(scannedData);
                                     outbountDTOS.add(outbountDTO);
                                     loadSheetSOListAdapter.notifyDataSetChanged();
+
 
                                 } else {
                                     // lblScannedSku.setText("");
@@ -849,24 +870,38 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                         try {
 
                             core = gson.fromJson(response.body().toString(), WMSCoreMessage.class);
+                            if ((core.getType().toString().equals("Exception"))) {
+                                List<LinkedTreeMap<?, ?>> _lExceptions = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lExceptions = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
 
-                            List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
-                            _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+                                WMSExceptionMessage owmsExceptionMessage = null;
+                                for (int i = 0; i < _lExceptions.size(); i++) {
 
-                            List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
+                                    owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
+                                }
 
-                            for (int i = 0; i < _lResult.size(); i++) {
-                                OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
-                                lstDto.add(dto);
-                            }
+                                ProgressDialogUtils.closeProgressDialog();
+                                common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
 
-                            if(lstDto.size()>0){
-                                NewLoadSheetFragment fragment = new NewLoadSheetFragment();
-                                Bundle args = new Bundle();
-                                args.putString("LoadSheetNo", lstDto.get(0).getLoadRefNo());
-                                FragmentUtils.replaceFragmentWithBackStackWithArguments(getActivity(), R.id.container_body, fragment ,args);
-                            }else{
-                                common.showUserDefinedAlertType("Load No. Not Created", getActivity(), getActivity(), "Warning");
+                            } else {
+                                List<LinkedTreeMap<?, ?>> _lResult = new ArrayList<LinkedTreeMap<?, ?>>();
+                                _lResult = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
+
+                                List<OutbountDTO> lstDto = new ArrayList<OutbountDTO>();
+
+                                for (int i = 0; i < _lResult.size(); i++) {
+                                    OutbountDTO dto = new OutbountDTO(_lResult.get(i).entrySet());
+                                    lstDto.add(dto);
+                                }
+
+                                if(lstDto.size()>0){
+                                    NewLoadSheetFragment fragment = new NewLoadSheetFragment();
+                                    Bundle args = new Bundle();
+                                    args.putString("LoadSheetNo", lstDto.get(0).getLoadRefNo());
+                                    FragmentUtils.replaceFragmentWithBackStackWithArguments(getActivity(), R.id.container_body, fragment ,args);
+                                }else{
+                                    common.showUserDefinedAlertType("Load No. Not Created", getActivity(), getActivity(), "Warning");
+                                }
                             }
 
                             ProgressDialogUtils.closeProgressDialog();

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.BuildConfig;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,8 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.inventrax.falconsl_new.services.appupdate.UpdateServiceUtils;
 import com.inventrax.falconsl_new.R;
+import com.inventrax.falconsl_new.services.appupdate.UpdateServiceUtils;
 import com.inventrax.falconsl_new.util.AndroidUtils;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
@@ -62,6 +63,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
             txtVersion = (TextView) rootView.findViewById(R.id.txtVersion);
 
             txtVersion.setText(AndroidUtils.getVersionName().toString());
+            txtVersion.setText("" + BuildConfig.VERSION_NAME);
 
             btnCheckUpdate = (Button) rootView.findViewById(R.id.btnCheckUpdate);
             btnCheckUpdate.setOnClickListener(this);
@@ -80,7 +82,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
 
             lblReleaseDate = (TextView) rootView.findViewById(R.id.lblReleaseDate);
             txtReleaseDate = (TextView) rootView.findViewById(R.id.txtReleaseDate);
-            txtReleaseDate.setText("14-06-2019");
+            txtReleaseDate.setText("07-06-2020");
 
         } catch (Exception ex) {
             Log.d(AboutFragment.class.getName(), ex.toString());

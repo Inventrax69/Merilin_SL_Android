@@ -300,10 +300,10 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                     common.showUserDefinedAlertType("Please Enter Qty", getActivity(), getActivity(), "Warning");
                     return;
                 }
-                if(lblPackingType.getText().toString().isEmpty()){
+/*                if(lblPackingType.getText().toString().isEmpty()){
                     common.showUserDefinedAlertType("Please Enter Packing Type", getActivity(), getActivity(), "Warning");
                     return;
-                }
+                }*/
                 if((Integer.parseInt(lblReceivedQty.getText().toString())+packQty) > pickedQty_1){
                     common.showUserDefinedAlertType("Qty is more than picked qty", getActivity(), getActivity(), "Warning");
                     return;

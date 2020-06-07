@@ -162,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
                             if (fragment != null && fragment.isVisible() && fragment instanceof PackingFragment) {
                                 ((PackingFragment) fragment).myScannedData(MainActivity.this, barcode);
                             }
+                            if (fragment != null && fragment.isVisible() && fragment instanceof LoadGenerationFragment) {
+                                ((LoadGenerationFragment) fragment).myScannedData(MainActivity.this, barcode);
+                            }
+                            if (fragment != null && fragment.isVisible() && fragment instanceof NewLoadSheetFragment) {
+                                ((NewLoadSheetFragment) fragment).myScannedData(MainActivity.this, barcode);
+                            }
                             
                     }
                 }
