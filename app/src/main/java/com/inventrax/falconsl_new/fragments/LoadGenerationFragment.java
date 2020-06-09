@@ -482,16 +482,19 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
         if (scannedData != null) {
+
             if (!ProgressDialogUtils.isProgressActive()) {
+
                 if(!isSOEnabled){
                     ValidateSO(scannedData);
                 }else{
                     common.showUserDefinedAlertType("Please enable by clicking on scan SO number icon", getActivity(), getActivity(), "Warning");
                 }
 
-
             }
+
         }
     }
 

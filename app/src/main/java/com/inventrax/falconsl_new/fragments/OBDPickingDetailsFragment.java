@@ -1193,7 +1193,9 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
     }
 
     public void ValidatePalletCode(String pallet) {
+
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO outbountDTO = new OutbountDTO();
@@ -1400,6 +1402,8 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
 
                                 rlSkip.setVisibility(View.VISIBLE);
                                 rlPickList.setVisibility(View.GONE);
+
+
                             }
                             //  btnPick.setEnabled(true);
                         } catch (Exception ex) {
@@ -1443,7 +1447,9 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
     }
 
     public void UpsertPickItem() {
+
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             OutbountDTO oOutboundDTO = new OutbountDTO();
@@ -1625,7 +1631,9 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
     }
 
     public void OBDSkipItem() {
+
         try {
+
             WMSCoreMessage message = new WMSCoreMessage();
             message = common.SetAuthentication(EndpointConstants.Outbound, getContext());
             //final OutbountDTO outbountDTO = new OutbountDTO();
@@ -1697,6 +1705,7 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                                     rlSkip.setVisibility(View.GONE);
 
                                     GetPickItem();
+
                                 } else {
                                     //Response object Success
                                     List<LinkedTreeMap<?, ?>> _lstPickitem = new ArrayList<LinkedTreeMap<?, ?>>();
@@ -1726,26 +1735,47 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                                     cvScanPalletTo.setCardBackgroundColor(getResources().getColor(R.color.palletColor));
                                     ivScanPalletTo.setImageResource(R.drawable.fullscreen_img);
 
-                                    sLoc = "" + oOutboundDTO.getsLoc();
-                                    POSOHeaderId = "" + oOutboundDTO.getpOSOHeaderId();
-                                    Lineno = "" + oOutboundDTO.getLineno();
-                                    lblSKuNo.setText(oOutboundDTO.getSKU());
-                                    assignedId = "" + oOutboundDTO.getAssignedID();
-                                    soDetailsId = "" + oOutboundDTO.getSODetailsID();
-                                    KitId = "" + oOutboundDTO.getAssignedID();
-                                    lblBatchNo.setText(oOutboundDTO.getBatchNo());
-                                    lblLocationNo.setText(oOutboundDTO.getLocation());
-                                    etPallet.setText(oOutboundDTO.getPalletNo());
-                                    lblassignedQty.setText(oOutboundDTO.getPickedQty().split("[.]")[0] + "/" + oOutboundDTO.getAssignedQuantity().split("[.]")[0]);
-                                    lblMfgDate.setText(oOutboundDTO.getMfgDate());
-                                    lblExpDate.setText(oOutboundDTO.getExpDate());
-                                    lblProjectRefNo.setText(oOutboundDTO.getProjectNo());
-                                    lblserialNo.setText(oOutboundDTO.getSerialNo());
-                                    rlPickList.setVisibility(View.VISIBLE);
-                                    rlSkip.setVisibility(View.GONE);
-                                    lblMRP.setText(oOutboundDTO.getMRP());
+                                    if (oOutboundDTO.getPendingQty().equals("0")) {
 
-                                    common.showUserDefinedAlertType(errorMessages.EMC_0077,getActivity(),getContext(),"Success");
+                                        rlPickList.setVisibility(View.VISIBLE);
+                                        rlSkip.setVisibility(View.GONE);
+
+                                        lblassignedQty.setText(oOutboundDTO.getPendingQty());
+                                        lblReceivedQty.setText("");
+                                        lblSKuNo.setText("");
+
+                                        // Added to clear data after completion of the outbound
+                                        ClearFields();
+                                        clearData();
+
+                                        common.showUserDefinedAlertType(errorMessages.EMC_0063 + lblPickListNo.getText().toString(), getActivity(), getContext(), "Success");
+
+                                    }else{
+
+                                        sLoc = "" + oOutboundDTO.getsLoc();
+                                        POSOHeaderId = "" + oOutboundDTO.getpOSOHeaderId();
+                                        Lineno = "" + oOutboundDTO.getLineno();
+                                        lblSKuNo.setText(oOutboundDTO.getSKU());
+                                        assignedId = "" + oOutboundDTO.getAssignedID();
+                                        soDetailsId = "" + oOutboundDTO.getSODetailsID();
+                                        KitId = "" + oOutboundDTO.getAssignedID();
+                                        lblBatchNo.setText(oOutboundDTO.getBatchNo());
+                                        lblLocationNo.setText(oOutboundDTO.getLocation());
+                                        etPallet.setText(oOutboundDTO.getPalletNo());
+                                        lblassignedQty.setText(oOutboundDTO.getPickedQty().split("[.]")[0] + "/" + oOutboundDTO.getAssignedQuantity().split("[.]")[0]);
+                                        lblMfgDate.setText(oOutboundDTO.getMfgDate());
+                                        lblExpDate.setText(oOutboundDTO.getExpDate());
+                                        lblProjectRefNo.setText(oOutboundDTO.getProjectNo());
+                                        lblserialNo.setText(oOutboundDTO.getSerialNo());
+                                        lblMRP.setText(oOutboundDTO.getMRP());
+
+                                        rlPickList.setVisibility(View.VISIBLE);
+                                        rlSkip.setVisibility(View.GONE);
+
+
+                                        common.showUserDefinedAlertType(errorMessages.EMC_0077,getActivity(),getContext(),"Success");
+
+                                    }
 
                                     ProgressDialogUtils.closeProgressDialog();
                                 }
