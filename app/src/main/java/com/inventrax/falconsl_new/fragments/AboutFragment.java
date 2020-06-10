@@ -2,10 +2,11 @@ package com.inventrax.falconsl_new.fragments;
 
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.BuildConfig;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,7 +18,6 @@ import android.widget.TextView;
 
 import com.inventrax.falconsl_new.R;
 import com.inventrax.falconsl_new.services.appupdate.UpdateServiceUtils;
-import com.inventrax.falconsl_new.util.AndroidUtils;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 
@@ -62,8 +62,16 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
 
             txtVersion = (TextView) rootView.findViewById(R.id.txtVersion);
 
-            txtVersion.setText(AndroidUtils.getVersionName().toString());
-            txtVersion.setText("" + BuildConfig.VERSION_NAME);
+
+           // txtVersion.setText(AndroidUtils.getVersionName().toString());
+
+            try {
+                PackageInfo pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+                String version = pInfo.versionName;
+                txtVersion.setText("" + version);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
 
             btnCheckUpdate = (Button) rootView.findViewById(R.id.btnCheckUpdate);
             btnCheckUpdate.setOnClickListener(this);

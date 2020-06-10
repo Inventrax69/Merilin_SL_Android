@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
@@ -18,27 +19,24 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.inventrax.falconsl_new.R;
 import com.inventrax.falconsl_new.adapters.NavigationDrawerAdapter;
-import com.inventrax.falconsl_new.adapters.NewExpandableListAdapter;
 import com.inventrax.falconsl_new.model.NavDrawerItem;
 import com.inventrax.falconsl_new.util.DialogUtils;
-import com.inventrax.falconsl_new.util.FragmentUtils;
+import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by Padmaja.B on 20/12/2018.
  */
 
-public class DrawerFragment extends Fragment implements View.OnClickListener {
+public class DrawerFragmentWithList extends Fragment implements View.OnClickListener {
 
-    private static String TAG = DrawerFragment.class.getSimpleName();
+    private static String TAG = DrawerFragmentWithList.class.getSimpleName();
     private RecyclerView recyclerView;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
@@ -46,19 +44,12 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
     private View containerView;
     private FragmentDrawerListener drawerListener;
     private View layout;
-    private TextView txtLoginUser,txtHome;
+    private TextView txtLoginUser;
     private AppCompatActivity appCompatActivity;
     private List<NavDrawerItem> menuItemList;
     private IntentFilter mIntentFilter;
     private CounterBroadcastReceiver counterBroadcastReceiver;
-
     private String userName = "";
-    List<String> listDataParent;
-    HashMap<String, List<String>> listDataChild;
-    ExpandableListView expandable_list_view;
-    NewExpandableListAdapter.OnItemClick onItemClick;
-
-
 
     public void setDrawerListener(FragmentDrawerListener listener) {
         this.drawerListener = listener;
@@ -72,7 +63,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflating view layout
-        layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        layout = inflater.inflate(R.layout.fragment_navigation_drawer_withlist, container, false);
 
         appCompatActivity = (AppCompatActivity) getActivity();
 
@@ -83,94 +74,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
         return layout;
     }
 
-    private void createListData() {
-
-
-        listDataParent = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
-
-        // Adding child data
-        listDataParent.add("Inbound");
-        listDataParent.add("Outbound");
-        listDataParent.add("House Keeping");
-
-        // Adding child data List one
-        List<String> mainListInbound = new ArrayList<String>();
-        mainListInbound.add("Receiving");
-        mainListInbound.add("Putaway");
-        mainListInbound.add("Pallet Transfers");
-
-        // Adding child data List two
-        List<String> mainListOutbound  = new ArrayList<String>();
-        mainListOutbound.add("OBD Picking");
-        mainListOutbound.add("Packing");
-        mainListOutbound.add("Load Generation");
-        mainListOutbound.add("Loading");
-
-        // Adding child data List three
-        List<String> mainListHouseKeeping = new ArrayList<String>();
-        mainListHouseKeeping.add("Bin to Bin");
-        mainListHouseKeeping.add("Live Stock");
-        mainListHouseKeeping.add("Cycle Count");
-
-        listDataChild.put(listDataParent.get(0), mainListInbound); // Header, Child data
-        listDataChild.put(listDataParent.get(1), mainListOutbound); // Header, Child data
-        listDataChild.put(listDataParent.get(2), mainListHouseKeeping); // Header, Child data
-
-        NewExpandableListAdapter listAdapter = new NewExpandableListAdapter(getActivity(), listDataParent, listDataChild, new NewExpandableListAdapter.OnItemClick() {
-
-            @Override
-            public void onItemClick(int gpos, int cpos, String text) {
-                mDrawerLayout.closeDrawer(containerView);
-                setNavigationPage(text);
-            }
-        });
-
-        expandable_list_view.setAdapter(listAdapter);
-        expandable_list_view.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            int previousGroup = -1;
-
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                if(groupPosition != previousGroup)
-                    expandable_list_view.collapseGroup(previousGroup);
-                previousGroup = groupPosition;
-            }
-        });
-    }
-
-    public void loadFormControls(){
-        try {
-
-            SharedPreferences sp = getContext().getSharedPreferences("LoginActivity", Context.MODE_PRIVATE);
-            userName = sp.getString("UserName", "");
-
-            mIntentFilter = new IntentFilter();
-            mIntentFilter.addAction("com.example.broadcast.counter");
-
-            txtLoginUser = (TextView) layout.findViewById(R.id.txtLoginUser);
-            txtHome = (TextView) layout.findViewById(R.id.txtHome);
-
-            txtLoginUser.setText(userName);
-
-            txtHome.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mDrawerLayout.closeDrawer(containerView);
-                    FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
-                }
-            });
-
-            expandable_list_view = (ExpandableListView) layout.findViewById(R.id.expandable_list_view);
-            createListData();
-
-        }catch (Exception ex) {
-            DialogUtils.showAlertDialog(getActivity(), "Error while loading menu list");
-            return;
-        }
-    }
-
-/*    public void loadFormControls() {
+    public void loadFormControls() {
         try {
 
             SharedPreferences sp = getContext().getSharedPreferences("LoginActivity", Context.MODE_PRIVATE);
@@ -183,6 +87,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
             menuItemList = getMenuItemsByUserType("1");
 
             new ProgressDialogUtils(getContext());
+
 
             recyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
             txtLoginUser = (TextView) layout.findViewById(R.id.txtLoginUser);
@@ -216,7 +121,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
             DialogUtils.showAlertDialog(getActivity(), "Error while loading menu list");
             return;
         }
-    }*/
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -285,61 +190,13 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-//        getActivity().registerReceiver(counterBroadcastReceiver, mIntentFilter);
+        getActivity().registerReceiver(counterBroadcastReceiver, mIntentFilter);
     }
 
     @Override
     public void onPause() {
-       // getActivity().unregisterReceiver(counterBroadcastReceiver);
+        getActivity().unregisterReceiver(counterBroadcastReceiver);
         super.onPause();
-    }
-
-
-    public void setNavigationPage(String menuChildText){
-        switch (menuChildText) {
-            case "Receiving": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new UnloadingFragment());
-            }
-            break;
-            case "Putaway": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new PutawayFragment());
-            }
-            break;
-            case "Pallet Transfers": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new PalletTransfersFragment());
-            }
-            break;
-            case "OBD Picking": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new OBDPickingHeaderFragment());
-            }
-            break;
-            case "Packing": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new PackingFragment());
-            }
-            break;
-            case "Load Generation": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new LoadGenerationFragment());
-            }
-            break;
-            case "Loading": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new NewLoadSheetFragment());
-            }
-            break;
-            case "Bin to Bin": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new InternalTransferFragment());
-            }
-            break;
-            case "Live Stock": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new LiveStockFragment());
-            }
-            break;
-            case "Cycle Count": {
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new CycleCountHeaderFragment());
-            }
-            break;
-            default:
-            break;
-        }
     }
 
     public List<NavDrawerItem> getMenuItemsByUserType(String userType) {
@@ -350,21 +207,18 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
 
             case "1": {
                 menuList.add(new NavDrawerItem("Home", R.drawable.go));
-                // Inbound
                 menuList.add(new NavDrawerItem("Receiving", R.drawable.go));
                 menuList.add(new NavDrawerItem("Putaway", R.drawable.go));
-                menuList.add(new NavDrawerItem("Pallet Transfers", R.drawable.go));
-                // Outbound
                 menuList.add(new NavDrawerItem("OBD Picking", R.drawable.go));
-                menuList.add(new NavDrawerItem("Packing", R.drawable.go));
-                menuList.add(new NavDrawerItem("Load Generation", R.drawable.go));
-                menuList.add(new NavDrawerItem("Loading", R.drawable.go));
-                // HouseKeeping
+                menuList.add(new NavDrawerItem("Delete OBD Picked Items", R.drawable.go));
                 menuList.add(new NavDrawerItem("Bin to Bin", R.drawable.go));
+                menuList.add(new NavDrawerItem("Pallet Transfers", R.drawable.go));
+                menuList.add(new NavDrawerItem("Packing", R.drawable.go));
+                menuList.add(new NavDrawerItem("Loading", R.drawable.go));
+                menuList.add(new NavDrawerItem("Load Generation", R.drawable.go));
                 menuList.add(new NavDrawerItem("Cycle Count", R.drawable.go));
                 menuList.add(new NavDrawerItem("Live Stock", R.drawable.go));
 
-                // menuList.add(new NavDrawerItem("Delete OBD Picked Items", R.drawable.go));
                 // menuList.add(new NavDrawerItem("VLPD Picking", R.drawable.go));
                 // menuList.add(new NavDrawerItem("Delete VLPD Picked Items", R.drawable.go));
                 // menuList.add(new NavDrawerItem("Transfer Order Pick", R.drawable.go));
@@ -392,8 +246,6 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
 
         return menuList;
     }
-
-
 
     public interface ClickListener {
         void onClick(View view, int position);

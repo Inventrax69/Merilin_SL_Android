@@ -23,7 +23,7 @@ import com.inventrax.falconsl_new.fragments.CycleCountDetailsFragment;
 import com.inventrax.falconsl_new.fragments.CycleCountHeaderFragment;
 import com.inventrax.falconsl_new.fragments.DeleteOBDPickedItemsFragment;
 import com.inventrax.falconsl_new.fragments.DeleteVLPDPickedItemsFragment;
-import com.inventrax.falconsl_new.fragments.DrawerFragment;
+import com.inventrax.falconsl_new.fragments.DrawerFragmentWithList;
 import com.inventrax.falconsl_new.fragments.GoodsInFragment;
 import com.inventrax.falconsl_new.fragments.HomeFragment;
 import com.inventrax.falconsl_new.fragments.InternalTransferFragment;
@@ -54,10 +54,10 @@ import com.inventrax.falconsl_new.util.SharedPreferencesUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DrawerFragment.FragmentDrawerListener {
+public class MainActivity extends AppCompatActivity implements DrawerFragmentWithList.FragmentDrawerListener {
 
     private Toolbar mToolbar;
-    private DrawerFragment drawerFragment;
+    private DrawerFragmentWithList drawerFragment;
     private FragmentUtils fragmentUtils;
     private CharSequence[] userRouteCharSequences;
     private List<String> userRouteStringList;
@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
                 }
             });
 
-            drawerFragment = (DrawerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
+            drawerFragment = (DrawerFragmentWithList) getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
             drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
             drawerFragment.setDrawerListener(this);
 
