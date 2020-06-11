@@ -163,6 +163,18 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/lblQty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/tvSONumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -549,6 +561,8 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:hint="@string/hintQty"
+                        android:text="1"
+                        android:enabled="false"
                         android:inputType="number"
                         android:singleLine="true"
                         android:textColor="@color/colorAccent"
@@ -607,6 +621,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="65dp"
+            android:visibility="invisible"
             android:background="@drawable/button_shape"
             android:elevation="30dp"
             android:text="Pack"
