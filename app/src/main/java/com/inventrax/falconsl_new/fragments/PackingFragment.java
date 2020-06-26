@@ -1,5 +1,6 @@
 package com.inventrax.falconsl_new.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -81,7 +82,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
     private SearchableSpinner spinnerSelectTenant, spinnerSelectWH;
     private CardView cvScanSONumber, cvScanPallet, cvScanSku;
     private ImageView ivScanSONumber, ivScanSku, ivScanPallet;
-    private Button btnPackComplete, btnBackHome,btnPack,btnClear;
+    private Button btnPackComplete, btnBackPacking,btnPack,btnClear;
     private RecyclerView recyclerViewLiveStock;
     private LinearLayoutManager linearLayoutManager;
     private RadioButton radioLocation,radioPallet,radioSKU;
@@ -151,10 +152,10 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         scanType = sp.getString("scanType", "");
         accountId = sp.getString("AccountId", "");
 
-        cvScanSONumber = (CardView) rootView.findViewById(R.id.cvScanSONumber);
+
         cvScanPallet = (CardView) rootView.findViewById(R.id.cvScanPallet);
         cvScanSku = (CardView) rootView.findViewById(R.id.cvScanSku);
-
+        cvScanSONumber = (CardView) rootView.findViewById(R.id.cvScanSONumber);
         ivScanSONumber = (ImageView) rootView.findViewById(R.id.ivScanSONumber);
         ivScanPallet = (ImageView) rootView.findViewById(R.id.ivScanPallet);
         ivScanSku = (ImageView) rootView.findViewById(R.id.ivScanSku);
@@ -168,7 +169,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         linearSKU = (LinearLayout) rootView.findViewById(R.id.linearSKU);
 
         btnPackComplete = (Button) rootView.findViewById(R.id.btnPackComplete);
-        btnBackHome = (Button) rootView.findViewById(R.id.btnBackHome);
+        btnBackPacking = (Button) rootView.findViewById(R.id.btnBackPacking);
         btnPack = (Button) rootView.findViewById(R.id.btnPack);
         btnClear = (Button) rootView.findViewById(R.id.btnClear);
 
@@ -265,7 +266,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
         cvScanSONumber.setOnClickListener(this);
         btnPackComplete.setOnClickListener(this);
-        btnBackHome.setOnClickListener(this);
+        btnBackPacking.setOnClickListener(this);
         btnPack.setOnClickListener(this);
         btnClear.setOnClickListener(this);
 
@@ -275,7 +276,15 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         relativeThree.setVisibility(View.GONE);
         relativeFour.setVisibility(View.GONE);
 
-        ClearFileds();
+
+
+        if(scanType.equals("Auto")){
+            btnPack.setVisibility(View.INVISIBLE);
+            ClearFileds();
+        }else{
+            btnPack.setVisibility(View.VISIBLE);
+            ClearFileds1();
+        }
 
     }
 
@@ -289,8 +298,12 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                 UpdatePackComplete();
                 break;
 
-            case R.id.btnBackHome:
-                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
+            case R.id.btnBackPacking:
+                relativeOne.setVisibility(View.VISIBLE);
+                relativeTwo.setVisibility(View.GONE);
+                relativeThree.setVisibility(View.GONE);
+                relativeFour.setVisibility(View.GONE);
+              //  FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new HomeFragment());
                 break;
 
             case R.id.btnPack:
@@ -322,6 +335,30 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         isPallet = false;
 
         lblReceivedQty.setText("1");
+        lblReceivedQty.clearFocus();
+        lblReceivedQty.setEnabled(false);
+
+        lblPackingType.setText("");
+        lblPackingType.clearFocus();
+        lblPackingType.setEnabled(false);
+
+    }
+
+
+    private void ClearFileds1() {
+
+        cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+        ivScanSku.setImageResource(R.drawable.fullscreen_img);
+
+        cvScanPallet.setCardBackgroundColor(getResources().getColor(R.color.palletColor));
+        ivScanPallet.setImageResource(R.drawable.fullscreen_img);
+
+        lblContainer.setText("");
+
+        isSKU = false;
+        isPallet = false;
+
+        lblReceivedQty.setText("");
         lblReceivedQty.clearFocus();
         lblReceivedQty.setEnabled(false);
 
@@ -855,8 +892,6 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
         try {
 
-
-
             if(lblReceivedQty.getText().toString().isEmpty()){
                 common.showUserDefinedAlertType("Please Enter Qty", getActivity(), getActivity(), "Warning");
                 return;
@@ -939,6 +974,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                                     common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
                                     return;
                                 }
+                                ProgressDialogUtils.closeProgressDialog();
                             } else {
                                 List<LinkedTreeMap<?, ?>> _lOutBound = new ArrayList<LinkedTreeMap<?, ?>>();
                                 _lOutBound = (List<LinkedTreeMap<?, ?>>) core.getEntityObject();
@@ -948,24 +984,33 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                                         OutbountDTO dto = new OutbountDTO(_lOutBound.get(i).entrySet());
                                         outbountDTOS.add(dto);
                                     }
-
+                                    ProgressDialogUtils.closeProgressDialog();
                                     if(outbountDTOS.size()>0){
                                         if(Integer.parseInt(outbountDTOS.get(0).getPSNDetailsID())>0){
                                            // ClearFileds();
-                                            packedQty_1 += 1;
-                                            if(packedQty_1==pickedQty_1){
-                                                ScanSONumberForPacking(SONumber,1);
+                                            if(scanType.equals("Auto")){
+                                                packedQty_1 += 1;
+                                                if(packedQty_1==pickedQty_1){
+                                                    ScanSONumberForPacking(SONumber,1);
+                                                }else{
+                                                    lblQty.setText(packedQty_1+" / " +pickedQty_1);
+                                                }
                                             }else{
-                                                lblQty.setText(packedQty_1+" / " +pickedQty_1);
+                                                relativeOne.setVisibility(View.GONE);
+                                                relativeTwo.setVisibility(View.VISIBLE);
+                                                relativeThree.setVisibility(View.GONE);
+                                                relativeFour.setVisibility(View.GONE);
+                                                ClearFileds1();
+                                                ScanSONumberForPacking(SONumber,1);
                                             }
                                             //
                                         }
-                                        ProgressDialogUtils.closeProgressDialog();
+
                                     }
                                 }
                             }
 
-                            ProgressDialogUtils.closeProgressDialog();
+
 
                         } catch (Exception ex) {
                             try {
@@ -1185,6 +1230,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         relativeFour.setVisibility(View.GONE);
         tvOrderInfromation.setText(skuListDTOS.get(0).getCustomerName());
         SkuListAdapter skuListAdapter = new SkuListAdapter(getActivity(), skuListDTOS, relativeOne, relativeTwo, relativeThree, relativeFour, new SkuListAdapter.OnItemClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onItemClick(int pos) {
 
@@ -1334,18 +1380,31 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
                                             cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.white));
                                             ivScanSku.setImageResource(R.drawable.check);
-
-                                            lblReceivedQty.setText("1");
-                                            lblReceivedQty.clearFocus();
-                                            lblReceivedQty.setEnabled(false);
-
-                                            lblPackingType.setText("");
-                                            lblPackingType.clearFocus();
-                                            lblPackingType.setEnabled(false);
-
                                             isSKU=true;
 
-                                            UpsertPackItem();
+                                            if(scanType.equals("Auto")){
+
+                                                lblReceivedQty.setText("1");
+                                                lblReceivedQty.clearFocus();
+                                                lblReceivedQty.setEnabled(false);
+
+                                                lblPackingType.setText("");
+                                                lblPackingType.clearFocus();
+                                                lblPackingType.setEnabled(false);
+
+                                                UpsertPackItem();
+
+                                            }else{
+                                                DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0073);
+                                                lblReceivedQty.setText("");
+                                                lblReceivedQty.clearFocus();
+                                                lblReceivedQty.setEnabled(true);
+
+                                                lblPackingType.setText("");
+                                                lblPackingType.clearFocus();
+                                                lblPackingType.setEnabled(true);
+
+                                            }
 
                                         }else{
                                             common.showUserDefinedAlertType(errorMessages.EMC_0079,getActivity(),getContext(),"Error");

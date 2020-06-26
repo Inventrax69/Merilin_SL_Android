@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="NestedWeights,UseCompoundDrawables"
     android:background="@color/white">
 
     <ImageView
@@ -14,7 +15,8 @@
         android:scaleType="fitXY"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:contentDescription="TODO" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -39,22 +41,23 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                   >
 
                     <ImageView
-
                         android:layout_width="85dp"
                         android:layout_height="85dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/receive" />
+                        android:src="@drawable/receive"
+                        android:contentDescription="TODO" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Receiving"
-                        android:textSize="20dp" />
+                        android:text="@string/receiving"
+                        android:textSize="20sp" />
 
 
                 </LinearLayout>
@@ -63,9 +66,6 @@
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
                     android:background="#cccc" />
-
-
-
 
                 <LinearLayout
                     android:id="@+id/ll_picking"
@@ -86,8 +86,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Picking"
-                        android:textSize="20dp" />
+                        android:text="@string/picking"
+                        android:textSize="20sp" />
 
 
                 </LinearLayout>
@@ -117,15 +117,15 @@
                         android:layout_width="85dp"
                         android:layout_height="85dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/stcok" />
+                        android:src="@drawable/stock" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Live Stock"
-                        android:textSize="20dp" />
+                        android:text="@string/live_stock"
+                        android:textSize="20sp" />
 
 
                 </LinearLayout>
@@ -155,8 +155,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Internal transfer"
-                        android:textSize="20dp" />
+                        android:text="@string/internal_transfer"
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -196,8 +196,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Cycle count"
-                        android:textSize="20dp" />
+                        android:text="@string/cycle_count"
+                        android:textSize="20sp" />
 
 
                 </LinearLayout>
@@ -229,8 +229,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
-                        android:text="Putaway"
-                        android:textSize="20dp"
+                        android:text="@string/putaway"
+                        android:textSize="20sp"
                         android:layout_marginTop="15dp"/>
 
 

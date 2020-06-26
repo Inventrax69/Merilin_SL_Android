@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
 import com.honeywell.aidc.AidcManager;
 import com.honeywell.aidc.BarcodeReader;
+import com.honeywell.aidc.ScannerUnavailableException;
 import com.inventrax.falconsl_new.R;
 import com.inventrax.falconsl_new.activities.MainActivity;
 import com.inventrax.falconsl_new.common.Common;
@@ -33,6 +35,8 @@ import com.inventrax.falconsl_new.common.constants.EndpointConstants;
 import com.inventrax.falconsl_new.common.constants.ErrorMessages;
 import com.inventrax.falconsl_new.interfaces.ApiInterface;
 import com.inventrax.falconsl_new.pojos.CycleCountDTO;
+import com.inventrax.falconsl_new.pojos.OutbountDTO;
+import com.inventrax.falconsl_new.pojos.SKUListDTO;
 import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner;
@@ -162,6 +166,8 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
 
     }
 
+
+
     public void getWarehouseId() {
         for (CycleCountDTO oCycleCount : lstCycleCount) {
             if (oCycleCount.getCCName().equals(CCname)) {
@@ -213,6 +219,8 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
         FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, cycleCountDetailsFragment);
 
     }
+
+
 
     // Get Cycle count names list
     public void getCCNames() {

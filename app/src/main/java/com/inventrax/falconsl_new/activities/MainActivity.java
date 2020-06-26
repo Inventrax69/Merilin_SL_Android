@@ -1,6 +1,7 @@
 package com.inventrax.falconsl_new.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -14,7 +15,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.honeywell.aidc.BarcodeReader;
 import com.inventrax.falconsl_new.R;
 import com.inventrax.falconsl_new.application.AbstractApplication;
@@ -23,6 +27,7 @@ import com.inventrax.falconsl_new.fragments.CycleCountDetailsFragment;
 import com.inventrax.falconsl_new.fragments.CycleCountHeaderFragment;
 import com.inventrax.falconsl_new.fragments.DeleteOBDPickedItemsFragment;
 import com.inventrax.falconsl_new.fragments.DeleteVLPDPickedItemsFragment;
+import com.inventrax.falconsl_new.fragments.DrawerFragment;
 import com.inventrax.falconsl_new.fragments.DrawerFragmentWithList;
 import com.inventrax.falconsl_new.fragments.GoodsInFragment;
 import com.inventrax.falconsl_new.fragments.HomeFragment;
@@ -48,16 +53,17 @@ import com.inventrax.falconsl_new.model.NavDrawerItem;
 import com.inventrax.falconsl_new.util.AndroidUtils;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.FragmentUtils;
+import com.inventrax.falconsl_new.util.MaterialDialogUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 import com.inventrax.falconsl_new.util.SharedPreferencesUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DrawerFragmentWithList.FragmentDrawerListener {
+public class MainActivity extends AppCompatActivity implements DrawerFragment.FragmentDrawerListener {
 
     private Toolbar mToolbar;
-    private DrawerFragmentWithList drawerFragment;
+    private DrawerFragment drawerFragment;
     private FragmentUtils fragmentUtils;
     private CharSequence[] userRouteCharSequences;
     private List<String> userRouteStringList;
@@ -68,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragmentWit
     private static BarcodeReader barcodeReader;
     public String barcode = "";
     GoodsInFragment goodsInFragment;
+    IntentIntegrator qrScan;
 
     ScanKeyListener scanKeyListener = new ScanKeyListener() {
         @Override
@@ -108,71 +115,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragmentWit
 
             if (e.getAction() == KeyEvent.ACTION_DOWN && e.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                 // Toast.makeText(getApplicationContext(), barcode, Toast.LENGTH_LONG).show();
-                if (barcode != null) {
-                    // scanKeyListener.getScannedData(barcode);
-                    // ((GoodsInFragment)goodsInFragment).myScannedData(MainActivity.this,barcode);
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    // (if you're not using the support library)
-                    // FragmentManager fragmentManager = getFragmentManager();
-
-                        for (final Fragment fragment : fragmentManager.getFragments()) {
-
-                            if (fragment != null && fragment.isVisible() && fragment instanceof CycleCountDetailsFragment) {
-                                ((CycleCountDetailsFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof DeleteOBDPickedItemsFragment) {
-                                ((DeleteOBDPickedItemsFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof DeleteVLPDPickedItemsFragment) {
-                                ((DeleteVLPDPickedItemsFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof GoodsInFragment) {
-                                ((GoodsInFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof InternalTransferFragment) {
-                                ((InternalTransferFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof LiveStockFragment) {
-                                ((LiveStockFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof LoadingFragment) {
-                                ((LoadingFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof OBDPickingDetailsFragment) {
-                                ((OBDPickingDetailsFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof PalletTransfersFragment) {
-                                ((PalletTransfersFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof PutawayFragment) {
-                                ((PutawayFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof SortingFragment) {
-                                ((SortingFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof StockTransferPutAway) {
-                                ((StockTransferPutAway) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof VLPDPickingDetailsFragment) {
-                                ((VLPDPickingDetailsFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof LoadSheetFragment) {
-                                ((LoadSheetFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof PackingFragment) {
-                                ((PackingFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof LoadGenerationFragment) {
-                                ((LoadGenerationFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            if (fragment != null && fragment.isVisible() && fragment instanceof NewLoadSheetFragment) {
-                                ((NewLoadSheetFragment) fragment).myScannedData(MainActivity.this, barcode);
-                            }
-                            
-                    }
-                }
-
-                barcode = "";
+                ProcessScan(barcode);
                 return true;
             }
 /*        }else{
@@ -205,6 +148,81 @@ public class MainActivity extends AppCompatActivity implements DrawerFragmentWit
         } catch (Exception ex) {
             // Logger.Log(MainActivity.class.getName(), ex);
         }
+    }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @SuppressLint("RestrictedApi")
+    public void ProcessScan(String ScannedData){
+
+        if (ScannedData != null) {
+
+            // scanKeyListener.getScannedData(barcode);
+            // ((GoodsInFragment)goodsInFragment).myScannedData(MainActivity.this,barcode);
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            // (if you're not using the support library)
+            // FragmentManager fragmentManager = getFragmentManager();
+
+            for (final Fragment fragment : fragmentManager.getFragments()) {
+
+                if (fragment != null && fragment.isVisible() && fragment instanceof CycleCountDetailsFragment) {
+                    ((CycleCountDetailsFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof DeleteOBDPickedItemsFragment) {
+                    ((DeleteOBDPickedItemsFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof DeleteVLPDPickedItemsFragment) {
+                    ((DeleteVLPDPickedItemsFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof GoodsInFragment) {
+                    ((GoodsInFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof InternalTransferFragment) {
+                    ((InternalTransferFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof LiveStockFragment) {
+                    ((LiveStockFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof LoadingFragment) {
+                    ((LoadingFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof OBDPickingDetailsFragment) {
+                    ((OBDPickingDetailsFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof OBDPickingHeaderFragment) {
+                    ((OBDPickingHeaderFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof PalletTransfersFragment) {
+                    ((PalletTransfersFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof PutawayFragment) {
+                    ((PutawayFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof SortingFragment) {
+                    ((SortingFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof StockTransferPutAway) {
+                    ((StockTransferPutAway) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof VLPDPickingDetailsFragment) {
+                    ((VLPDPickingDetailsFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof LoadSheetFragment) {
+                    ((LoadSheetFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof PackingFragment) {
+                    ((PackingFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof LoadGenerationFragment) {
+                    ((LoadGenerationFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof NewLoadSheetFragment) {
+                    ((NewLoadSheetFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+            }
+        }
+
+        barcode = "";
     }
 
     public void loadFormControls() {
@@ -242,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragmentWit
                 }
             });
 
-            drawerFragment = (DrawerFragmentWithList) getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
+            drawerFragment = (DrawerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
             drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
             drawerFragment.setDrawerListener(this);
 
@@ -260,7 +278,10 @@ public class MainActivity extends AppCompatActivity implements DrawerFragmentWit
             displayView(0, new NavDrawerItem(false, "Home"));
 
 
-
+            //initializing scan object
+            qrScan = new IntentIntegrator(this);
+            qrScan.setOrientationLocked(false);
+            qrScan.setCaptureActivity(CaptureActivityPortrait.class);
 
 
 
@@ -308,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragmentWit
             break;
 
             case R.id.rescan: {
-
+                qrScan.initiateScan();
             }
             break;
 
@@ -316,6 +337,24 @@ public class MainActivity extends AppCompatActivity implements DrawerFragmentWit
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            //if qrcode has nothing in it
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Result Not Found", Toast.LENGTH_LONG).show();
+            } else {
+                //if qr contains data
+                //txtLocation.setText(result.getContents());
+                ProcessScan(result.getContents());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 

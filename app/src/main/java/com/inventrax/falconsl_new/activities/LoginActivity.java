@@ -349,10 +349,12 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
                             //materialDialogUtil.showErrorDialog(LoginActivity.this,"Failed Failed Failed Failed Failed Failed Failed Failed Failed Failed Failed Failed");
                             if (submitForm()) {
                                 // Checking Internet Connection
-
-                                if (serviceUrlString != null && serviceUrlString != "") {
-
-                                    validateUserSession();
+                                if (serviceUrlString != null && !serviceUrlString.equals("")) {
+                                    try{
+                                        validateUserSession();
+                                    }catch (Exception e){
+                                        DialogUtils.showAlertDialog(LoginActivity.this, "Configure Url Correctly");
+                                    }
 
                                 } else {
                                     DialogUtils.showAlertDialog(LoginActivity.this, "Configure Url");

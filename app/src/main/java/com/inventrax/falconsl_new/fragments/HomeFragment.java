@@ -28,7 +28,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         rootView = inflater.inflate(R.layout.fragment_home,container,false);
         loadFormControls();
 
-
         return rootView;
     }
 
@@ -88,7 +87,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, vlpdPickingHeaderFragment);
                 break;
 
-
             case R.id.ll_houseKeeping:
                 InternalTransferFragment internalTransferheaderFragment = new InternalTransferFragment();
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, internalTransferheaderFragment);
@@ -99,12 +97,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, cycleCountHeaderFragment);
                 break;
 
-
             case R.id.ll_livestock:
                 LiveStockFragment liveStockFragment_ = new LiveStockFragment();
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, liveStockFragment_);
                 break;
+
         }
+
     }
 
 

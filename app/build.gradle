@@ -10,8 +10,8 @@ android {
         applicationId "com.inventrax.falconsl_new"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 6
-        versionName "1.5"
+        versionCode 8
+        versionName "1.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -65,6 +65,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-identity:8.4.0'
     implementation 'com.google.android.gms:play-services-gcm:8.4.0'
     implementation 'ch.acra:acra:4.9.0'
+    implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
     implementation 'com.android.support:multidex:1.0.1'
     testImplementation 'junit:junit:4.12'
 }

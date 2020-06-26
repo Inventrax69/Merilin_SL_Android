@@ -83,6 +83,9 @@ public interface ApiInterface {
     @POST("Outbound/GetobdRefNos")
     Call<String> GetobdRefNos(@Body WMSCoreMessage oRequest);
 
+    @POST("Outbound/GetOBDNosUnderSO")
+    Call<String> GetOBDNosUnderSO(@Body WMSCoreMessage oRequest);
+
     @POST("Outbound/GetOBDPickedList")
     Call<String> GetOBDPickedList(@Body WMSCoreMessage oRequest);
 

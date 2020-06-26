@@ -1,11 +1,15 @@
 package com.inventrax.falconsl_new.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.inventrax.falconsl_new.R;
@@ -52,9 +56,9 @@ public class NewExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         TextView txtListChild = (TextView) convertView.findViewById(R.id.text_desc);
-        txtListChild.setText(childText);
+        txtListChild.setText(" "+childText);
 
-        txtListChild.setOnClickListener(new View.OnClickListener() {
+        convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onItemClick.onItemClick(groupPosition,childPosition,childText);
@@ -85,6 +89,7 @@ public class NewExpandableListAdapter extends BaseExpandableListAdapter {
         return groupPosition;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
@@ -92,6 +97,14 @@ public class NewExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.adapter_list_group, null);
+        }
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
+        if(isExpanded){
+            convertView.setBackgroundColor(Color.parseColor("#50000000"));
+            imageView.setImageDrawable(_context.getDrawable(R.drawable.down_arrow));
+        }else{
+            convertView.setBackgroundColor(Color.TRANSPARENT);
+            imageView.setImageDrawable(_context.getDrawable(R.drawable.up_arrow));
         }
 
         TextView lblListHeader = (TextView) convertView.findViewById(R.id.text_title);

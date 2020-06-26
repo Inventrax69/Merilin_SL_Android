@@ -720,7 +720,7 @@
             android:scrollbars="vertical" />
 
         <Button
-            android:id="@+id/btnBackHome"
+            android:id="@+id/btnBackPacking"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
@@ -729,7 +729,7 @@
             android:background="@drawable/button_shape"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Go Back to Home "
+            android:text="Go Back to Packing "
             android:textAllCaps="true"
             android:textColor="@color/white" />
 

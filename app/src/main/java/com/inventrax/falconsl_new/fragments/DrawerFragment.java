@@ -6,8 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.inventrax.falconsl_new.R;
@@ -52,12 +57,13 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
     private IntentFilter mIntentFilter;
     private CounterBroadcastReceiver counterBroadcastReceiver;
 
-    private String userName = "";
+    private String userName = "",scanType="";
     List<String> listDataParent;
     HashMap<String, List<String>> listDataChild;
     ExpandableListView expandable_list_view;
     NewExpandableListAdapter.OnItemClick onItemClick;
 
+    RelativeLayout rr;
 
 
     public void setDrawerListener(FragmentDrawerListener listener) {
@@ -127,8 +133,66 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
         });
 
         expandable_list_view.setAdapter(listAdapter);
+        expandable_list_view.expandGroup(0);
         expandable_list_view.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            int previousGroup = -1;
+            int previousGroup = 0;
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                if(groupPosition != previousGroup)
+                    expandable_list_view.collapseGroup(previousGroup);
+                previousGroup = groupPosition;
+            }
+        });
+    }
+
+    private void createListDataAuto() {
+
+
+        listDataParent = new ArrayList<String>();
+        listDataChild = new HashMap<String, List<String>>();
+
+        // Adding child data
+       // listDataParent.add("Inbound");
+        listDataParent.add("Outbound");
+      //  listDataParent.add("House Keeping");
+
+        // Adding child data List one
+        List<String> mainListInbound = new ArrayList<String>();
+        mainListInbound.add("Receiving");
+        mainListInbound.add("Putaway");
+        mainListInbound.add("Pallet Transfers");
+
+        // Adding child data List two
+        List<String> mainListOutbound  = new ArrayList<String>();
+        mainListOutbound.add("OBD Picking");
+        mainListOutbound.add("Packing");
+        mainListOutbound.add("Load Generation");
+        mainListOutbound.add("Loading");
+
+        // Adding child data List three
+        List<String> mainListHouseKeeping = new ArrayList<String>();
+        mainListHouseKeeping.add("Bin to Bin");
+        mainListHouseKeeping.add("Live Stock");
+        mainListHouseKeeping.add("Cycle Count");
+
+      //  listDataChild.put(listDataParent.get(0), mainListInbound); // Header, Child data
+        listDataChild.put(listDataParent.get(0), mainListOutbound); // Header, Child data
+       // listDataChild.put(listDataParent.get(2), mainListHouseKeeping); // Header, Child data
+
+        NewExpandableListAdapter listAdapter = new NewExpandableListAdapter(getActivity(), listDataParent, listDataChild, new NewExpandableListAdapter.OnItemClick() {
+
+            @Override
+            public void onItemClick(int gpos, int cpos, String text) {
+                mDrawerLayout.closeDrawer(containerView);
+                setNavigationPage(text);
+            }
+        });
+
+        expandable_list_view.setAdapter(listAdapter);
+        expandable_list_view.expandGroup(0);
+        expandable_list_view.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            int previousGroup = 0;
 
             @Override
             public void onGroupExpand(int groupPosition) {
@@ -144,6 +208,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
 
             SharedPreferences sp = getContext().getSharedPreferences("LoginActivity", Context.MODE_PRIVATE);
             userName = sp.getString("UserName", "");
+            scanType = sp.getString("scanType", "");
 
             mIntentFilter = new IntentFilter();
             mIntentFilter.addAction("com.example.broadcast.counter");
@@ -151,7 +216,16 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
             txtLoginUser = (TextView) layout.findViewById(R.id.txtLoginUser);
             txtHome = (TextView) layout.findViewById(R.id.txtHome);
 
+            rr = (RelativeLayout) layout.findViewById(R.id.rr);
+
             txtLoginUser.setText(userName);
+
+/*            Fragment fragment = new HomeFragment();
+            if(fragment != null && fragment.isVisible() && fragment instanceof HomeFragment ){
+                rr.setBackgroundColor(Color.parseColor("#000000"));
+            }else{
+                rr.setBackgroundColor(Color.parseColor("#FF0000"));
+            }*/
 
             txtHome.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -162,7 +236,13 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
             });
 
             expandable_list_view = (ExpandableListView) layout.findViewById(R.id.expandable_list_view);
-            createListData();
+
+            if(scanType.equals("Auto")){
+                createListDataAuto();
+            }else{
+                createListData();
+            }
+
 
         }catch (Exception ex) {
             DialogUtils.showAlertDialog(getActivity(), "Error while loading menu list");

@@ -51,7 +51,6 @@
     <string name="excessOrShortage">Excess/Shortage</string>
     <string name="clear">Clear</string>
     <string name="receive">Receive</string>
-    <string name="putaway">Putaway</string>
     <string name="selectResson">Select Reason </string>
     <string name="suggestedLoc">Suggested Loc. </string>
     <string name="suggestedDock">Suggested Dock </string>
@@ -213,4 +212,10 @@
     <string name="select_vehicle">Select Vehicle</string>
     <string name="select_wh">Select WH</string>
     <string name="from_pallet">From Pallet</string>
+    <string name="putaway">Putaway</string>
+ <string name="cycle_count">Cycle count</string>
+ <string name="internal_transfer">Internal transfer</string>
+ <string name="live_stock">Live Stock</string>
+ <string name="picking">Picking</string>
+ <string name="receiving">Receiving</string>
 </resources>

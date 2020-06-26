@@ -215,7 +215,7 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
             inboundDTO.setAccountID(accountId);
             message.setEntityObject(inboundDTO);
 
-            Log.v("ABCDE",new Gson().toJson(message));
+            // Log.v("ABCDE",new Gson().toJson(message));
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
