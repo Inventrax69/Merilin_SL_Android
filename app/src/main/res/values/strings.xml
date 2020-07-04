@@ -218,4 +218,9 @@
  <string name="live_stock">Live Stock</string>
  <string name="picking">Picking</string>
  <string name="receiving">Receiving</string>
+    <string name="scan_so_number">Scan SO Number</string>
+ <string name="scan_cartoon">Scan Cartoon</string>
+    <string name="packing">Packing</string>
+ <string name="load_generation">Load Generation</string>
+ <string name="loading">Loading</string>
 </resources>

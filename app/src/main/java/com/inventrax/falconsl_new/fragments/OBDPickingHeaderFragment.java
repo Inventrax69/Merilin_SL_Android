@@ -57,7 +57,6 @@ import retrofit2.Response;
 public class OBDPickingHeaderFragment extends Fragment implements View.OnClickListener, BarcodeReader.TriggerListener, BarcodeReader.BarcodeListener, AdapterView.OnItemSelectedListener {
 
     private static final String classCode = "API_FRAG_020";
-
     private View rootView;
     Button btnGo,btnClear;
     SearchableSpinner spinnerSelectPickList;
@@ -71,7 +70,6 @@ public class OBDPickingHeaderFragment extends Fragment implements View.OnClickLi
     String accountId = null;
     private String pickRefNo = "", pickobdId;
     List<String> lstObdIds;
-
     String scanner = null;
     String getScanner = null;
     //For Honey well barcode
@@ -96,6 +94,7 @@ public class OBDPickingHeaderFragment extends Fragment implements View.OnClickLi
     }
 
     private void loadFormControls() {
+
         SharedPreferences sp = getActivity().getSharedPreferences("LoginActivity", Context.MODE_PRIVATE);
         userId = sp.getString("RefUserId", "");
         accountId = sp.getString("AccountId", "");
@@ -480,15 +479,15 @@ public class OBDPickingHeaderFragment extends Fragment implements View.OnClickLi
                                 ivScanSONumber.setImageResource(R.drawable.check);
 
                                 if (lstPickRefNo == null) {
-                                    ProgressDialogUtils.closeProgressDialog();
-                                    DialogUtils.showAlertDialog(getActivity(), "Picklist is null");
+                                     ProgressDialogUtils.closeProgressDialog();
+                                     DialogUtils.showAlertDialog(getActivity(), "Picklist is null");
                                 } else {
                                     ProgressDialogUtils.closeProgressDialog();
                                     if(lstPickRefNo.size()==0){
                                         pickobdId="";pickRefNo="";
                                         arrayAdapterPickList = new ArrayAdapter(getActivity(), R.layout.support_simple_spinner_dropdown_item, lstPickRefNo);
                                         spinnerSelectPickList.setAdapter(arrayAdapterPickList);
-                                        common.showUserDefinedAlertType("SO delivered", getActivity(), getContext(), "Warning");
+                                        common.showUserDefinedAlertType("There is no corresponding OBD to pick for this SO", getActivity(), getContext(), "Warning");
                                         return;
                                     }
                                     if(lstPickRefNo.size()==1){

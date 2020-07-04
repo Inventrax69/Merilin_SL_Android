@@ -135,6 +135,9 @@ public interface ApiInterface {
     @POST("Outbound/UpdatePackComplete")
     Call<String> UpdatePackComplete(@Body WMSCoreMessage oRequest);
 
+   @POST("Outbound/GetPackingCartonInfo")
+    Call<String> GetPackingCartonInfo(@Body WMSCoreMessage oRequest);
+
     @POST("Outbound/GETMSPsForPacking")
     Call<String> GETMSPsForPacking(@Body WMSCoreMessage oRequest);
 

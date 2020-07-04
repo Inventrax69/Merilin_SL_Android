@@ -40,6 +40,7 @@ import com.inventrax.falconsl_new.fragments.NewLoadSheetFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingDetailsFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingHeaderFragment;
 import com.inventrax.falconsl_new.fragments.PackingFragment;
+import com.inventrax.falconsl_new.fragments.PackingInfoFragment;
 import com.inventrax.falconsl_new.fragments.PalletTransfersFragment;
 import com.inventrax.falconsl_new.fragments.PutawayFragment;
 import com.inventrax.falconsl_new.fragments.SortingFragment;
@@ -212,6 +213,9 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
                 }
                 if (fragment != null && fragment.isVisible() && fragment instanceof PackingFragment) {
                     ((PackingFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof PackingInfoFragment) {
+                    ((PackingInfoFragment) fragment).myScannedData(MainActivity.this, ScannedData);
                 }
                 if (fragment != null && fragment.isVisible() && fragment instanceof LoadGenerationFragment) {
                     ((LoadGenerationFragment) fragment).myScannedData(MainActivity.this, ScannedData);

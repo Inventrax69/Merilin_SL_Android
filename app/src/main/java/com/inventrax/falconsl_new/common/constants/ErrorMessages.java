@@ -139,4 +139,6 @@ public class ErrorMessages {
 
     public String EMC_080 = "Other request is in progress .";
 
+    public String EMC_081= "Please scan any of the above to get packing info";
+
 }

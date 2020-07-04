@@ -110,6 +110,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
         List<String> mainListOutbound  = new ArrayList<String>();
         mainListOutbound.add("OBD Picking");
         mainListOutbound.add("Packing");
+        mainListOutbound.add("Packing Info");
         mainListOutbound.add("Load Generation");
         mainListOutbound.add("Loading");
 
@@ -165,8 +166,9 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
 
         // Adding child data List two
         List<String> mainListOutbound  = new ArrayList<String>();
-        mainListOutbound.add("OBD Picking");
+       // mainListOutbound.add("OBD Picking");
         mainListOutbound.add("Packing");
+        mainListOutbound.add("Packing Info");
         mainListOutbound.add("Load Generation");
         mainListOutbound.add("Loading");
 
@@ -397,6 +399,10 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new PackingFragment());
             }
             break;
+            case "Packing Info": {
+                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new PackingInfoFragment());
+            }
+            break;
             case "Load Generation": {
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new LoadGenerationFragment());
             }
@@ -560,7 +566,6 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
             }
 
         }
-
 
     }
 

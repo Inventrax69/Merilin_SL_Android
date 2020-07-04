@@ -256,6 +256,10 @@ public class OutbountDTO {
     @SerializedName("CustomerAddress")
     private String CustomerAddress;
 
+
+    @SerializedName("WareHouseID")
+    private String WareHouseID;
+
     private boolean isChecked=false;
 
 
@@ -686,6 +690,11 @@ public class OutbountDTO {
                  case "CustomerAddress":
                     if(entry.getValue()!=null) {
                         this.setCustomerAddress(entry.getValue().toString());
+                    }
+                    break;
+                case "WareHouseID":
+                    if(entry.getValue()!=null) {
+                        this.setWareHouseID(entry.getValue().toString());
                     }
                     break;
 
@@ -1342,5 +1351,12 @@ public class OutbountDTO {
         CustomerAddress = customerAddress;
     }
 
+    public String getWareHouseID() {
+        return WareHouseID;
+    }
+
+    public void setWareHouseID(String wareHouseID) {
+        WareHouseID = wareHouseID;
+    }
 
 }
