@@ -222,6 +222,9 @@ public class LiveStockFragment extends Fragment implements View.OnClickListener,
         common = new Common();
         gson = new GsonBuilder().create();
 
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
+
         btnClear.setOnClickListener(this);
         btnSearch.setOnClickListener(this);
 
@@ -283,6 +286,10 @@ public class LiveStockFragment extends Fragment implements View.OnClickListener,
                 }
             }
         });
+
+
+
+
 
     }
 
@@ -408,6 +415,12 @@ public class LiveStockFragment extends Fragment implements View.OnClickListener,
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
+
 
         if (scannedData != null) {
 
@@ -1316,6 +1329,7 @@ public class LiveStockFragment extends Fragment implements View.OnClickListener,
         }
     }*/
 
+/*
     public void validatePalletCode() {
         try {
 
@@ -1440,8 +1454,9 @@ public class LiveStockFragment extends Fragment implements View.OnClickListener,
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
         }
     }
+*/
 
-    public void validateMaterial() {
+/*    public void validateMaterial() {
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
@@ -1555,7 +1570,7 @@ public class LiveStockFragment extends Fragment implements View.OnClickListener,
             ProgressDialogUtils.closeProgressDialog();
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
         }
-    }
+    }*/
 
     public void GetActiveStockData() {
         try {

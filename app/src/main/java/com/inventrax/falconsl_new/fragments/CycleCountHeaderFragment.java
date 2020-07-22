@@ -159,9 +159,14 @@ public class CycleCountHeaderFragment extends Fragment implements View.OnClickLi
 
         common = new Common();
         gson = new GsonBuilder().create();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         // To get Cycle count names
         getCCNames();
+
+
+
 
 
     }

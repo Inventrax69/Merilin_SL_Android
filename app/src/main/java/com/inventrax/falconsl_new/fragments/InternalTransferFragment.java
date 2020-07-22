@@ -228,6 +228,8 @@ public class InternalTransferFragment extends Fragment implements View.OnClickLi
         gson = new GsonBuilder().create();
         core = new WMSCoreMessage();
 
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         //For Honeywell Broadcast receiver intiation
         AidcManager.create(getActivity(), new AidcManager.CreatedCallback() {
@@ -250,6 +252,8 @@ public class InternalTransferFragment extends Fragment implements View.OnClickLi
 
         // To get tenants
         getTenants();
+
+
 
 
     }
@@ -363,6 +367,11 @@ public class InternalTransferFragment extends Fragment implements View.OnClickLi
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (common.isPopupActive()) {
 
@@ -1128,7 +1137,7 @@ public class InternalTransferFragment extends Fragment implements View.OnClickLi
         }
     }
 
-    public void validateLocationCode(String location, final String from) {
+  /*  public void validateLocationCode(String location, final String from) {
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
@@ -1264,7 +1273,7 @@ public class InternalTransferFragment extends Fragment implements View.OnClickLi
             common.showUserDefinedAlertType(errorMessages.EMC_0003, getActivity(), getContext(), "Error");
         }
     }
-
+*/
     public void GetAvailbleQtyList() {
         try {
             WMSCoreMessage message = new WMSCoreMessage();

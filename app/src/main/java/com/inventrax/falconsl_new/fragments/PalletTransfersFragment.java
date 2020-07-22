@@ -211,6 +211,8 @@ public class PalletTransfersFragment extends Fragment implements View.OnClickLis
         common = new Common();
         gson = new GsonBuilder().create();
         core = new WMSCoreMessage();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         //For Honeywell Broadcast receiver intiation
         AidcManager.create(getActivity(), new AidcManager.CreatedCallback() {
@@ -293,6 +295,11 @@ public class PalletTransfersFragment extends Fragment implements View.OnClickLis
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (common.isPopupActive()) {
 

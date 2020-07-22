@@ -181,6 +181,10 @@ public class LoadingFragment extends Fragment implements View.OnClickListener,Ba
         common = new Common();
         core= new WMSCoreMessage();
 
+
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
+
         GetLoadSheetNo();
 
         //For Honeywell
@@ -200,6 +204,7 @@ public class LoadingFragment extends Fragment implements View.OnClickListener,Ba
                 }
             }
         });
+
     }
 
 
@@ -292,6 +297,11 @@ public class LoadingFragment extends Fragment implements View.OnClickListener,Ba
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
+
         if (scannedData != null) {
             if (ScanValidator.IsItemScanned(scannedData)) {
                 cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));

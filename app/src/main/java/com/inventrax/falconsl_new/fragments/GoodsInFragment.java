@@ -227,7 +227,8 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
         gson = new GsonBuilder().create();
         core = new WMSCoreMessage();
         soundUtils = new SoundUtils();
-
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         // For Cipher Barcode reader
         Intent RTintent = new Intent("sw.reader.decode.require");
@@ -276,6 +277,8 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
 
         // To get Storage Locations
         getSLocs();
+
+
 
     }
 
@@ -449,6 +452,11 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (scannedData != null && !Common.isPopupActive() && !isInboundCompleted) {
 
@@ -1126,7 +1134,7 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
         }
     }
 
-    public void validateDock() {
+/*    public void validateDock() {
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
@@ -1242,9 +1250,9 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
             ProgressDialogUtils.closeProgressDialog();
             common.showUserDefinedAlertType(errorMessages.EMC_0003, getActivity(), getContext(), "Error");
         }
-    }
+    }*/
 
-    public void ValidatePalletCode() {
+/*    public void ValidatePalletCode() {
 
         try {
 
@@ -1358,7 +1366,7 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
             ProgressDialogUtils.closeProgressDialog();
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
         }
-    }
+    }*/
 
 
     // for auto mode

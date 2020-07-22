@@ -172,6 +172,9 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
         common = new Common();
         core = new WMSCoreMessage();
 
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
+
         if (getArguments() != null) {
             if (getArguments().getString("LoadSheetNo") != null) {
                 lblLoadSheetNo.setText(getArguments().getString("LoadSheetNo"));
@@ -208,6 +211,9 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
 
         btnGo.setOnClickListener(this);
         btnLoadingComplete.setOnClickListener(this);
+
+
+
 
 
     }
@@ -379,8 +385,8 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
                                     owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                                 }
 
-                                cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
-                                ivScanSku.setImageResource(R.drawable.fullscreen_img);
+                               // cvScanSku.setCardBackgroundColor(getResources().getColor(R.color.skuColor));
+                              //  ivScanSku.setImageResource(R.drawable.fullscreen_img);
                                 ProgressDialogUtils.closeProgressDialog();
                                 common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
 
@@ -458,6 +464,12 @@ public class NewLoadSheetFragment extends Fragment implements View.OnClickListen
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
         if (scannedData != null) {
+
+            if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+                common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+                return;
+            }
+
             if (!ProgressDialogUtils.isProgressActive()) {
                 if (rlLoadingTwo.getVisibility() == View.VISIBLE) {
                     UpsertLoadDetails(scannedData);

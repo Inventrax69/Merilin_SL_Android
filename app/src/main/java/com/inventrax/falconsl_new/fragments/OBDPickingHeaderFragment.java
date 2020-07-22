@@ -114,6 +114,9 @@ public class OBDPickingHeaderFragment extends Fragment implements View.OnClickLi
         common = new Common();
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
+
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
         LoadPickRefnos();
 
         // For Cipher Barcode reader
@@ -142,6 +145,7 @@ public class OBDPickingHeaderFragment extends Fragment implements View.OnClickLi
                 }
             }
         });
+
     }
 
     public void myScannedData(Context context, String barcode){
@@ -164,6 +168,11 @@ public class OBDPickingHeaderFragment extends Fragment implements View.OnClickLi
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (scannedData != null && !common.isPopupActive) {
             pickRefNo = ""; pickobdId="";

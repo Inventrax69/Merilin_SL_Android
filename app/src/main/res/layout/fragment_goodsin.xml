@@ -480,6 +480,7 @@
                         android:inputType="number"
                         android:singleLine="true"
                         android:enabled="false"/>
+
                 </android.support.design.widget.TextInputLayout>
 
 

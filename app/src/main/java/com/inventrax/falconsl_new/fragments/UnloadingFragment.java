@@ -158,6 +158,9 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
             errorMessages = new ErrorMessages();
             lstInbound = new ArrayList<InboundDTO>();
 
+            ProgressDialogUtils.closeProgressDialog();
+            common.setIsPopupActive(false);
+
 
 
             LoadInbounddetails();

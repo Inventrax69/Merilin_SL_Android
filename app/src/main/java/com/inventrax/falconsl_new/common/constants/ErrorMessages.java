@@ -141,4 +141,6 @@ public class ErrorMessages {
 
     public String EMC_081= "Please scan any of the above to get packing info";
 
+    public String EMC_082 = "Please wait previous scan is in progress";
+
 }

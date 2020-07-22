@@ -250,6 +250,8 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
         gson = new GsonBuilder().create();
         common = new Common();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         btnBinComplete.setOnClickListener(this);
         btnClear.setOnClickListener(this);
@@ -290,6 +292,9 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
         // To get Storage Locations
         getSLocs();
+
+
+
 
     }
 
@@ -480,6 +485,11 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (rlCC.getVisibility() == View.VISIBLE) {
 
@@ -1410,6 +1420,8 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
 
     public void clearFields1() {
 
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         cvScanContainer.setCardBackgroundColor(getResources().getColor(R.color.palletColor));
         ivScanContainer.setImageResource(R.drawable.fullscreen_img);
@@ -1441,6 +1453,9 @@ public class CycleCountDetailsFragment extends Fragment implements View.OnClickL
     }
 
     public void clearFields() {
+
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         cvScanLocation.setCardBackgroundColor(getResources().getColor(R.color.locationColor));
         ivScanLocation.setImageResource(R.drawable.fullscreen_img);

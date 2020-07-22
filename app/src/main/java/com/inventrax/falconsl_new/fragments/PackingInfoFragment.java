@@ -215,6 +215,8 @@ public class PackingInfoFragment extends Fragment implements View.OnClickListene
 
         common = new Common();
         gson = new GsonBuilder().create();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         btnClear.setOnClickListener(this);
         btnSearch.setOnClickListener(this);
@@ -393,6 +395,10 @@ public class PackingInfoFragment extends Fragment implements View.OnClickListene
 
         if (scannedData != null) {
 
+            if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+                common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+                return;
+            }
             if(radioSONumber.isChecked()){
               //  ValidateLocation(scannedData);
                 cvScanSONumber.setCardBackgroundColor(getResources().getColor(R.color.white));

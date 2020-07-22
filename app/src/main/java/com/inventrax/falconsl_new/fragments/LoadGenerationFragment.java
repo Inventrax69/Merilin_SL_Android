@@ -228,6 +228,9 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
         common = new Common();
         core = new WMSCoreMessage();
 
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
+
         //For Honeywell
         AidcManager.create(getActivity(), new AidcManager.CreatedCallback() {
             @Override
@@ -306,6 +309,8 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
                 }
             }
         });
+
+
 
 
     }
@@ -484,6 +489,11 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
     public void ProcessScannedinfo(String scannedData) {
 
         if (scannedData != null) {
+
+            if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+                common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+                return;
+            }
 
             if (!ProgressDialogUtils.isProgressActive()) {
 

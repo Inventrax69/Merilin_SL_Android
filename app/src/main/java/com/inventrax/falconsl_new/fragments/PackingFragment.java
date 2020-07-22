@@ -3,6 +3,7 @@ package com.inventrax.falconsl_new.fragments;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -58,6 +59,7 @@ import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.FragmentUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 import com.inventrax.falconsl_new.util.ScanValidator;
+import com.inventrax.falconsl_new.util.SoundUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,9 +105,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
     private String scannedLocation = null, scannedPallet = "", scannedSKU = null;
     private String userId = "", scanType = "", accountId = "", selectedTenant = "",
             selectedWH = "", tenantId = "", warehouseId = "";
-
     private String batch = "", serialNo = "", prjRef = "", mfg = "", exp = "", mrp = "";
-
     private RecyclerView recycler_view_sku_list,recycler_view_sku_listSuccess;
     RelativeLayout relativeOne,relativeTwo,relativeThree,relativeFour;
     TextView lblBatchNo,lblserialNo,lblMfgDate,lblExpDate,lblMRP,lblScannedSku,lblProjectRefNo,tvSONumber,lblContainer,lblQty;
@@ -243,6 +243,8 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
 
         common = new Common();
         gson = new GsonBuilder().create();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
 
         //For Honeywell
@@ -438,7 +440,14 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
 
+
         if (scannedData != null) {
+
+            if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+                common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+                return;
+            }
+
 
             if(relativeOne.getVisibility()==View.VISIBLE){
                 ScanSONumberForPacking(scannedData,0);
@@ -758,7 +767,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
         }
     }
 
-    public void GETMSPsForPacking(final String mCode) {
+/*    public void GETMSPsForPacking(final String mCode) {
 
         try {
             WMSCoreMessage message = new WMSCoreMessage();
@@ -886,7 +895,7 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
             ProgressDialogUtils.closeProgressDialog();
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0003);
         }
-    }
+    }*/
 
    public void UpsertPackItem() {
 
@@ -971,7 +980,30 @@ public class PackingFragment extends Fragment implements View.OnClickListener, B
                                 for (int i = 0; i < _lExceptions.size(); i++) {
                                     owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
                                     ProgressDialogUtils.closeProgressDialog();
-                                    common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+
+                                    if(owmsExceptionMessage.getWMSMessage().toString().equals("You are exceeding the qty.")){
+                                        common.setIsPopupActive(true);
+                                        new SoundUtils().alertWarning(getActivity(), getActivity());
+                                        DialogUtils.showAlertDialog(getActivity(), "Warning", owmsExceptionMessage.getWMSMessage().toString(), R.drawable.warning_img,new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                switch (which) {
+                                                    case DialogInterface.BUTTON_POSITIVE:
+                                                        relativeOne.setVisibility(View.GONE);
+                                                        relativeTwo.setVisibility(View.VISIBLE);
+                                                        relativeThree.setVisibility(View.GONE);
+                                                        relativeFour.setVisibility(View.GONE);
+                                                        ClearFileds1();
+                                                        ScanSONumberForPacking(SONumber,1);
+                                                        common.setIsPopupActive(false);
+                                                        break;
+                                                }
+                                            }
+                                        });
+                                    }else{
+                                        common.showAlertType(owmsExceptionMessage, getActivity(), getContext());
+                                    }
                                     return;
                                 }
                                 ProgressDialogUtils.closeProgressDialog();

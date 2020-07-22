@@ -271,6 +271,9 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         soundUtils = new SoundUtils();
 
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
+
         if (getArguments() != null) {
             if (getArguments().getString("SuggestedId") != null) {
                 try {
@@ -553,6 +556,11 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (scannedData != null && !common.isPopupActive() && !restrictScan) {
 
@@ -1188,7 +1196,6 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
         }
     }
 
-
     public void getStoreRefNo() {
 
         try {
@@ -1324,7 +1331,7 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
         }
     }
 
-    public void validatePalletCode() {
+   /* public void validatePalletCode() {
         try {
 
             WMSCoreMessage message = new WMSCoreMessage();
@@ -1436,7 +1443,7 @@ public class PutawayFragment extends Fragment implements View.OnClickListener, B
             ProgressDialogUtils.closeProgressDialog();
             DialogUtils.showAlertDialog(getActivity(), errorMessages.EMC_0002);
         }
-    }
+    }*/
 
     public void getItemTOPutAway() {
 

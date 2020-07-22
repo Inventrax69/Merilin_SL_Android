@@ -219,6 +219,8 @@ public class StockTransferOrderPick extends Fragment implements View.OnClickList
         common = new Common();
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
 
         //For Honeywell
@@ -305,7 +307,6 @@ public class StockTransferOrderPick extends Fragment implements View.OnClickList
                         }
                     } else {
                         etPalletTo.setText(scannedData);
-
                         ValidatePalletCode(etPalletTo.getText().toString(), "ToPallet");
                     }
                 } else {

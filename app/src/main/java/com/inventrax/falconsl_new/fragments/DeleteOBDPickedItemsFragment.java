@@ -192,7 +192,8 @@ public class DeleteOBDPickedItemsFragment extends Fragment implements View.OnCli
         common = new Common();
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
-
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         //For Honeywell
         AidcManager.create(getActivity(), new AidcManager.CreatedCallback() {
@@ -213,6 +214,8 @@ public class DeleteOBDPickedItemsFragment extends Fragment implements View.OnCli
         });
 
         getobdRefNos();
+
+
 
     }
 
@@ -451,6 +454,13 @@ public class DeleteOBDPickedItemsFragment extends Fragment implements View.OnCli
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
+
+
         if (scannedData != null && !common.isPopupActive() && rlDelete.getVisibility() == View.VISIBLE) {
 
 

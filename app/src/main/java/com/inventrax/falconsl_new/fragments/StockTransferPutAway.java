@@ -237,6 +237,8 @@ public class StockTransferPutAway extends Fragment implements View.OnClickListen
         gson = new GsonBuilder().create();
         errorMessages = new ErrorMessages();
         exceptionLoggerUtils = new ExceptionLoggerUtils();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         if (getArguments() != null) {
             if (getArguments().getString("SuggestedId") != null) {
@@ -276,6 +278,7 @@ public class StockTransferPutAway extends Fragment implements View.OnClickListen
                 }
             }
         });
+
 
 
         // To get Store Ref#
@@ -477,6 +480,11 @@ public class StockTransferPutAway extends Fragment implements View.OnClickListen
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
 
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
+
         if (scannedData != null) {
 
             if (rlPutaway.getVisibility() == View.VISIBLE) {
@@ -528,7 +536,8 @@ public class StockTransferPutAway extends Fragment implements View.OnClickListen
                     }
 
 
-                } else if (ScanValidator.isContainerScanned(scannedData) && !lblScannedLocation.getText().toString().isEmpty()) {
+                }
+                else if (ScanValidator.isContainerScanned(scannedData) && !lblScannedLocation.getText().toString().isEmpty()) {
 
                     if (lblContainer.getText().toString().isEmpty() || lblContainer.getText().toString().equals("0")) {
 
@@ -555,7 +564,8 @@ public class StockTransferPutAway extends Fragment implements View.OnClickListen
                     }
                 }
 
-            } else if (rlLocationScan.getVisibility() == View.VISIBLE) {
+            }
+            else if (rlLocationScan.getVisibility() == View.VISIBLE) {
 
                 if (ScanValidator.isLocationScanned(scannedData)) {
 
@@ -594,11 +604,13 @@ public class StockTransferPutAway extends Fragment implements View.OnClickListen
                         common.showUserDefinedAlertType(errorMessages.EMC_0013, getActivity(), getContext(), "Error");
                         return;
                     }
-                } else {
+                }
+                else {
                     common.showUserDefinedAlertType(errorMessages.EMC_0007, getActivity(), getContext(), "Error");
                     return;
                 }
             }
+
         }
     }
 

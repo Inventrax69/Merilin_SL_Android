@@ -94,6 +94,8 @@ public class VLPDPickingHeaderFragment extends Fragment implements View.OnClickL
         common = new Common();
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         LoadPickRefnos();
     }

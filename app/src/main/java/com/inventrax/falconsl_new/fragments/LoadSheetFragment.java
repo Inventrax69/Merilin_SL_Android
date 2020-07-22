@@ -228,6 +228,10 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
         common = new Common();
         core = new WMSCoreMessage();
 
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
+
+
         GetOpenLoadsheetList();
 
         //For Honeywell
@@ -245,6 +249,8 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
                 }
             }
         });
+
+
 
     }
 
@@ -513,6 +519,10 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
         if (scannedData != null) {
             if (!ProgressDialogUtils.isProgressActive()) {
                 if (rlLoadListThree.getVisibility() == View.VISIBLE) {

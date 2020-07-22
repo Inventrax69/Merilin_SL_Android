@@ -216,6 +216,8 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
         soundUtils = new SoundUtils();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         pickOBDno = getArguments().getString("pickOBDno");
         pickobdId = getArguments().getString("pickobdId");
@@ -246,7 +248,10 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
             }
         });
 
+
         GetPickItem();
+
+
     }
 
     @Override
@@ -458,6 +463,10 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
     public void ProcessScannedinfo(String scannedData) {
 
 
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (common.isPopupActive() && rlPickList.getVisibility() != View.VISIBLE) {
 
@@ -779,7 +788,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
             scanDTO.setObdNumber(lblPickListNo.getText().toString());
             //inboundDTO.setIsOutbound("0");
             message.setEntityObject(scanDTO);
-
 
             Call<String> call = null;
             ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
@@ -1530,8 +1538,6 @@ public class OBDPickingDetailsFragment extends Fragment implements View.OnClickL
                                         owmsExceptionMessage.getWMSExceptionCode().equals("EMC_OB_DAL_PICKSugg_EC01") ||
                                         owmsExceptionMessage.getWMSExceptionCode().equals("EMC_OB_DAL_PICKSugg_EC04") ||
                                         owmsExceptionMessage.getWMSExceptionCode().equals("EMC_IN_DAL_001")) {
-
-
                                 }
                                 if (owmsExceptionMessage.getWMSExceptionCode().equals("EMC_OB_DAL_010")){
 

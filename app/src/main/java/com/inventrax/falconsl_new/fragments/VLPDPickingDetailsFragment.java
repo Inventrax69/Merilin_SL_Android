@@ -203,6 +203,8 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
         exceptionLoggerUtils = new ExceptionLoggerUtils();
         errorMessages = new ErrorMessages();
         soundUtils = new SoundUtils();
+        ProgressDialogUtils.closeProgressDialog();
+        common.setIsPopupActive(false);
 
         pickOBDno = getArguments().getString("pickRefNo");
         pickobdId = getArguments().getString("pickobdId");
@@ -431,6 +433,11 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
 
     //Assigning scanned value to the respective fields
     public void ProcessScannedinfo(String scannedData) {
+
+        if (ProgressDialogUtils.isProgressActive() || Common.isPopupActive()) {
+            common.showUserDefinedAlertType(errorMessages.EMC_082, getActivity(), getContext(), "Warning");
+            return;
+        }
 
         if (common.isPopupActive() && rlPickList.getVisibility() != View.VISIBLE) {
 
