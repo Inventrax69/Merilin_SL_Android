@@ -56,9 +56,6 @@ public class ExceptionLoggerUtils {
         return file;
     }
 
-
-
-
     public static String readFromFile(Context contect) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyy");
@@ -80,7 +77,6 @@ public class ExceptionLoggerUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         return aBuffer;
     }

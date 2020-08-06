@@ -92,6 +92,7 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
     }
 
     public void loadFormControls() {
+
         if (NetworkUtils.isInternetAvailable(getContext())) {
 
             txtSelectStRef = (TextView) rootView.findViewById(R.id.tvSelectStRef);
@@ -128,6 +129,7 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
                             if (entryDTO.get(k).getVehicleNumber().equals(vehilceNo)) {
 
                                 dock = entryDTO.get(k).getDockNumber();
+
                             }
                         }
                     }
@@ -161,8 +163,6 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
             ProgressDialogUtils.closeProgressDialog();
             common.setIsPopupActive(false);
 
-
-
             LoadInbounddetails();
 
         } else {
@@ -179,7 +179,6 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
         switch (v.getId()) {
             case R.id.btnGo:
                 if (Storerefno != null) {
-
                     // passing values to the next screen
                     GetInboundDeatils();
                 }
@@ -277,7 +276,6 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
                                 List<String> _lstINBNames = new ArrayList<>();
                                 List<String> _lstInboundId = new ArrayList<>();
 
-
                                 for (int i = 0; i < _lstUnloading.size(); i++) {
                                     InboundDTO dto = new InboundDTO(_lstUnloading.get(i).entrySet());
                                     lstDto.add(dto);
@@ -286,7 +284,6 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
 
                                 for (int i = 0; i < lstDto.size(); i++) {
                                     _lstINBNames.add(lstDto.get(i).getStoreRefNo());
-
                                 }
 
 
@@ -425,7 +422,6 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
                                     if (entry.getKey().equals("Result")) {
                                         String Result = entry.getValue();
                                         if (Result.equals("0")) {
-
                                             return;
                                         } else {
                                             exceptionLoggerUtils.deleteFile(getActivity());
@@ -505,7 +501,6 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
 
     }
 */
-
   /*  private void processImage() {
 
         try {
@@ -537,8 +532,10 @@ public class UnloadingFragment extends Fragment implements View.OnClickListener 
 
 
                 //FileUtils.delete(CameraUtils.fileUri.getPath());
-               *//* FileUtils.forceDelete(CameraUtils.getStoredImagesDirectory());
-                FileUtils.forceDelete(CameraUtils.getCompressedImagesDirectory());*//*
+               */
+  /* FileUtils.forceDelete(CameraUtils.getStoredImagesDirectory());
+                FileUtils.forceDelete(CameraUtils.getCompressedImagesDirectory());
+
 
             }
         } catch (Exception ex) {

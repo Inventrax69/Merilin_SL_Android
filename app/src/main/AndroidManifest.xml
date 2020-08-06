@@ -51,7 +51,7 @@
         android:roundIcon= "@mipmap/in_launcher"
         android:supportsRtl= "true"
         android:largeHeap= "true"
-        android:hardwareAccelerated= "true"
+        android:hardwareAccelerated= "false"
         android:theme= "@style/AppTheme"
         tools:ignore= "AllowBackup,GoogleAppIndexingWarning">
 

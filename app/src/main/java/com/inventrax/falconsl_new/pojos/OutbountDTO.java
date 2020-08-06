@@ -116,8 +116,6 @@ public class OutbountDTO {
     @SerializedName("AssignedID")
     private String assignedID;
 
-
-
     @SerializedName("ProjectNo")
     private String projectNo;
 
@@ -156,6 +154,9 @@ public class OutbountDTO {
 
     @SerializedName("SODetailsID")
     private String SODetailsID;
+
+    @SerializedName("SOHeaderID")
+    private String SOHeaderID;
 
     @SerializedName("POSOHeaderId")
     private String pOSOHeaderId;
@@ -241,10 +242,8 @@ public class OutbountDTO {
     @SerializedName("ScannedSOCount")
     private String ScannedSOCount;
 
-
     @SerializedName("BusinessType")
     private String BusinessType;
-
 
     @SerializedName("LoadRefNo")
     private String LoadRefNo;
@@ -252,13 +251,18 @@ public class OutbountDTO {
     @SerializedName("CustomerName")
     private String CustomerName;
 
-
     @SerializedName("CustomerAddress")
     private String CustomerAddress;
 
-
     @SerializedName("WareHouseID")
     private String WareHouseID;
+
+
+    @SerializedName("Status")
+    private String Status;
+
+    @SerializedName("SOQty")
+    private String SOQty;
 
     private boolean isChecked=false;
 
@@ -415,6 +419,11 @@ public class OutbountDTO {
                         this.setBatchNo(entry.getValue().toString());
                     }
                     break;
+                case "Status":
+                    if (entry.getValue() != null) {
+                        this.setStatus(entry.getValue().toString());
+                    }
+                    break;
                 case "AssignedQuantity":
                     if (entry.getValue() != null) {
                         this.setAssignedQuantity(entry.getValue().toString());
@@ -504,6 +513,11 @@ public class OutbountDTO {
                 case "SODetailsID":
                     if (entry.getValue() != null) {
                         this.setSODetailsID(entry.getValue().toString());
+                    }
+                    break;
+                case "SOHeaderID":
+                    if (entry.getValue() != null) {
+                        this.setSOHeaderID(entry.getValue().toString());
                     }
                     break;
 
@@ -608,6 +622,12 @@ public class OutbountDTO {
                 case "LRnumber":
                     if(entry.getValue()!=null) {
                         this.setLRnumber(entry.getValue().toString());
+                    }
+                    break;
+
+                case "SOQty":
+                    if(entry.getValue()!=null) {
+                        this.setSOQty(entry.getValue().toString());
                     }
                     break;
 
@@ -1358,5 +1378,33 @@ public class OutbountDTO {
     public void setWareHouseID(String wareHouseID) {
         WareHouseID = wareHouseID;
     }
+
+
+    public String getSOHeaderID() {
+        return SOHeaderID;
+    }
+
+    public void setSOHeaderID(String SOHeaderID) {
+        this.SOHeaderID = SOHeaderID;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
+    }
+
+
+    public String getSOQty() {
+        return SOQty;
+    }
+
+    public void setSOQty(String SOQty) {
+        this.SOQty = SOQty;
+    }
+
+
 
 }

@@ -15,7 +15,7 @@
         android:icon="@drawable/technology"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:visible="true"/>
+        android:visible="false"/>
 
     <item
         android:title="home"
@@ -24,7 +24,6 @@
         android:orderInCategory="100"
         app:showAsAction="always"
         android:visible="true"/>
-
 
     <item
         android:id="@+id/action_about"
@@ -59,6 +58,5 @@
         android:orderInCategory="100"
         app:showAsAction="never"
         android:visible="false" />
-
 
 </menu>

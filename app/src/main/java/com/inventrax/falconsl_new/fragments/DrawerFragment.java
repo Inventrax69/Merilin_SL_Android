@@ -6,12 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -113,6 +109,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
         mainListOutbound.add("Packing Info");
         mainListOutbound.add("Load Generation");
         mainListOutbound.add("Loading");
+        mainListOutbound.add("Outbound Revert");
 
         // Adding child data List three
         List<String> mainListHouseKeeping = new ArrayList<String>();
@@ -252,7 +249,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-/*    public void loadFormControls() {
+    /*    public void loadFormControls() {
         try {
 
             SharedPreferences sp = getContext().getSharedPreferences("LoginActivity", Context.MODE_PRIVATE);
@@ -345,6 +342,8 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
                 }
             };
 
+
+
             mDrawerLayout.setDrawerListener(mDrawerToggle);
             mDrawerLayout.post(new Runnable() {
                 @Override
@@ -367,13 +366,13 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-//        getActivity().registerReceiver(counterBroadcastReceiver, mIntentFilter);
+        // getActivity().registerReceiver(counterBroadcastReceiver, mIntentFilter);
     }
 
     @Override
     public void onPause() {
-       // getActivity().unregisterReceiver(counterBroadcastReceiver);
         super.onPause();
+        // getActivity().unregisterReceiver(counterBroadcastReceiver);
     }
 
 
@@ -409,6 +408,10 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
             break;
             case "Loading": {
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new NewLoadSheetFragment());
+            }
+            break;
+            case "Outbound Revert": {
+                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new OutboundRevertHeaderFragment());
             }
             break;
             case "Bin to Bin": {

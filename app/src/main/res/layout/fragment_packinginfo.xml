@@ -154,7 +154,7 @@
                         android:id="@+id/tvScanCartoon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/scan_cartoon"
+                        android:text="@string/scan_carton"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         android:textStyle="normal" />

@@ -1053,10 +1053,7 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
 
                                 WMSExceptionMessage owmsExceptionMessage = null;
                                 for (int i = 0; i < _lExceptions.size(); i++) {
-
                                     owmsExceptionMessage = new WMSExceptionMessage(_lExceptions.get(i).entrySet());
-
-
                                 }
                                 ProgressDialogUtils.closeProgressDialog();
                                 DialogUtils.showAlertDialog(getActivity(), owmsExceptionMessage.getWMSMessage());
@@ -1068,16 +1065,13 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
                                 List<InboundDTO> lstDto = new ArrayList<InboundDTO>();
                                 List<String> _lstSLocNames = new ArrayList<>();
 
-
                                 for (int i = 0; i < _lstSLoc.size(); i++) {
                                     InboundDTO dto = new InboundDTO(_lstSLoc.get(i).entrySet());
                                     lstDto.add(dto);
                                 }
 
                                 for (int i = 0; i < lstDto.size(); i++) {
-
                                     _lstSLocNames.add(lstDto.get(i).getStorageLocation());
-
                                 }
 
 
@@ -1989,7 +1983,6 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
     @Override
     public void onResume() {
         super.onResume();
-
 
         if (barcodeReader != null) {
             try {

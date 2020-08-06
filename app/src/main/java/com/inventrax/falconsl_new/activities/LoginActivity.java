@@ -274,7 +274,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -284,10 +283,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
         loadFormControls();
         loginPresenter = new LoginPresenterImpl(this);
     }
-
-
-
-
 
     //Loading all the form controls
     private void loadFormControls() {
@@ -301,7 +296,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
-
 
             sharedPreferencesUtils = new SharedPreferencesUtils("LoginActivity", getApplicationContext());
 

@@ -440,7 +440,7 @@ public class PackingInfoFragment extends Fragment implements View.OnClickListene
         scannedSKU = "";
 
         tvScanSONumber.setText(R.string.scan_so_number);
-        tvScanCartoon.setText(R.string.scan_cartoon);
+        tvScanCartoon.setText(R.string.scan_carton);
 
         serialNo = "";
         batch = "";

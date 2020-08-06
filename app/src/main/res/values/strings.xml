@@ -1,5 +1,5 @@
 <resources>
-   <!-- <string name="app_name">Falcon WMS</string>-->
+    <!-- <string name="app_name">Falcon WMS</string>-->
     <string name="app_name">Merlin WMS</string>
     <!-- Navigation Drawer -->
 
@@ -73,6 +73,7 @@
     <string name="menu_putaway">Putaway</string>
     <string name="menu_liveStock">Live Stock</string>
     <string name="menu_obdPicking">OBD Picking</string>
+    <string name="menu_outbound_revert">Outbound Revert</string>
     <string name="menu_obdPicklist">OBD pick list</string>
     <string name="menu_vlpdList">VLPD List</string>
     <string name="menu_vlpdPick">VLPD Picking</string>
@@ -213,14 +214,17 @@
     <string name="select_wh">Select WH</string>
     <string name="from_pallet">From Pallet</string>
     <string name="putaway">Putaway</string>
- <string name="cycle_count">Cycle count</string>
- <string name="internal_transfer">Internal transfer</string>
- <string name="live_stock">Live Stock</string>
- <string name="picking">Picking</string>
- <string name="receiving">Receiving</string>
+    <string name="cycle_count">Cycle count</string>
+    <string name="internal_transfer">Internal transfer</string>
+    <string name="live_stock">Live Stock</string>
+    <string name="picking">Picking</string>
+    <string name="receiving">Receiving</string>
     <string name="scan_so_number">Scan SO Number</string>
- <string name="scan_cartoon">Scan Cartoon</string>
+    <string name="scan_carton">Scan Carton</string>
     <string name="packing">Packing</string>
- <string name="load_generation">Load Generation</string>
- <string name="loading">Loading</string>
+    <string name="load_generation">Load Generation</string>
+    <string name="loading">Loading</string>
+    <string name="scancartoon"> Scan Cartoon</string>
+    <string name="carton">Carton</string>
+    <string name="so_number_list">SO Number list</string>
 </resources>
