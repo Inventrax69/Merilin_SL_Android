@@ -10,7 +10,7 @@ android {
         applicationId "com.inventrax.falconsl_new"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 12
+        versionCode 13
         versionName "1.9.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

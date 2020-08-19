@@ -534,7 +534,6 @@ public class GoodsInFragment extends Fragment implements View.OnClickListener, B
 
                     lblScannedSku.setText(Materialcode);
 
-
                     if (scanType.equals("Auto")) {
                         etQty.setText("1");
 

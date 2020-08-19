@@ -39,6 +39,8 @@ import com.inventrax.falconsl_new.fragments.LoadingFragment;
 import com.inventrax.falconsl_new.fragments.NewLoadSheetFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingDetailsFragment;
 import com.inventrax.falconsl_new.fragments.OBDPickingHeaderFragment;
+import com.inventrax.falconsl_new.fragments.OutboundRevertDetailsFragment;
+import com.inventrax.falconsl_new.fragments.OutboundRevertHeaderFragment;
 import com.inventrax.falconsl_new.fragments.PackingFragment;
 import com.inventrax.falconsl_new.fragments.PackingInfoFragment;
 import com.inventrax.falconsl_new.fragments.PalletTransfersFragment;
@@ -223,6 +225,12 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
                 if (fragment != null && fragment.isVisible() && fragment instanceof NewLoadSheetFragment) {
                     ((NewLoadSheetFragment) fragment).myScannedData(MainActivity.this, ScannedData);
                 }
+                if (fragment != null && fragment.isVisible() && fragment instanceof OutboundRevertDetailsFragment) {
+                    ((OutboundRevertDetailsFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof OutboundRevertHeaderFragment) {
+                    ((OutboundRevertHeaderFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
             }
         }
 
@@ -281,13 +289,10 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
             // display the first navigation drawer view on app launch
             displayView(0, new NavDrawerItem(false, "Home"));
 
-
             //initializing scan object
             qrScan = new IntentIntegrator(this);
             qrScan.setOrientationLocked(false);
             qrScan.setCaptureActivity(CaptureActivityPortrait.class);
-
-
 
         } catch (Exception ex) {
             DialogUtils.showAlertDialog(this, "Error while loading form controls");
