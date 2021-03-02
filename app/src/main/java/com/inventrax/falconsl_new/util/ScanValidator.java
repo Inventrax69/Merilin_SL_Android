@@ -15,8 +15,6 @@ public class ScanValidator {
     }
 
 
-
-
     // Scan Validator
 
     public static boolean isItemScanned(String scannedData) {
@@ -28,7 +26,7 @@ public class ScanValidator {
     }
 
     public static boolean isContainerScanned(String scanneddata) {
-        if (scanneddata.length() == 14 && (isNumeric(scanneddata.substring(0, 3)) || isNumeric(scanneddata.substring(8, 10)))) {
+        if (scanneddata.startsWith("202")) {
             return true;
         } else {
             return false;
@@ -60,6 +58,14 @@ public class ScanValidator {
             Double result = Double.parseDouble(ValueToCheck);
             return true;
         } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public static boolean isBinScanned(String scannedData) {
+        if (scannedData.split("[-]").length == 5 && !isNumeric(scannedData.split("[-]")[0])) {
+            return true;
+        } else {
             return false;
         }
     }

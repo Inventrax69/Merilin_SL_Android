@@ -27,6 +27,7 @@ import com.inventrax.falconsl_new.pojos.OutbountDTO;
 import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.services.RestService;
+import com.inventrax.falconsl_new.services.RetrofitBuilderHttpsEx;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
 
@@ -158,7 +159,7 @@ public class DeletePickedItemAdapter extends RecyclerView.Adapter<DeletePickedIt
             message.setEntityObject(outbountDTO);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(context).create(ApiInterface.class);
             try {
                 //Checking for Internet Connectivity
                 // if (NetworkUtils.isInternetAvailable()) {

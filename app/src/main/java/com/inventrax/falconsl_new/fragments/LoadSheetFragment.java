@@ -52,6 +52,7 @@ import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner;
 import com.inventrax.falconsl_new.services.RestService;
+import com.inventrax.falconsl_new.services.RetrofitBuilderHttpsEx;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.FragmentUtils;
@@ -387,7 +388,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             message.setEntityObject(scanDTO);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -555,7 +556,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             message.setEntityObject(outbountDTO);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -664,7 +665,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -783,7 +784,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -920,7 +921,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
 
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -1050,9 +1051,7 @@ public class LoadSheetFragment extends Fragment implements View.OnClickListener,
             message.setEntityObject(wmsExceptionMessage);
 
             Call<String> call = null;
-            ApiInterface apiService =
-                    RestService.getClient().create(ApiInterface.class);
-
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
             try {
                 //Checking for Internet Connectivity
                 // if (NetworkUtils.isInternetAvailable()) {

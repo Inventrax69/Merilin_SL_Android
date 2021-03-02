@@ -101,7 +101,7 @@ public interface ApiInterface {
     @POST("Outbound/GetScanqtyvalidation")
     Call<String> GetScanqtyvalidation(@Body WMSCoreMessage oRequest);
 
-   @POST("Outbound/UpsertHHTOBDRevert")
+    @POST("Outbound/UpsertHHTOBDRevert")
     Call<String> UpsertHHTOBDRevert(@Body WMSCoreMessage oRequest);
 
     @POST("Outbound/GetOBDPickedList")
@@ -153,7 +153,7 @@ public interface ApiInterface {
     @POST("Outbound/UpdatePackComplete")
     Call<String> UpdatePackComplete(@Body WMSCoreMessage oRequest);
 
-   @POST("Outbound/GetPackingCartonInfo")
+    @POST("Outbound/GetPackingCartonInfo")
     Call<String> GetPackingCartonInfo(@Body WMSCoreMessage oRequest);
 
     @POST("Outbound/GETMSPsForPacking")
@@ -259,6 +259,9 @@ public interface ApiInterface {
 
     @POST("Scan/ValidateSO")
     Call<String> ValidateSO(@Body WMSCoreMessage oRequest);
+
+    @POST("HouseKeeping/UpsertStockTake")
+    Call<String> UpsertStockTake(@Body WMSCoreMessage oRequest);
 
 
 }

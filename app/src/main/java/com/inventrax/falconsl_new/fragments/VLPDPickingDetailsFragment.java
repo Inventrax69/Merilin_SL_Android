@@ -48,6 +48,7 @@ import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner;
 import com.inventrax.falconsl_new.services.RestService;
+import com.inventrax.falconsl_new.services.RetrofitBuilderHttpsEx;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.ProgressDialogUtils;
@@ -595,7 +596,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
             Log.v("ABCDE",new Gson().toJson(message));
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -754,7 +755,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
 
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -869,7 +870,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
             outbountDTO.setAccountID(accountId);
             message.setEntityObject(outbountDTO);
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -1085,7 +1086,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
             outbountDTO.setAccountID(accountId);
             message.setEntityObject(outbountDTO);
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -1229,7 +1230,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
             oOutboundDTO.setMRP(lblMRP.getText().toString());
             message.setEntityObject(oOutboundDTO);
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -1407,7 +1408,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
             message.setEntityObject(outbountDTO);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -1554,7 +1555,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
             message.setEntityObject(oOutboundDTO);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
             try {
                 //Checking for Internet Connectivity
                 // if (NetworkUtils.isInternetAvailable()) {
@@ -1714,7 +1715,7 @@ public class VLPDPickingDetailsFragment extends Fragment implements View.OnClick
             message.setEntityObject(wmsExceptionMessage);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity

@@ -49,6 +49,7 @@ import com.inventrax.falconsl_new.pojos.ScanDTO;
 import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.services.RestService;
+import com.inventrax.falconsl_new.services.RetrofitBuilderHttpsEx;
 import com.inventrax.falconsl_new.util.DialogUtils;
 import com.inventrax.falconsl_new.util.ExceptionLoggerUtils;
 import com.inventrax.falconsl_new.util.FragmentUtils;
@@ -542,7 +543,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
             message.setEntityObject(scanDTO);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -676,7 +677,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
             message.setEntityObject(wmsExceptionMessage);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity
@@ -849,7 +850,7 @@ public class LoadGenerationFragment extends Fragment implements View.OnClickList
 
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(getActivity()).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity

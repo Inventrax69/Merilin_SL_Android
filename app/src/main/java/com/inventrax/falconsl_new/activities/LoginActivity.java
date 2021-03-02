@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
@@ -56,6 +57,7 @@ import com.inventrax.falconsl_new.pojos.WMSCoreMessage;
 import com.inventrax.falconsl_new.pojos.WMSExceptionMessage;
 import com.inventrax.falconsl_new.searchableSpinner.SearchableSpinner;
 import com.inventrax.falconsl_new.services.RestService;
+import com.inventrax.falconsl_new.services.RetrofitBuilderHttpsEx;
 import com.inventrax.falconsl_new.util.AndroidUtils;
 import com.inventrax.falconsl_new.util.DateUtils;
 import com.inventrax.falconsl_new.util.DialogUtils;
@@ -68,6 +70,7 @@ import com.inventrax.falconsl_new.util.SoundUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,6 +136,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
 
         SharedPreferences sp = this.getSharedPreferences("SettingsActivity", Context.MODE_PRIVATE);
         serviceUrlString = sp.getString("url", "");
@@ -513,7 +517,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
         message.setEntityObject(loginUserDTO);
 
         Call<String> call = null;
-        ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+        ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(this).create(ApiInterface.class);
 
         try {
             //Checking for Internet Connectivity
@@ -525,7 +529,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
             //  else {
             //   DialogUtils.showAlertDialog(this,"Please -enable internet");
             //   return;
-
             //  }
 
         } catch (Exception ex) {
@@ -583,8 +586,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
                                     if (oProfileDto.getFirstName() != null) {
 
                                         sharedPreferencesUtils.savePreference("UserName", oProfileDto.getFirstName());
-
-
                                     }
                                     if (oProfileDto.getAccountId() != null) {
 
@@ -606,7 +607,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
-
                                 }
                             }
                             Intent i = new Intent(LoginActivity.this, MainActivity.class);
@@ -659,7 +659,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, Adapt
             message.setEntityObject(wmsExceptionMessage);
 
             Call<String> call = null;
-            ApiInterface apiService = RestService.getClient().create(ApiInterface.class);
+            ApiInterface apiService = RetrofitBuilderHttpsEx.getInstance(this).create(ApiInterface.class);
 
             try {
                 //Checking for Internet Connectivity

@@ -116,6 +116,7 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
         mainListHouseKeeping.add("Bin to Bin");
         mainListHouseKeeping.add("Live Stock");
         mainListHouseKeeping.add("Cycle Count");
+        mainListHouseKeeping.add("Stock Take");
 
         listDataChild.put(listDataParent.get(0), mainListInbound); // Header, Child data
         listDataChild.put(listDataParent.get(1), mainListOutbound); // Header, Child data
@@ -424,6 +425,11 @@ public class DrawerFragment extends Fragment implements View.OnClickListener {
             break;
             case "Cycle Count": {
                 FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new CycleCountHeaderFragment());
+            }
+            break;
+
+            case "Stock Take": {
+                FragmentUtils.replaceFragmentWithBackStack(getActivity(), R.id.container_body, new StockTakeFragment());
             }
             break;
             default:

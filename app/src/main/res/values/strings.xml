@@ -220,11 +220,14 @@
     <string name="picking">Picking</string>
     <string name="receiving">Receiving</string>
     <string name="scan_so_number">Scan SO Number</string>
-    <string name="scan_carton">Scan Carton</string>
     <string name="packing">Packing</string>
     <string name="load_generation">Load Generation</string>
     <string name="loading">Loading</string>
     <string name="scancartoon"> Scan Cartoon</string>
     <string name="carton">Carton</string>
     <string name="so_number_list">SO Number list</string>
+    <string name="scan_bin">Scan Bin</string>
+    <string name="scan_carton">Scan Carton</string>
+    <string name="submit">Submit</string>
+    <string name="stock_take_Title">Stock Take</string>
 </resources>

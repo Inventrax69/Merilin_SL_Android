@@ -49,7 +49,7 @@ public class CCExportAdapter extends RecyclerView.Adapter {
         // infalte the item Layout
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cc_export_row, parent, false);
 
-        // set the view's size, margins, paddings and layout parameters
+        // set the view's size, margins, padding and layout parameters
         return new MyViewHolder(v);
     }
 

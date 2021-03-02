@@ -46,6 +46,7 @@ import com.inventrax.falconsl_new.fragments.PackingInfoFragment;
 import com.inventrax.falconsl_new.fragments.PalletTransfersFragment;
 import com.inventrax.falconsl_new.fragments.PutawayFragment;
 import com.inventrax.falconsl_new.fragments.SortingFragment;
+import com.inventrax.falconsl_new.fragments.StockTakeFragment;
 import com.inventrax.falconsl_new.fragments.StockTransferPutAway;
 import com.inventrax.falconsl_new.fragments.UnloadingFragment;
 import com.inventrax.falconsl_new.fragments.VLPDPickingDetailsFragment;
@@ -230,6 +231,9 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
                 }
                 if (fragment != null && fragment.isVisible() && fragment instanceof OutboundRevertHeaderFragment) {
                     ((OutboundRevertHeaderFragment) fragment).myScannedData(MainActivity.this, ScannedData);
+                }
+                if (fragment != null && fragment.isVisible() && fragment instanceof StockTakeFragment) {
+                    ((StockTakeFragment) fragment).myScannedData(MainActivity.this, ScannedData);
                 }
             }
         }

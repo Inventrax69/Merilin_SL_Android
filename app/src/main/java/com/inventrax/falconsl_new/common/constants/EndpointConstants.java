@@ -5,6 +5,6 @@ package com.inventrax.falconsl_new.common.constants;
  */
 
 public enum  EndpointConstants {
-    None, LoginUserDTO, ProfileDTO,Inbound,PutAwayDTO,Inventory,Exception,CycleCount,Outbound, DenestingDTO,HouseKeepingDTO,ScanDTO;
+    None, LoginUserDTO, ProfileDTO,Inbound,PutAwayDTO,Inventory,Exception,CycleCount,Outbound, DenestingDTO,HouseKeepingDTO,ScanDTO,StockTakeDTO;
     public enum ScanType { Unloading, Putaway, Picking, Loading, DeNesting, Assortment };
 }
