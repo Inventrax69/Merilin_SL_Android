@@ -74,7 +74,7 @@ public class RetrofitBuilderHttpsEx {
         try {
             //sslContext = createCertificate(context.getResources().openRawResource(R.raw.shipper));
             //sslContext = createCertificate(context.getResources().openRawResource(R.raw.shipper_matahari));
-            sslContext = createCertificate(context.getResources().openRawResource(R.raw.shipper_merlin));
+            sslContext = createCertificate(context.getResources().openRawResource(R.raw.shipper_id));
         } catch (CertificateException | IOException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
